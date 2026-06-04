@@ -42,7 +42,18 @@ Additionally, please adhere to the following guidelines:
 
 Make sure to write clear and concise docstrings for all functions, classes, and modules.
 
+## Changelog Management
 
+To maintain a transparent and traceable project history, **every pull request that introduces user-facing changes or structural adjustments must include an update to `docs/CHANGELOG.md`.**
+
+### How to contribute to the Changelog:
+1. Open `docs/CHANGELOG.md`.
+2. Locate the `## [Unreleased]` section at the very top of the file (create it if it does not exist).
+3. Add a concise, bulleted description of your changes under the appropriate category header:
+   - `🌟 Features`: New tools, scripts, or enhancements (e.g., your new student sandbox script).
+   - `🐛 Bug fixes`: Corrections to existing simulation heuristics or layout code.
+   - `♻️ Refactorings`: Internal structural improvements that do not change external logic.
+   - `📚 Documentation`: Updates to docstrings, READMEs, or user guides.
 
 ## Running Tests
 
