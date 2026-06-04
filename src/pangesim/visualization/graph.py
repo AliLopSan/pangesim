@@ -1,0 +1,192 @@
+"""Module for visualizing pangenome graphs and constituent genome paths.
+
+This module provides visualization utilities for the pangenome class.
+"""
+
+import os
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+
+import matplotlib.pyplot as plt
+import networkx as nx
+
+from pangesim import Pangenome
+
+
+class PangenomeVisualizer:
+    """Handles the rendering of pangenomes."""
+
+    __slots__ = "pangenome"
+
+    def __init__(self, pangenome: Pangenome | None = None) -> None:
+        """Initializes the visualizer with a pangenome object.
+
+        Args:
+            pangenome: A pangenome object.
+        """
+        self.pangenome = pangenome
+
+        plt.rcParams.update(
+            {
+                "text.usetex": True,
+                "font.family": "serif",
+                "text.latex.preamble": r"\usepackage{amsmath}",
+            }
+        )
+
+    def _build_graph(self) -> nx.Graph:
+        """Constructs a NetworkX Graph from the weighted adjacency list."""
+        graph = nx.Graph()
+        adjacencies: List[Tuple[Any, Any, float]] = self.pangenome.compute_weighted_adjacencies()
+        for u, v in adjacencies:
+            graph.add_edge(u, v, weight=adjacencies[(u, v)])
+        return graph
+
+    def _compute_layout(self, graph: nx.Graph, method: str) -> Dict[Any, Tuple[float, float]]:
+        """Computes geometric node coordinates based on the selected layout style.
+
+        Args:
+            graph: The networkx graph structure to evaluate.
+            method: The naming string corresponding to the layout engine type
+              ('dot', 'planar', 'kamada_kawai', or 'spectral').
+
+        Returns:
+            A dictionary mapping node keys to explicit (x, y) coordinates.
+        """
+        if method == "dot":
+            return nx.nx_agraph.graphviz_layout(graph, prog="dot")
+        elif method == "planar":
+            try:
+                return nx.planar_layout(graph)
+            except nx.NetworkXException:
+                # Fallback safely if the simulated graph is non-planar
+                return nx.kamada_kawai_layout(graph)
+        elif method == "kamada_kawai":
+            return nx.kamada_kawai_layout(graph)
+        elif method == "spectral":
+            return nx.spectral_layout(graph)
+        else:
+            return nx.spring_layout(graph)
+
+    def plot_pangenome_grid(
+        self,
+        layout_method: str = "dot",
+        figsize: Tuple[int, int] = (16, 8),
+        output_path: Optional[str] = None,
+        filename: str = "pangenome_grid.pdf",
+    ) -> None:
+        """Plots the aggregate pangenome graph alongside individual genome paths.
+
+        Args:
+            layout_method: The pre-defined graph layout, either
+                          "dot", "planar", "kamada-kawai" or "spectral".
+            figsize: A tuple containing the width and height of the canvas.
+            output_path: The path where the plots will be stored.
+            filename: The file name and type of the created plot.
+        """
+        graph = self._build_graph()
+        num_genomes = len(self.pangenome)
+
+        # Compute the user-defined layout
+        pos = self._compute_layout(graph, method=layout_method)
+
+        fig = plt.figure(figsize=figsize)
+
+        # Create a GridSpec layout: 2 columns total (Left column = 50% width)
+        # The right column is partitioned evenly into a sub-grid for the genomes
+        gs = fig.add_gridspec(1, 2, width_ratios=[1, 1])
+
+        # Left Panel: Main Aggregate Graph
+        ax_main = fig.add_subplot(gs[0, 0])
+        weights: List[float] = [graph[u][v]["weight"] for u, v in graph.edges()]
+
+        nx.draw_networkx_nodes(
+            graph,
+            pos,
+            ax=ax_main,
+            node_color="#A0CBE8",
+            node_size=700,
+            edgecolors="black",
+        )
+        nx.draw_networkx_edges(graph, pos, ax=ax_main, width=weights, edge_color="#4E79A7")
+        nx.draw_networkx_labels(graph, pos, ax=ax_main, font_size=10, font_weight="bold")
+        ax_main.set_title(
+            "Adjacency Graph\n(Edge width = Weight)",
+            fontsize=14,
+            fontweight="bold",
+        )
+        ax_main.axis("off")
+
+        # Right Panel: Dynamically partition the remaining space for subplots
+        gs_genomes = gs[0, 1].subgridspec(1, num_genomes)
+
+        for i, genome in enumerate(self.pangenome.genomes):
+            ax_sub = fig.add_subplot(gs_genomes[0, i])
+
+            active_nodes = list(genome.gene_set)
+            active_edges = list(genome.get_adjacency_tuples())
+
+            # Define node visibility arrays based on usage
+            node_colors = ["#C13383" if n in active_nodes else "#D3D3D3" for n in graph.nodes()]
+            node_alphas = [1.0 if n in active_nodes else 0.5 for n in graph.nodes()]
+
+            # Draw background faded nodes first to safely simulate individual cell alpha
+            for node, color, alpha in zip(graph.nodes(), node_colors, node_alphas):
+                nx.draw_networkx_nodes(
+                    graph,
+                    pos,
+                    nodelist=[node],
+                    ax=ax_sub,
+                    node_color=color,
+                    node_size=400,
+                    alpha=alpha,
+                    edgecolors="black" if node in active_nodes else "#A9A9A9",
+                )
+
+            # Draw active edges (Solid, 100% alpha)
+            if active_edges:
+                nx.draw_networkx_edges(
+                    graph,
+                    pos,
+                    edgelist=list(active_edges),
+                    ax=ax_sub,
+                    width=2.5,
+                    edge_color="#E15759",
+                    alpha=1.0,
+                )
+
+            # Draw inactive edges (Dotted, 50% alpha)
+            inactive_edges = [e for e in graph.edges() if e not in active_edges]
+            if inactive_edges:
+                nx.draw_networkx_edges(
+                    graph,
+                    pos,
+                    edgelist=inactive_edges,
+                    ax=ax_sub,
+                    width=1.0,
+                    edge_color="#D3D3D3",
+                    style="dotted",
+                    alpha=0.5,
+                )
+
+            # Node labels rendered inside nodes (font size scaled to fit nicely)
+            nx.draw_networkx_labels(
+                graph, pos, ax=ax_sub, font_size=8, font_weight="bold", font_color="white"
+            )
+
+            # Apply indexed LaTeX formula string to subplot header titles
+            ax_sub.set_title(f"$G_{{{i + 1}}}$", fontsize=14)
+            ax_sub.axis("off")
+
+        plt.tight_layout()
+
+        # Handle File I/O Serialization Logic
+        save_dir = output_path if output_path else "."
+        os.makedirs(save_dir, exist_ok=True)
+        full_save_path = os.path.join(save_dir, filename)
+        plt.savefig(full_save_path, dpi=400, bbox_inches="tight")
+
+        plt.show()
