@@ -91,8 +91,9 @@ Metrics include:
 ├── src/pangesim/
 │   ├── analysis/
 │   ├── io/
+│   ├── datastructures/
 │   ├── panevolve/ #main simulator
-│   ├── reconstruction/ #heuristics
+│   ├── reconstruction/ #algorithms and heuristics
 │   ├── tools/
 │   └── visualization/
 │
