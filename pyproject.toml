@@ -1,0 +1,55 @@
+[project]
+name = "pangesim"
+version = "0.1.0"
+description = "A graph-based pangenome simulator and reconstruction evaluator."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "asymmetree>=2.3.0",
+    "pygraphviz>=1.14",
+    "tralda>=2.0.3",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "matplotlib>=3.10.8",
+    "notebook>=7.5.6",
+    "pandas>=2.3.3",
+    "ruff>=0.15.13",
+    "seaborn>=0.13.2",
+]
+lint = [
+    "pre-commit>=4.6.0",
+    "ruff"
+]
+test = [
+    "pytest>=9.0.3",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pangesim"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: Pyflakes, I: isort, N: pep8-naming, D: pydocstyle (Google layout)
+select = ["E", "W", "F", "I", "N", "D"]
+ignore = [
+    "D100", # Missing docstring in public module
+    "D104", # Missing docstring in public package
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+force-single-line = true  # Matches Google's exact import convention
+
+

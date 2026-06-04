@@ -1,0 +1,8 @@
+"""Pangesim: A discrete graph-based pangenome simulator.
+
+This package provides discrete simulation frameworks to model pangenome structural
+evolution, alongside combinatorial metrics to benchmark graph-reconstruction
+heuristics and discrete optimization algorithms.
+"""
+
+__version__ = "0.1.0"

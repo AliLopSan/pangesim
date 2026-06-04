@@ -1,0 +1,90 @@
+"""Tests verifying core tralda setup and baseline genome path loops."""
+
+from tralda.datastructures.doubly_linked import DLList
+from tralda.datastructures.doubly_linked import DLListNode
+
+from pangesim.panevolve.datastructures import Genome
+from pangesim.panevolve.datastructures import Pangenome
+
+
+def test_genome_constructor():
+    """Validates that doubly-linked lists link and traverse correctly."""
+    # 1. Test basic constructor initialization
+    genome = Genome(genome_id="test_bacterium")
+    assert genome._genome_id == "test_bacterium"
+    assert len(genome.heads) == 0
+    assert genome.gene_set == set()
+
+    # 2. Construct Path 1: (1 -> 2)
+    p1 = DLList()
+    n1 = DLListNode(value=1)
+    n2 = DLListNode(value=2)
+    p1.append(n1)
+    p1.append(n2)
+
+    # 3. Construct Path 2: (3 -> 4)
+    p2 = DLList()
+    n3 = DLListNode(value=3)
+    n4 = DLListNode(value=4)
+    p2.append(n3)
+    p2.append(n4)
+
+    # 4. Bind paths to our custom container class
+    genome.add_path(p1)
+    genome.add_path(p2)
+
+    # 5. Execute structural checks and traversal loop
+    assert len(genome.heads) == 2
+    assert len(genome) == 4
+    assert genome.path_count == 2
+
+    extracted_sequences = genome.get_path_sequences()
+    assert extracted_sequences == [[n1._value, n2._value], [n3._value, n4._value]]
+
+    # 6. Integrity checks for path forest
+    assert genome.check_integrity() is True
+
+    p3 = DLList()
+    n5 = DLListNode(value=5)
+    p3.append(n5)
+
+    genome.add_path(p3)
+
+    assert genome.check_integrity() is False
+
+
+def test_pangenome_metrics_and_weights():
+    """Validates core calculation logic and adjacency frequency counting."""
+    # 1. Initialize custom Genomes
+    g1 = Genome(genome_id="g1")
+    g2 = Genome(genome_id="g2")
+
+    # Build Path for Genome 1: (1-2)
+    p1 = DLList()
+    p1.append(DLListNode(value=1))
+    p1.append(DLListNode(value=2))
+    g1.add_path(p1)
+
+    # Build Path for Genome 2: (1-2-3)
+    p2 = DLList()
+    p2.append(DLListNode(value=1))
+    p2.append(DLListNode(value=2))
+    p2.append(DLListNode(value=3))
+    g2.add_path(p2)
+
+    # 2. Assemble Pangenome
+    pangenome = Pangenome(pangenome_id="test_pan")
+    pangenome.add_genome(g1)
+    pangenome.add_genome(g2)
+
+    # 3. Assert structural length metric
+    assert len(pangenome) == 2
+
+    # 4. Assert Core Genome calculation (1 and 2 are shared, 3 is accessory)
+    assert pangenome.compute_core_genes() == {1, 2}
+
+    # 5. Assert Weighted Adjacencies
+    # Edge (1, 2) occurs twice. Edge (2, 3) occurs once.
+    weighted_edges = pangenome.compute_weighted_adjacencies()
+    assert weighted_edges[(1, 2)] == 2
+    assert weighted_edges[(2, 3)] == 1
