@@ -1,0 +1,48 @@
+"""Main orchestration engine executing the 4-phase Eulerian path heuristic."""
+
+from pangesim import Pangenome
+from pangesim.reconstruction import AssignmentStrategy
+from pangesim.reconstruction import BoundsStrategy
+from pangesim.reconstruction.assignment import DummyAssignment
+from pangesim.reconstruction.bounds import DummyBounds
+
+
+class EulerianPathHeuristic:
+    """Orchestrates pangenome reconstruction using a 4-phase pipeline."""
+
+    def __init__(
+        self,
+        alpha: float = 1.0,
+        gamma: float = 1.0,
+        bounds_strategy: BoundsStrategy = None,
+        assign_strategy: AssignmentStrategy = None,
+    ) -> None:
+        """Constructor for the Eulerian path heuristic.
+
+        Args:
+           alpha: per-genome reward in the score.
+           gamma: weight-error penalty coefficient.
+           bounds_strategy: A strategy for computing the number of genomes.
+           assign_strategy: An assignment strategy for genomes.
+        """
+        self.alpha = alpha
+        self.gamma = gamma
+        self.bounds_strategy = bounds_strategy or DummyBounds
+        self.assign_strategy = assign_strategy or DummyAssignment
+
+    def reconstruct(self, adjacencies: AdjacencyMatrix) -> Pangenome:
+        """Executes full pipeline.
+
+        Args:
+            adjacencies: weighted adjacency matrix.
+
+        Returns:
+            A candidate pangenome.
+        """
+        # Phase 1: Compute bounds
+        k_min, k_max = self.bounds_strategy.compute_bounds(adjacencies)
+        target_k = k_max
+        # Phase 2: Paths assignment
+        Pangenome = self.assignment_strategy.assign_genomes(adjacencies,
+                                                            target_k)
+        return Pangenome
