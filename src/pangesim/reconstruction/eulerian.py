@@ -1,4 +1,6 @@
 """Main orchestration engine executing the 4-phase Eulerian path heuristic."""
+from typing import Any
+from typing import Dict
 
 from pangesim import Pangenome
 from pangesim.reconstruction import AdjacencyMatrix
@@ -13,37 +15,44 @@ class EulerianPathHeuristic:
 
     def __init__(
         self,
-        alpha: float = 1.0,
-        gamma: float = 1.0,
-        bounds_strategy: BoundsStrategy = None,
-        assign_strategy: AssignmentStrategy = None,
+            params: Dict[str, Any] | None = None,
+            bounds_strategy: BoundsStrategy | None = None,
+            assignment_strategy: AssignmentStrategy | None = None,
     ) -> None:
         """Constructor for the Eulerian path heuristic.
 
         Args:
-           alpha: per-genome reward in the score.
-           gamma: weight-error penalty coefficient.
-           bounds_strategy: A strategy for computing the number of genomes.
-           assign_strategy: An assignment strategy for genomes.
+           params: A dict of optional parameters.
+           bounds_strategy: Strategy used to compute genome bounds.
+           assignment_strategy: Strategy used to assign genomes.
         """
-        self.alpha = alpha
-        self.gamma = gamma
-        self.bounds_strategy = bounds_strategy or DummyBounds
-        self.assign_strategy = assign_strategy or DummyAssignment
+        self.params = params or {"alpha":1.0,"gamma":1.0}
+        self.bounds_strategy = (
+            bounds_strategy
+            if bounds_strategy is not None
+            else DummyBounds()
+        )
 
-    def reconstruct(self, adjacencies: AdjacencyMatrix) -> Pangenome:
+        self.assignment_strategy = (
+            assignment_strategy
+            if assignment_strategy is not None
+            else DummyAssignment()
+        )
+
+    def reconstruct(self, matrix: AdjacencyMatrix) -> Pangenome:
         """Executes full pipeline.
 
         Args:
-            adjacencies: weighted adjacency matrix.
+            matrix: weighted adjacency matrix.
 
         Returns:
             A candidate pangenome.
         """
         # Phase 1: Compute bounds
-        k_min, k_max = self.bounds_strategy.compute_bounds(adjacencies)
-        target_k = k_max
+        k_min, k_max, info = self.bounds_strategy.compute_bounds(matrix)
+        print("\t Successfully computed bounds kmin : ", k_min,
+              "k_max: ", k_max)
         # Phase 2: Paths assignment
-        pangenome = self.assignment_strategy.assign_genomes(adjacencies,
-                                                            target_k)
+        pangenome = self.assignment_strategy.assign_genomes(adjacencies=matrix,
+                                                            k=k_max)
         return pangenome

@@ -9,7 +9,7 @@ from pangesim import Pangenome
 
 # Type alias for structural clarity
 AdjacencyMatrix = Dict[Tuple[int, int], int]
-AdjacencyList = Dict[int,List[int]]
+AdjacencyList = Dict[int,List[Tuple[int,int]]]
 
 def matrix_to_list(matrix: AdjacencyMatrix,
                    directed: bool = False) -> AdjacencyList:
@@ -21,29 +21,32 @@ def matrix_to_list(matrix: AdjacencyMatrix,
             as undirected, duplicating entries for both nodes.
 
     Returns:
-        An adjacency list representation.
+        An adjacency list with weights representation.
     """
     adj_list: AdjacencyList = {}
     for source, target in matrix:
         if source not in adj_list:
             adj_list[source] = []
-        adj_list[source].append(target)
+        adj_list[source].append((target,matrix[(source,target)]))
 
         if not directed:
             if target not in adj_list:
                 adj_list[target] = []
-            adj_list[target].append(source)
+            adj_list[target].append((source,matrix[(source,target)]))
     return adj_list
 
 class BoundsStrategy(ABC):
     """Bounds strategy blueprint for computing k bounds."""
     @abstractmethod
     def compute_bounds(self,
-                       adjacencies: AdjacencyMatrix) -> Tuple[int, int,Dict[int, int]]:
+                       adjacencies: AdjacencyMatrix,
+                       params: Dict | None = None,
+                       ) -> Tuple[int, int,Dict[int, int]]:
         """Computes the genomes bounds.
 
         Args:
            adjacencies: The weighted adjacency matrix.
+           params: An optional dictionary of parameters.
 
         Returns (k_min, k_max_structural, per_vertex_k) where:
            k_min               = max_v LocalK(v, H)

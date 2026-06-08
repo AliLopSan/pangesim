@@ -26,9 +26,10 @@ class DummyAssignment(AssignmentStrategy):
         Returns:
         A pangenome object with k genomes.
         """
-        genomes = List[Genome]
+        genomes: List[Genome] = []
         i = 0
-        for u,v in AdjacencyMatrix:
+
+        for u,v in adjacencies:
             genome = Genome(genome_id = str(i))
             u_node = DLListNode(value=u)
             v_node = DLListNode(value=v)
