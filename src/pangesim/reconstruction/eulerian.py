@@ -49,7 +49,7 @@ class EulerianPathHeuristic:
             A candidate pangenome.
         """
         # Phase 1: Compute bounds
-        k_min, k_max, info = self.bounds_strategy.compute_bounds(matrix)
+        k_min, k_max, info = self.bounds_strategy.compute_bounds(matrix, self.params)
         print("\t Successfully computed bounds kmin : ", k_min,
               "k_max: ", k_max)
         # Phase 2: Paths assignment

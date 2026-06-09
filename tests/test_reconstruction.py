@@ -1,7 +1,7 @@
 """Tests for reconstruction algorithms."""
 from pangesim.panevolve import PangenomeSimulator
 from pangesim.reconstruction import EulerianPathHeuristic
-
+from pangesim.reconstruction.bounds import GreedyPairingISCB
 
 def test_dummy_pipeline():
     """Naive Pangenome reconstruction."""
@@ -14,5 +14,11 @@ def test_dummy_pipeline():
           len(h_ground),"edges")
     heuristic = EulerianPathHeuristic()
     p_recons  = heuristic.reconstruct(h_ground)
+
+    assert len(p_recons) == len(h_ground)
+
+    greedy = GreedyPairingISCB()
+    greedy_heuristic = EulerianPathHeuristic(bounds_strategy=greedy)
+    inferred = greedy_heuristic.reconstruct(h_ground)
 
     assert len(p_recons) == len(h_ground)

@@ -45,7 +45,7 @@ class GreedyPairingISCB(BoundsStrategy):
            k_v bound value for the node.
         """
         #Collect neighbor's multiplicities
-        multiplicities = List[int] = []
+        multiplicities: List[int] = []
         for u,m in neighbors:
             if m > 0:
                 multiplicities.append(m)
@@ -71,7 +71,7 @@ class GreedyPairingISCB(BoundsStrategy):
             ad_list:AdjacencyList,
                     ) -> Iterator[Tuple[int,int]]:
         """Yields node bounds one at a time."""
-        for node,neighbors in ad_list.items:
+        for node,neighbors in ad_list.items():
             yield(
                 node,
                 self.compute_node_bound(node,neighbors),
