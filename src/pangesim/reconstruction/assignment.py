@@ -8,6 +8,8 @@ from pangesim import Genome
 from pangesim import Pangenome
 from pangesim.reconstruction import AdjacencyMatrix
 from pangesim.reconstruction import AssignmentStrategy
+from pangesim.reconstruction import matrix_to_list
+from pangesim.reconstruction.utils import TopologicalExplorer
 
 
 class DummyAssignment(AssignmentStrategy):
@@ -43,6 +45,46 @@ class DummyAssignment(AssignmentStrategy):
         return Pangenome(pangenome_id=f"dummy_with_{k}",genomes=genomes)
 
 
+class EulerianTrailAssignment(AssignmentStrategy):
+    """Decomposes an adjacency matrix into genome trails using localized components.
 
+    This strategy leverages a lightweight TopologicalExplorer to partition the
+    global graph into independent subgraphs, minimizing NetworkX overhead by
+    restricting circuit calculations strictly to isolated, active components.
+    """
+    __slots__ = ("directed")
+
+    def __init__(self, directed: bool = False) -> None:
+        """Initializes the assignment engine.
+
+        Args:
+            directed: If True, treats edges as directed vectors. Defaults to False.
+        """
+        self.directed = directed
+
+    def assign_genomes(self, adjacencies: AdjacencyMatrix, k: int) -> Pangenome:
+        """Decomposes an adjacency matrix into a reconstructed Pangenome object.
+
+        Args:
+            adjacencies: The global weighted adjacency matrix.
+            k: The target number of genomes to reconstruct.
+
+        Returns:
+            A  Pangenome containing k genomes built by Eulerian Path decomposition.
+        """
+        adj_list = matrix_to_list(adjacencies, directed=self.directed)
+        explorer = TopologicalExplorer(adj_list, directed=self.directed)
+        components = explorer.extract_components()
+
+        for component in components:
+            if component.is_eulerian:
+                print("Component is eulerian")
+
+            else:
+                print("Component is not eulerian")
+
+        # Step 4: Materialize and return your official domain layer contract
+        # TODO: Transform all_reconstructed_paths into a Pangenome(genomes=...) list
+        return Pangenome()
 
 
