@@ -4,7 +4,8 @@ from collections import deque
 from typing import Dict
 from typing import NamedTuple
 
-# Importing your custom type definitions from your base file
+import networkx as nx
+
 from pangesim.reconstruction.base import AdjacencyList
 
 
@@ -86,7 +87,6 @@ class TopologicalExplorer:
                     if neighbor not in visited:
                         visited.add(neighbor)
                         queue.append(neighbor)
-
             components.append(
                 ComponentTopology(
                     nodes=component_nodes,
@@ -96,3 +96,32 @@ class TopologicalExplorer:
             )
 
         return components
+
+def component_to_networkx(
+        nodes: set[int],
+        adj_list: AdjacencyList,
+        directed: bool = False ) -> nx.Graph:
+    """Transforms a specific isolated connected component into a NetworkX graph.
+
+    This utility isolates edge translation to a subset of nodes, ensuring
+    NetworkX graph construction scales efficiently with large datasets.
+
+    Args:
+        nodes: The set of node IDs belonging strictly to this component.
+        adj_list: The global pre-built AdjacencyList representation.
+        directed: If True, returns an nx.DiGraph; otherwise returns an nx.Graph.
+
+    Returns:
+        A NetworkX graph object with the component's topology and weights.
+    """
+    graph = nx.DiGraph() if directed else nx.Graph()
+
+    for node in nodes:
+        # Safely fetch neighbors from the adjacency list
+        for neighbor, weight in adj_list.get(node, []):
+            # Avoid duplicating undirected edges in the NetworkX layer
+            if not directed and node > neighbor:
+                continue
+            graph.add_edge(node, neighbor, weight=weight)
+
+    return graph

@@ -10,6 +10,7 @@ from pangesim.reconstruction import AdjacencyMatrix
 from pangesim.reconstruction import AssignmentStrategy
 from pangesim.reconstruction import matrix_to_list
 from pangesim.reconstruction.utils import TopologicalExplorer
+from pangesim.reconstruction.utils import component_to_networkx
 
 
 class DummyAssignment(AssignmentStrategy):
@@ -77,13 +78,15 @@ class EulerianTrailAssignment(AssignmentStrategy):
         components = explorer.extract_components()
 
         for component in components:
-            if component.is_eulerian:
+            nx_component = component_to_networkx(nodes=component.nodes,
+                                                 adj_list=adj_list,
+                                                 directed=self.directed)
+            if nx_component.is_eulerian:
                 print("Component is eulerian")
 
             else:
                 print("Component is not eulerian")
 
-        # Step 4: Materialize and return your official domain layer contract
         # TODO: Transform all_reconstructed_paths into a Pangenome(genomes=...) list
         return Pangenome()
 
