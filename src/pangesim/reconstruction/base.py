@@ -5,6 +5,8 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
+import networkx as nx
+
 from pangesim import Pangenome
 
 # Type alias for structural clarity
@@ -96,4 +98,13 @@ class RefinementStrategy(ABC):
         Returns:
             The refined pangenome object.
         """
+        pass
+
+class OddPairingStrategy(ABC):
+    """Abstract base class for pairing odd-degree vertices."""
+
+    @abstractmethod
+    def pair_vertices(self, graph: nx.Graph,
+                      odd_vertices: list[int]) -> list[tuple[int, int]]:
+        """Computes new edges to make a component Eulerian."""
         pass
