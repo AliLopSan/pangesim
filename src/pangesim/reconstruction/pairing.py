@@ -1,4 +1,4 @@
-"""Concrete strategies for pairing odd-degree nodes in a graph."""
+"""Concrete strategies for Eulerization (transforming a non-eulerian graph into one)."""
 
 import random
 

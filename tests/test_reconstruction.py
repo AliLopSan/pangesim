@@ -1,9 +1,11 @@
 """Tests for reconstruction algorithms and utilities."""
 from pangesim.panevolve import PangenomeSimulator
 from pangesim.reconstruction import EulerianPathHeuristic
+from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.utils import TopologicalExplorer
+
 
 def test_dummy_pipeline():
     """Naive Pangenome reconstruction."""
@@ -23,11 +25,11 @@ def test_dummy_pipeline():
     greedy_heuristic = EulerianPathHeuristic(bounds_strategy=greedy)
     inferred = greedy_heuristic.reconstruct(h_ground)
 
-    assert len(p_recons) == len(h_ground)
+    assert len(inferred) == len(h_ground)
 
 def test_topological_explorer_undirected():
     """Validates component isolation and parity mapping on an undirected graph."""
-    # Graph structure: 
+    # Graph structure:
     # Component 1 (Triangle, all even): 1-2, 2-3, 3-1
     # Component 2 (Line, two odd nodes): 4-5
     sample_adjacencies = {
@@ -52,3 +54,14 @@ def test_topological_explorer_undirected():
     assert line.nodes == {4, 5}
     assert line.is_eulerian is False
     assert set(line.odd_vertices) == {4, 5}
+
+def test_eulerian_assignments():
+    """Test the basics of eulerian assignments."""
+    sample_matrix = {
+        (1, 2): 1, (2, 3): 1, (3, 1): 1,
+        (4, 5): 1
+    }
+    assign = EulerianTrailAssignment()
+    pan = assign.assign_genomes(sample_matrix,3)
+
+    assert len(pan) == 0

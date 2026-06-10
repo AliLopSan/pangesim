@@ -104,7 +104,12 @@ class OddPairingStrategy(ABC):
     """Abstract base class for pairing odd-degree vertices."""
 
     @abstractmethod
-    def pair_vertices(self, graph: nx.Graph,
+    def pair_vertices(self,graph: nx.Graph,
                       odd_vertices: list[int]) -> list[tuple[int, int]]:
-        """Computes new edges to make a component Eulerian."""
+        """Computes new edges to make a component Eulerian.
+
+        Args:
+           graph: a networkx graph.
+           odd_vertices: All odd vertices in the graph.
+        """
         pass

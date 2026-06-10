@@ -125,3 +125,15 @@ def component_to_networkx(
             graph.add_edge(node, neighbor, weight=weight)
 
     return graph
+
+def is_graph_a_path(graph: nx.Graph):
+    """Checks if given graph is a path.
+
+    Args:
+        graph: A networkx graph
+    """
+    if len(graph) <= 1:
+        return True
+    if not nx.is_tree(graph):
+        return False
+    return max(dict(graph.degree()).values()) <= 2
