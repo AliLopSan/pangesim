@@ -1,5 +1,5 @@
 """Concrete strategies for Eulerization (transforming a non-eulerian graph into one)."""
-import random
+import random as rd
 from typing import Dict
 from typing import List
 
@@ -23,7 +23,7 @@ class RandomOddPairing(OddPairingStrategy):
            A list of pairs of odd vertices.
         """
         nodes = odd_vertices.copy()
-        random.shuffle(nodes)
+        rd.shuffle(nodes)
 
         edges_to_add = []
         for i in range(0, len(nodes), 2):
@@ -72,6 +72,8 @@ class IterativeOddPairing(OddPairingStrategy):
         edges_to_add: list[tuple[int, int]] = []
         ad_list = self.odd_adj_list(graph, odd_vertices)
         odd_tracker:list = list(odd_vertices)
+
+        rd.shuffle(odd_tracker)
 
         # Dynamic optimization loop
         while len(odd_tracker) > 0:

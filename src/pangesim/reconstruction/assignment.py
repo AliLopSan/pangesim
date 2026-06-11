@@ -167,31 +167,41 @@ class EulerianTrailAssignment(AssignmentStrategy):
             trail = self.direct_trail(component,nx_component,adj_list)
             trails_list.append(trail)
         else:
-            if not self.path:
-                print("\t Finding Eulerian path first")
-                if not nx.is_eulerian(nx_component):
+            #if we chose to find eulerian path first, then
+            if self.path:
+                print("\t Option: Find eulerian path first")
+                if nx.has_eulerian_path(nx_component):
+                    print("\t\t Graph has an eulerian path")
+                    eulerian_edges = list(nx.eulerian_path(nx_component))
+                else:
+                    print("\t\t No eulerian path")
                     added_edges=self.eulerize_strategy.pair_vertices(
                         graph=nx_component,
                         odd_vertices=component.odd_vertices)
-                    print("Edges to add: ", added_edges)
                     nx_component.add_edges_from(added_edges)
+                    print("\t\t\t Added : ",added_edges)
+                    print("\t\t\t New component:")
                     print_adj_list(nx_component)
-                    print("\t Adjacency list of component AFTER addition")
-                if nx.has_eulerian_path(nx_component):
-                    eulerian_edges = list(nx.eulerian_path(nx_component))
-                else:
-                    eulerian_edges = list(nx.eulerian_circuit(nx_component))
+                    if nx.has_eulerian_path(nx_component):
+                        eulerian_edges = list(nx.eulerian_path(nx_component))
+                    else:
+                        eulerian_edges = list(nx.eulerian_circuit(nx_component))
+            #go to eulerian circuit directly
             else:
-                print("\t Finding Eulerian circuit first")
-                if nx.has_eulerian_path(nx_component):
-                    eulerian_edges = list(nx.eulerian_path(nx_component))
+                print("\t Option: Find eulerian circuit")
+                if nx.is_eulerian(nx_component):
+                    print("\t\t Graph is eulerian")
+                    eulerian_edges = list(nx.eulerian_circuit(nx_component))
                 else:
+                    print("\t\t Graph is not eulerian")
                     added_edges=self.eulerize_strategy.pair_vertices(
                         graph=nx_component,
                         odd_vertices=component.odd_vertices)
                     nx_component.add_edges_from(added_edges)
+                    print("\t\t\t Added : ",added_edges)
+                    print("\t\t\t New component:")
+                    print_adj_list(nx_component)
                     eulerian_edges = list(nx.eulerian_circuit(nx_component))
-            print("\t \t eulerian edges: ", eulerian_edges)
 
             trails_list = self.edges_to_trails_list(edges=eulerian_edges,
                                                 temp_edges=added_edges)

@@ -113,8 +113,9 @@ def component_to_networkx(
 
     Returns:
         A NetworkX graph object with the component's topology and weights.
+    It also stores a native tag, to see if the edge was native or added.
     """
-    graph = nx.DiGraph() if directed else nx.Graph()
+    graph = nx.MultiDiGraph() if directed else nx.MultiGraph()
 
     for node in nodes:
         # Safely fetch neighbors from the adjacency list
@@ -122,7 +123,7 @@ def component_to_networkx(
             # Avoid duplicating undirected edges in the NetworkX layer
             if not directed and node > neighbor:
                 continue
-            graph.add_edge(node, neighbor, weight=weight)
+            graph.add_edge(node, neighbor, weight=weight,native=True)
 
     return graph
 
