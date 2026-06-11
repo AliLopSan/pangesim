@@ -57,9 +57,14 @@ def test_topological_explorer_undirected():
 
 def test_eulerian_assignments():
     """Test the basics of eulerian assignments."""
+    # Graph structure:
+    # Component 1 (Triangle, all even): 1-2, 2-3, 3-1
+    # Component 2 (Line, two odd nodes): 4-5
+    # Component 3 (Unrooted tree): ((6,7)8,(10,11)9);
     sample_matrix = {
         (1, 2): 1, (2, 3): 1, (3, 1): 1,
-        (4, 5): 1
+        (4, 5): 1,
+        (6,8): 3, (8,7): 2, (8,9): 4,(9,10): 3,(9,11): 3
     }
     assign = EulerianTrailAssignment()
     pan = assign.assign_genomes(sample_matrix,3)

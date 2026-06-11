@@ -14,12 +14,12 @@ from pangesim.reconstruction import AdjacencyList
 from pangesim.reconstruction import AdjacencyMatrix
 from pangesim.reconstruction import AssignmentStrategy
 from pangesim.reconstruction import matrix_to_list
-from pangesim.reconstruction.base import OddPairingStrategy
-from pangesim.reconstruction.pairing import RandomOddPairing
+from pangesim.reconstruction.pairing import IterativeOddPairing
 from pangesim.reconstruction.utils import ComponentTopology
 from pangesim.reconstruction.utils import TopologicalExplorer
 from pangesim.reconstruction.utils import component_to_networkx
 from pangesim.reconstruction.utils import is_graph_a_path
+from pangesim.reconstruction.utils import print_adj_list
 
 
 class DummyAssignment(AssignmentStrategy):
@@ -66,7 +66,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
 
     def __init__(self,
                  directed: bool = False,
-                 eulerize_strategy: OddPairingStrategy | None = None,
+                 eulerize_strategy: IterativeOddPairing | None = None,
                  path: bool = False,
                  ) -> None:
         """Initializes the assignment engine.
@@ -80,7 +80,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
         self.eulerize_strategy = (
             eulerize_strategy
             if eulerize_strategy is not None
-            else RandomOddPairing()
+            else IterativeOddPairing()
         )
         self.path = path
 
@@ -104,10 +104,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
         if len(temp_as_set) == 0:
             for u,v in edges:
                 node_sequence.append(u)
-            if self.path:
-                trails_list.append(node_sequence)
-            else:
-                trails_list.append(node_sequence[:-1])
+            trails_list.append(node_sequence)
         else:
             temp_trail: List[int] = []
             for u,v in edges:
@@ -162,18 +159,30 @@ class EulerianTrailAssignment(AssignmentStrategy):
         nx_component = component_to_networkx(nodes=component.nodes,
                                                  adj_list=adj_list,
                                                  directed=self.directed)
+
+        print("\tAnalysis of component: ",component.nodes)
+        print_adj_list(nx_component)
+
         if is_graph_a_path(nx_component):
             trail = self.direct_trail(component,nx_component,adj_list)
             trails_list.append(trail)
         else:
             if not self.path:
+                print("\t Finding Eulerian path first")
                 if not nx.is_eulerian(nx_component):
                     added_edges=self.eulerize_strategy.pair_vertices(
                         graph=nx_component,
                         odd_vertices=component.odd_vertices)
+                    print("Edges to add: ", added_edges)
                     nx_component.add_edges_from(added_edges)
-                eulerian_edges = list(nx.eulerian_circuit(nx_component))
+                    print_adj_list(nx_component)
+                    print("\t Adjacency list of component AFTER addition")
+                if nx.has_eulerian_path(nx_component):
+                    eulerian_edges = list(nx.eulerian_path(nx_component))
+                else:
+                    eulerian_edges = list(nx.eulerian_circuit(nx_component))
             else:
+                print("\t Finding Eulerian circuit first")
                 if nx.has_eulerian_path(nx_component):
                     eulerian_edges = list(nx.eulerian_path(nx_component))
                 else:
@@ -182,6 +191,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
                         odd_vertices=component.odd_vertices)
                     nx_component.add_edges_from(added_edges)
                     eulerian_edges = list(nx.eulerian_circuit(nx_component))
+            print("\t \t eulerian edges: ", eulerian_edges)
 
             trails_list = self.edges_to_trails_list(edges=eulerian_edges,
                                                 temp_edges=added_edges)
@@ -208,7 +218,8 @@ class EulerianTrailAssignment(AssignmentStrategy):
         for component in components:
             comp_trails = self.compute_component_trails(component=component,
                                                    adj_list=adj_list)
-            trails.append(comp_trails)
+            for t in comp_trails:
+                trails.append(t)
         return trails
 
 
@@ -227,6 +238,8 @@ class EulerianTrailAssignment(AssignmentStrategy):
         trails = self.compute_trails(adjacencies)
 
         print("Found ", len(trails), " trails.")
+        for trail in trails:
+            print("\t",trail)
 
 
         # TODO: Transform all_reconstructed_paths into a Pangenome(genomes=...) list

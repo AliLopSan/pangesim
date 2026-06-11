@@ -100,7 +100,7 @@ class TopologicalExplorer:
 def component_to_networkx(
         nodes: set[int],
         adj_list: AdjacencyList,
-        directed: bool = False ) -> nx.Graph:
+        directed: bool = False ) -> nx.MultiGraph:
     """Transforms a specific isolated connected component into a NetworkX graph.
 
     This utility isolates edge translation to a subset of nodes, ensuring
@@ -126,14 +126,24 @@ def component_to_networkx(
 
     return graph
 
-def is_graph_a_path(graph: nx.Graph):
+def is_graph_a_path(graph: nx.MultiGraph) -> bool:
     """Checks if given graph is a path.
 
     Args:
-        graph: A networkx graph
+        graph: A networkx graph.
     """
     if len(graph) <= 1:
         return True
     if not nx.is_tree(graph):
         return False
     return max(dict(graph.degree()).values()) <= 2
+
+def print_adj_list(graph: nx.MultiGraph)->None:
+    """Prints the adjacency list of the given graph.
+
+    Args:
+        graph: A networkx graph.
+    """
+    for node in graph:
+        neighbors = [v for v in graph.neighbors(node)]
+        print("\t", node, "\t ", neighbors)
