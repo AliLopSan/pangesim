@@ -84,36 +84,61 @@ class EulerianTrailAssignment(AssignmentStrategy):
         )
         self.path = path
 
-    def edges_to_trails_list(self,
-                            edges:List[Any],
-                            temp_edges:List[Tuple[int,int]],
-                            )-> List[List[int]]:
-        """Transforms a list of edges to trail, removes added edges.
+    def graph_to_trails(self,
+                        eulerian_edges:List[Any],
+                        added_edges:List[Tuple[int,int]],
+                        graph:nx.MultiGraph):
+        """Given the eulerian edges, return a list of trails.
 
         Args:
-            edges: The list of edges to transform.
-            temp_edges: All the added temporal edges.
+           eulerian_edges: The list of edges in the eulerian path.
+           added_edges: Edges that were added.
+           graph: The current component.
 
         Returns:
-            A trail as a list of integers.
+           A list of lists of trails.
         """
-        node_sequence: List[int] = []
         trails_list: List[List[int]] = []
-        temp_as_set: Set[int] = set(temp_edges)
 
-        if len(temp_as_set) == 0:
-            for u,v in edges:
-                node_sequence.append(u)
+        #Get the nodes of the eulerian path
+        nodes: Set[int] = set()
+        node_sequence: List[int] = []
+        for u,v,k in eulerian_edges:
+            nodes.add(u)
+            node_sequence.append(u)
+
+        if len(added_edges) == 0:
             trails_list.append(node_sequence)
         else:
-            temp_trail: List[int] = []
-            for u,v in edges:
-                if (u,v) in temp_as_set or (v,u) in temp_as_set:
-                    temp_trail.append(u)
-                    trails_list.append(temp_trail)
-                    temp_trail = []
-                else:
-                    temp_trail.append(u)
+            # split circuit at temporary edges to recover real trails
+            # build vertex sequence from circuit edges
+            vertex_seq: List[int] = [eulerian_edges[0][0]]
+            temp_positions: List[int] = []  # positions (in vertex_seq) of temp edges
+
+            for idx, (u, v, key) in enumerate(eulerian_edges):
+                vertex_seq.append(v)
+                if not graph.edges[u,v,key]["native"]:
+                    temp_positions.append(len(vertex_seq) - 1)
+
+            # cut the circular sequence at every temp-edge seam
+            # temp_positions mark indices in vertex_seq where the temp edge ends
+            cuts = sorted(set(temp_positions))
+            # rotate so first cut is at position 0
+            offset = cuts[0]
+            rotated = vertex_seq[offset:-1] + vertex_seq[:offset]
+            # new cut positions after rotation
+            new_cuts = sorted((c - offset) % (len(rotated)) for c in cuts)
+            prev = 0
+            for cut in new_cuts[1:]:  # first cut is at 0 (seam start)
+                segment = rotated[prev:cut]
+                if len(segment) >= 2:
+                    trails_list.append(segment)
+                prev = cut
+
+            # last segment
+            segment = rotated[prev:]
+            if len(segment) >= 2:
+                trails_list.append(segment)
         return trails_list
 
     def direct_trail(self,component:ComponentTopology,
@@ -153,15 +178,12 @@ class EulerianTrailAssignment(AssignmentStrategy):
             - A list of Eulerian trails as lists of integers
             - The set of edges that were added.
         """
-        eulerian_edges: List[Tuple[int, int]] = []
+        eulerian_edges: List[Tuple[int, int,int]] = []
         added_edges: List[Tuple[int,int]] = []
         trails_list: List[List[int]] = []
         nx_component = component_to_networkx(nodes=component.nodes,
                                                  adj_list=adj_list,
                                                  directed=self.directed)
-
-        print("\tAnalysis of component: ",component.nodes)
-        print_adj_list(nx_component)
 
         if is_graph_a_path(nx_component):
             trail = self.direct_trail(component,nx_component,adj_list)
@@ -169,42 +191,32 @@ class EulerianTrailAssignment(AssignmentStrategy):
         else:
             #if we chose to find eulerian path first, then
             if self.path:
-                print("\t Option: Find eulerian path first")
                 if nx.has_eulerian_path(nx_component):
-                    print("\t\t Graph has an eulerian path")
-                    eulerian_edges = list(nx.eulerian_path(nx_component))
+                    eulerian_edges = list(nx.eulerian_path(nx_component, keys=True))
                 else:
-                    print("\t\t No eulerian path")
                     added_edges=self.eulerize_strategy.pair_vertices(
                         graph=nx_component,
                         odd_vertices=component.odd_vertices)
-                    nx_component.add_edges_from(added_edges)
-                    print("\t\t\t Added : ",added_edges)
-                    print("\t\t\t New component:")
+                    nx_component.add_edges_from(added_edges,native=False)
                     print_adj_list(nx_component)
                     if nx.has_eulerian_path(nx_component):
-                        eulerian_edges = list(nx.eulerian_path(nx_component))
+                        eulerian_edges = list(nx.eulerian_path(nx_component, keys=True))
                     else:
                         eulerian_edges = list(nx.eulerian_circuit(nx_component))
             #go to eulerian circuit directly
             else:
-                print("\t Option: Find eulerian circuit")
                 if nx.is_eulerian(nx_component):
-                    print("\t\t Graph is eulerian")
-                    eulerian_edges = list(nx.eulerian_circuit(nx_component))
+                    eulerian_edges = list(nx.eulerian_circuit(nx_component, keys=True))
                 else:
-                    print("\t\t Graph is not eulerian")
                     added_edges=self.eulerize_strategy.pair_vertices(
                         graph=nx_component,
                         odd_vertices=component.odd_vertices)
-                    nx_component.add_edges_from(added_edges)
-                    print("\t\t\t Added : ",added_edges)
-                    print("\t\t\t New component:")
-                    print_adj_list(nx_component)
-                    eulerian_edges = list(nx.eulerian_circuit(nx_component))
+                    nx_component.add_edges_from(added_edges,native=False)
+                    eulerian_edges = list(nx.eulerian_circuit(nx_component, keys=True))
 
-            trails_list = self.edges_to_trails_list(edges=eulerian_edges,
-                                                temp_edges=added_edges)
+            trails_list = self.graph_to_trails(eulerian_edges=eulerian_edges,
+                                               added_edges=added_edges,
+                                               graph=nx_component)
 
         return trails_list
 
