@@ -142,6 +142,29 @@ class Genome:
 
         return adjacency_list
 
+    # Jiazhen's code
+    def get_a_path(self, head: DLListNode) -> DLList:
+        """Given a head node, reconstruct the path as a list.
+
+        Returns:
+            The original list (DLList) of the path with the given head.
+        """
+        new_dllist = DLList()
+
+        new_dllist._first = head
+
+        node = head
+        count = 0
+
+        while node is not None:
+            count = count + 1
+            new_dllist._last = node
+            node = node._next
+
+        new_dllist._count = count
+
+        return new_dllist
+
     def check_integrity(self) -> bool:
         """Checks for path forest conditions.
 
