@@ -115,6 +115,26 @@ Metrics include:
 
 ## Quick start guide
 
+This project uses `pygraphviz` and `LaTeX` for high-fidelity pangenome network visualizations. Because these depend on system-level binaries, you must install them on your machine before setting up the Python environment.
+
+### 1. Install System Dependencies
+#### 🍏 macOS (via Homebrew)
+```bash
+brew install graphviz mactex-no-gui
+```
+#### 🐧 Ubuntu/Linux
+```bash
+sudo apt-get update
+sudo apt-get install graphviz graphviz-dev texlive-full
+```
+
+### 2. Initialize Python Environment
+Once system binaries are installed, let `uv` handle the rest:
+```bash
+uv sync --all-groups
+```
+
+
 We provide a built-in smoke test script to quickly verify your installation, run a toy pangenome evolution simulation, and output a structural grid visualization.
 
 ### Running the sample simulation 
