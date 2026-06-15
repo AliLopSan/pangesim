@@ -2,9 +2,12 @@
 
 from collections import deque
 from typing import Dict
+from typing import List
 from typing import NamedTuple
 
 import networkx as nx
+from tralda.datastructures.doubly_linked import DLList
+from tralda.datastructures.doubly_linked import DLListNode
 
 from pangesim.reconstruction.base import AdjacencyList
 
@@ -148,3 +151,21 @@ def print_adj_list(graph: nx.MultiGraph)->None:
     for node in graph:
         neighbors = [v for v in graph.neighbors(node)]
         print("\t", node, "\t ", neighbors)
+
+def build_dll_from_list(some_list:List[int]) -> List[DLList]:
+    """Builds a DLList from a list of ints.
+
+    Args:
+       some_list: A list of integers.
+
+    Returns:
+       A double linked list with the given nodes and order.
+    """
+    new_path = DLList()
+
+    for v in some_list:
+        v_node = DLListNode(value=v)
+        new_path.append(v_node)
+
+    return new_path
+

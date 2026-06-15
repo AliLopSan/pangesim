@@ -13,10 +13,13 @@ from pangesim import Pangenome
 from pangesim.reconstruction import AdjacencyList
 from pangesim.reconstruction import AdjacencyMatrix
 from pangesim.reconstruction import AssignmentStrategy
+from pangesim.reconstruction import TrailSortingStrategy
 from pangesim.reconstruction import matrix_to_list
 from pangesim.reconstruction.pairing import IterativeOddPairing
+from pangesim.reconstruction.sorting import LengthSorting
 from pangesim.reconstruction.utils import ComponentTopology
 from pangesim.reconstruction.utils import TopologicalExplorer
+from pangesim.reconstruction.utils import build_dll_from_list
 from pangesim.reconstruction.utils import component_to_networkx
 from pangesim.reconstruction.utils import is_graph_a_path
 from pangesim.reconstruction.utils import print_adj_list
@@ -67,6 +70,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
     def __init__(self,
                  directed: bool = False,
                  eulerize_strategy: IterativeOddPairing | None = None,
+                 trail_sorting: TrailSortingStrategy | None = None,
                  path: bool = False,
                  ) -> None:
         """Initializes the assignment engine.
@@ -74,6 +78,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
         Args:
             directed: If True, treats edges as directed vectors. Defaults to False.
             eulerize_strategy: If the graph is not eulerian, use this strategy.
+            trail_sorting: Sorting strategy to visit trails. Default is by length.
             path: If True looks for eulerian path instead of trail fro each cc.
         """
         self.directed = directed
@@ -81,6 +86,11 @@ class EulerianTrailAssignment(AssignmentStrategy):
             eulerize_strategy
             if eulerize_strategy is not None
             else IterativeOddPairing()
+        )
+        self.trail_sorting = (
+            trail_sorting
+            if trail_sorting is not None
+            else LengthSorting()
         )
         self.path = path
 
@@ -244,8 +254,70 @@ class EulerianTrailAssignment(AssignmentStrategy):
                 trails.append(t)
         return trails
 
+    def _split_trail_conflicts(self,trail: List[int],
+                               used_genes: set) -> List[List[int]]:
+        """Splits a trail into subtrails.
 
+        The resulting subtrails don't revisit the genes of used_genes.
 
+        Args:
+            trail: initial trail
+            used_genes: Genes that should not be repeated.
+
+        Returns:
+           A list of maximal subtrails that do not repeat nodes.
+        """
+        fragments: List[List[int]] = []
+        current: List[int] = []
+        for v in trail:
+            if v in used_genes:
+                if len(current) >= 2:
+                    fragments.append(current)
+                current = []
+            else:
+                current.append(v)
+        if len(current) >= 2:
+            fragments.append(current)
+        return fragments
+
+    def build_genomes(self,trails:List[List[int]], k:int) -> List[Genome]:
+        """Assigns sorted trails to k genomes.
+
+        Args:
+            trails: list of trails to assign.
+            k: number of desired genomes.
+
+        Returns:
+            A list of k genomes.
+        """
+        def build_fragment(fragment:List[int]) -> None:
+            """Recursively build fragments.
+
+            If conflict vertices exist, then split further.
+
+            Args:
+                fragment: a fragment as a list of ints.
+            """
+            # build_dll_from_list <- list to DLList
+            genes_in_f = set(fragment)
+            best_i = min(range(k), key=lambda i: len(genomes[i].gene_set & genes_in_f))
+            used_genes = genomes[best_i].gene_set
+
+            if used_genes & genes_in_f:
+                #if conflicts exist, we split the fragment
+                sub_fragments = self._split_trail_conflicts(fragment,used_genes)
+                for sub in sub_fragments:
+                    build_fragment(sub)
+            else:
+                new_path = build_dll_from_list(fragment)
+                genomes[best_i].add_path(new_path)
+
+        genomes: List[Genome] = [Genome(genome_id=i) for i in range(k)]
+
+        for trail in trails:
+            build_fragment(trail)
+
+        return genomes
 
     def assign_genomes(self, adjacencies: AdjacencyMatrix, k: int) -> Pangenome:
         """Decomposes an adjacency matrix into a reconstructed Pangenome object.
@@ -258,13 +330,9 @@ class EulerianTrailAssignment(AssignmentStrategy):
             A  Pangenome containing k genomes built by Eulerian Path decomposition.
         """
         trails = self.compute_trails(adjacencies)
+        trails_sorted = self.trail_sorting.sort(trails)
+        genomes = self.build_genomes(trails_sorted, k)
 
-        print("Found ", len(trails), " trails.")
-        for trail in trails:
-            print("\t",trail)
-
-
-        # TODO: Transform all_reconstructed_paths into a Pangenome(genomes=...) list
-        return Pangenome(pangenome_id="Euler")
+        return Pangenome(pangenome_id="Euler",genomes=genomes)
 
 
