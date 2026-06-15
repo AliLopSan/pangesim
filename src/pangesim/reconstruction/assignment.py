@@ -1,4 +1,5 @@
 """Phase 2: Assignment of Paths to Genomes."""
+
 from typing import Any
 from typing import List
 from typing import Set
@@ -22,14 +23,12 @@ from pangesim.reconstruction.utils import TopologicalExplorer
 from pangesim.reconstruction.utils import build_dll_from_list
 from pangesim.reconstruction.utils import component_to_networkx
 from pangesim.reconstruction.utils import is_graph_a_path
-from pangesim.reconstruction.utils import print_adj_list
 
 
 class DummyAssignment(AssignmentStrategy):
     """Assigns every edge to a genome."""
-    def assign_genomes(self,
-                      adjacencies: AdjacencyMatrix,
-                      k: int) -> Pangenome:
+
+    def assign_genomes(self, adjacencies: AdjacencyMatrix, k: int) -> Pangenome:
         """Decomposes graph into a list of genomes.
 
         Every edge in the adjacency matrix is a genome.
@@ -44,8 +43,8 @@ class DummyAssignment(AssignmentStrategy):
         genomes: List[Genome] = []
         i = 0
 
-        for u,v in adjacencies:
-            genome = Genome(genome_id = str(i))
+        for u, v in adjacencies:
+            genome = Genome(genome_id=str(i))
             u_node = DLListNode(value=u)
             v_node = DLListNode(value=v)
             new_path = DLList()
@@ -53,9 +52,9 @@ class DummyAssignment(AssignmentStrategy):
             new_path.append(v_node)
             genome.add_path(new_path)
             genomes.append(genome)
-            i+=1
+            i += 1
 
-        return Pangenome(pangenome_id=f"dummy_with_{k}",genomes=genomes)
+        return Pangenome(pangenome_id=f"dummy_with_{k}", genomes=genomes)
 
 
 class EulerianTrailAssignment(AssignmentStrategy):
@@ -65,14 +64,16 @@ class EulerianTrailAssignment(AssignmentStrategy):
     global graph into independent subgraphs, minimizing NetworkX overhead by
     restricting circuit calculations strictly to isolated, active components.
     """
-    __slots__ = ("directed", "eulerize_strategy","path")
 
-    def __init__(self,
-                 directed: bool = False,
-                 eulerize_strategy: IterativeOddPairing | None = None,
-                 trail_sorting: TrailSortingStrategy | None = None,
-                 path: bool = False,
-                 ) -> None:
+    __slots__ = ("directed", "eulerize_strategy", "path")
+
+    def __init__(
+        self,
+        directed: bool = False,
+        eulerize_strategy: IterativeOddPairing | None = None,
+        trail_sorting: TrailSortingStrategy | None = None,
+        path: bool = False,
+    ) -> None:
         """Initializes the assignment engine.
 
         Args:
@@ -83,21 +84,14 @@ class EulerianTrailAssignment(AssignmentStrategy):
         """
         self.directed = directed
         self.eulerize_strategy = (
-            eulerize_strategy
-            if eulerize_strategy is not None
-            else IterativeOddPairing()
+            eulerize_strategy if eulerize_strategy is not None else IterativeOddPairing()
         )
-        self.trail_sorting = (
-            trail_sorting
-            if trail_sorting is not None
-            else LengthSorting()
-        )
+        self.trail_sorting = trail_sorting if trail_sorting is not None else LengthSorting()
         self.path = path
 
-    def graph_to_trails(self,
-                        eulerian_edges:List[Any],
-                        added_edges:List[Tuple[int,int]],
-                        graph:nx.MultiGraph):
+    def graph_to_trails(
+        self, eulerian_edges: List[Any], added_edges: List[Tuple[int, int]], graph: nx.MultiGraph
+    ):
         """Given the eulerian edges, return a list of trails.
 
         Args:
@@ -110,10 +104,10 @@ class EulerianTrailAssignment(AssignmentStrategy):
         """
         trails_list: List[List[int]] = []
 
-        #Get the nodes of the eulerian path
+        # Get the nodes of the eulerian path
         nodes: Set[int] = set()
         node_sequence: List[int] = []
-        for u,v,k in eulerian_edges:
+        for u, v, k in eulerian_edges:
             nodes.add(u)
             node_sequence.append(u)
 
@@ -127,7 +121,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
 
             for idx, (u, v, key) in enumerate(eulerian_edges):
                 vertex_seq.append(v)
-                if not graph.edges[u,v,key]["native"]:
+                if not graph.edges[u, v, key]["native"]:
                     temp_positions.append(len(vertex_seq) - 1)
 
             # cut the circular sequence at every temp-edge seam
@@ -151,9 +145,9 @@ class EulerianTrailAssignment(AssignmentStrategy):
                 trails_list.append(segment)
         return trails_list
 
-    def direct_trail(self,component:ComponentTopology,
-                     graph:nx.Graph,
-                     adj_list:AdjacencyList) -> List[int]:
+    def direct_trail(
+        self, component: ComponentTopology, graph: nx.Graph, adj_list: AdjacencyList
+    ) -> List[int]:
         """When component is a path, return the path.
 
         Args:
@@ -168,15 +162,13 @@ class EulerianTrailAssignment(AssignmentStrategy):
 
         leaves = [n for n, d in graph.degree() if d == 1]
 
-        for v in nx.dfs_preorder_nodes(graph,leaves[0]):
+        for v in nx.dfs_preorder_nodes(graph, leaves[0]):
             trail.append(v)
         return trail
 
-
-    def compute_component_trails(self,
-                                 component:ComponentTopology,
-                                 adj_list:AdjacencyList
-                                 ) -> List[List[int]]:
+    def compute_component_trails(
+        self, component: ComponentTopology, adj_list: AdjacencyList
+    ) -> List[List[int]]:
         """Computes eulerian trails using the given eulerization strategy.
 
         Args:
@@ -188,52 +180,52 @@ class EulerianTrailAssignment(AssignmentStrategy):
             - A list of Eulerian trails as lists of integers
             - The set of edges that were added.
         """
-        eulerian_edges: List[Tuple[int, int,int]] = []
-        added_edges: List[Tuple[int,int]] = []
+        eulerian_edges: List[Tuple[int, int, int]] = []
+        added_edges: List[Tuple[int, int]] = []
         trails_list: List[List[int]] = []
-        nx_component = component_to_networkx(nodes=component.nodes,
-                                                 adj_list=adj_list,
-                                                 directed=self.directed)
+        nx_component = component_to_networkx(
+            nodes=component.nodes, adj_list=adj_list, directed=self.directed
+        )
 
         if is_graph_a_path(nx_component):
-            trail = self.direct_trail(component,nx_component,adj_list)
+            trail = self.direct_trail(component, nx_component, adj_list)
             trails_list.append(trail)
         else:
-            #if we chose to find eulerian path first, then
+            # if we chose to find eulerian path first, then
             if self.path:
                 if nx.has_eulerian_path(nx_component):
                     eulerian_edges = list(nx.eulerian_path(nx_component, keys=True))
                 else:
-                    added_edges=self.eulerize_strategy.pair_vertices(
-                        graph=nx_component,
-                        odd_vertices=component.odd_vertices)
-                    nx_component.add_edges_from(added_edges,native=False)
-                    print_adj_list(nx_component)
+                    added_edges = self.eulerize_strategy.pair_vertices(
+                        graph=nx_component, odd_vertices=component.odd_vertices
+                    )
+                    nx_component.add_edges_from(added_edges, native=False)
+
                     if nx.has_eulerian_path(nx_component):
                         eulerian_edges = list(nx.eulerian_path(nx_component, keys=True))
                     else:
                         eulerian_edges = list(nx.eulerian_circuit(nx_component))
-            #go to eulerian circuit directly
+            # go to eulerian circuit directly
             else:
                 if nx.is_eulerian(nx_component):
                     eulerian_edges = list(nx.eulerian_circuit(nx_component, keys=True))
                 else:
-                    added_edges=self.eulerize_strategy.pair_vertices(
-                        graph=nx_component,
-                        odd_vertices=component.odd_vertices)
-                    nx_component.add_edges_from(added_edges,native=False)
+                    added_edges = self.eulerize_strategy.pair_vertices(
+                        graph=nx_component, odd_vertices=component.odd_vertices
+                    )
+                    nx_component.add_edges_from(added_edges, native=False)
                     eulerian_edges = list(nx.eulerian_circuit(nx_component, keys=True))
 
-            trails_list = self.graph_to_trails(eulerian_edges=eulerian_edges,
-                                               added_edges=added_edges,
-                                               graph=nx_component)
+            trails_list = self.graph_to_trails(
+                eulerian_edges=eulerian_edges, added_edges=added_edges, graph=nx_component
+            )
 
         return trails_list
 
-
-    def compute_trails(self,
-                       matrix:AdjacencyMatrix,
-                       ) -> List[List[int]]:
+    def compute_trails(
+        self,
+        matrix: AdjacencyMatrix,
+    ) -> List[List[int]]:
         """Computes eulerian trails using the given eulerization strategy.
 
         Args:
@@ -246,16 +238,14 @@ class EulerianTrailAssignment(AssignmentStrategy):
         explorer = TopologicalExplorer(adj_list, directed=self.directed)
         components = explorer.extract_components()
         trails: List[List[int]] = []
-        #Note for future implementations, what is the graph is directed?
+        # Note for future implementations, what is the graph is directed?
         for component in components:
-            comp_trails = self.compute_component_trails(component=component,
-                                                   adj_list=adj_list)
+            comp_trails = self.compute_component_trails(component=component, adj_list=adj_list)
             for t in comp_trails:
                 trails.append(t)
         return trails
 
-    def _split_trail_conflicts(self,trail: List[int],
-                               used_genes: set) -> List[List[int]]:
+    def _split_trail_conflicts(self, trail: List[int], used_genes: set) -> List[List[int]]:
         """Splits a trail into subtrails.
 
         The resulting subtrails don't revisit the genes of used_genes.
@@ -280,7 +270,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
             fragments.append(current)
         return fragments
 
-    def build_genomes(self,trails:List[List[int]], k:int) -> List[Genome]:
+    def build_genomes(self, trails: List[List[int]], k: int) -> List[Genome]:
         """Assigns sorted trails to k genomes.
 
         Args:
@@ -290,7 +280,8 @@ class EulerianTrailAssignment(AssignmentStrategy):
         Returns:
             A list of k genomes.
         """
-        def build_fragment(fragment:List[int]) -> None:
+
+        def build_fragment(fragment: List[int]) -> None:
             """Recursively build fragments.
 
             If conflict vertices exist, then split further.
@@ -304,8 +295,8 @@ class EulerianTrailAssignment(AssignmentStrategy):
             used_genes = genomes[best_i].gene_set
 
             if used_genes & genes_in_f:
-                #if conflicts exist, we split the fragment
-                sub_fragments = self._split_trail_conflicts(fragment,used_genes)
+                # if conflicts exist, we split the fragment
+                sub_fragments = self._split_trail_conflicts(fragment, used_genes)
                 for sub in sub_fragments:
                     build_fragment(sub)
             else:
@@ -316,7 +307,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
 
         for trail in trails:
             build_fragment(trail)
-        genomes = [ g for g in genomes if len(g.gene_set) > 0]
+        genomes = [g for g in genomes if len(g.gene_set) > 0]
 
         return genomes
 
@@ -330,22 +321,8 @@ class EulerianTrailAssignment(AssignmentStrategy):
         Returns:
             A  Pangenome containing k genomes built by Eulerian Path decomposition.
         """
-        print("\t Running genome assignation")
         trails = self.compute_trails(adjacencies)
         trails_sorted = self.trail_sorting.sort(trails)
         genomes = self.build_genomes(trails_sorted, k)
-        print("\t\t Found trails: ")
-        for trail in trails:
-            print("\t\t\t", trail)
-        print("\t\t Sorted trails: ")
-        for trail in trails_sorted:
-            print("\t\t\t", trail)
-        print("\t\t Found genomes: ")
-        for g in genomes:
-            print("\t\t\t Genome", g._genome_id)
-            for t in g.get_path_sequences():
-                print("\t\t\t\t ",t)
 
-        return Pangenome(pangenome_id="Euler",genomes=genomes)
-
-
+        return Pangenome(pangenome_id="Euler", genomes=genomes)

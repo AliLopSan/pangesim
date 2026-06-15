@@ -43,13 +43,14 @@ class Genome:
 
     def __str__(self) -> str:
         """Returns the number of paths and a human-reable list of paths."""
-        summary = [f"Genome {self._genome_id}:",
-                   f"├── Number of Paths: {self.path_count}",
-                   "└── Assigned Paths:"
+        summary = [
+            f"Genome {self._genome_id}:",
+            f"├── Number of Paths: {self.path_count}",
+            "└── Assigned Paths:",
         ]
         paths = self.get_path_sequences()
-        for i,path in enumerate(paths[:5]):
-            summary.append(f"\t{i+1}) {path[:3]} ...")
+        for i, path in enumerate(paths[:5]):
+            summary.append(f"\t{i + 1}) {path[:3]} ...")
         if self.path_count > 5:
             summary.append(f"\t... and {self.path_count - 5} more paths.")
         return "\n".join(summary)
@@ -301,21 +302,18 @@ class Pangenome:
 
         for genome in self._genomes:
             if hasattr(genome, "check_integrity") and not genome.check_integrity():
-                raise ValueError(
-                    f"Genome '{genome.id}' failed internal validation."
-                )
+                raise ValueError(f"Genome '{genome.id}' failed internal validation.")
 
         return True
 
     def summary(self) -> str:
         """Overview of the pangenome object."""
         core_genes = list(self.compute_core_genes())
-        summary_info = [f"Pangenome {self._pangenome_id}:",
-                   f"├── Constituent genomes: {len(self)}",
-                   f"└── Core genes: {len(core_genes)}"
+        summary_info = [
+            f"Pangenome {self._pangenome_id}:",
+            f"├── Constituent genomes: {len(self)}",
+            f"└── Core genes: {len(core_genes)}",
         ]
         if len(core_genes) > 0:
             summary_info.append(f"> {core_genes[:5]}")
         return "\n".join(summary_info)
-
-

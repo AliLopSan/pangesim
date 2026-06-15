@@ -4,6 +4,7 @@ from pangesim.reconstruction.base import TrailSortingStrategy
 
 class LengthSorting(TrailSortingStrategy):
     """Sorts trails based on the number of edges they contain."""
+
     def __init__(self, descending: bool = True):
         """Constructor of the sorting strategy.
 
@@ -23,8 +24,10 @@ class LengthSorting(TrailSortingStrategy):
         """
         return sorted(trails, key=len, reverse=self.descending)
 
+
 class WeightSorting(TrailSortingStrategy):
     """Sorts trails based on the cumulative weight of their edges."""
+
     def __init__(self, descending: bool = True):
         """Constructor of the sorting strategy.
 
@@ -32,10 +35,9 @@ class WeightSorting(TrailSortingStrategy):
            descending: Choose from descending to ascending order.
         """
         self.descending = descending
-    #TODO:recheck this
-    def sort(self,
-             trails,
-             matrix:AdjacencyMatrix):
+
+    # TODO:recheck this
+    def sort(self, trails, matrix: AdjacencyMatrix):
         """Main sorting function.
 
         Args:
@@ -47,7 +49,5 @@ class WeightSorting(TrailSortingStrategy):
         """
         # We calculate the sum of weights for each trail
         return sorted(
-            trails,
-            key=lambda t: sum(matrix[u][v] for u, v in t),
-            reverse=self.descending
+            trails, key=lambda t: sum(matrix[u][v] for u, v in t), reverse=self.descending
         )
