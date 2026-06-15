@@ -1,4 +1,5 @@
 """Concrete strategies for Eulerization (transforming a non-eulerian graph into one)."""
+
 import random as rd
 from typing import Dict
 from typing import List
@@ -11,8 +12,7 @@ from pangesim.reconstruction.base import OddPairingStrategy
 class RandomOddPairing(OddPairingStrategy):
     """Pairs odd vertices completely at random (Baseline heuristic)."""
 
-    def pair_vertices(self, graph:nx.MultiGraph,
-                      odd_vertices: list[int]) -> list[tuple[int, int]]:
+    def pair_vertices(self, graph: nx.MultiGraph, odd_vertices: list[int]) -> list[tuple[int, int]]:
         """Random pairing of vertices.
 
         Args:
@@ -31,6 +31,7 @@ class RandomOddPairing(OddPairingStrategy):
 
         return edges_to_add
 
+
 class IterativeOddPairing(OddPairingStrategy):
     """Pairs odd vertices using an iterative state-evaluation loop.
 
@@ -38,8 +39,8 @@ class IterativeOddPairing(OddPairingStrategy):
     each individual edge, preventing blind edge allocations that leave
     topological anomalies.
     """
-    def odd_adj_list(self, graph:nx.MultiGraph,
-                     odd_vertices: list[int]) -> Dict[int,List[int]]:
+
+    def odd_adj_list(self, graph: nx.MultiGraph, odd_vertices: list[int]) -> Dict[int, List[int]]:
         """Current adjacency list of the odd nodes.
 
         Args:
@@ -49,17 +50,13 @@ class IterativeOddPairing(OddPairingStrategy):
         Returns:
             The adjacency list of all odd vertices.
         """
-        ad_list : Dict[int,List[int]] = {}
+        ad_list: Dict[int, List[int]] = {}
         for node in odd_vertices:
             neighbors = [v for v in graph.neighbors(node)]
             ad_list[node] = list(neighbors)
         return ad_list
 
-    def pair_vertices(
-        self,
-        graph: nx.MultiGraph,
-        odd_vertices: list[int]
-    ) -> list[tuple[int, int]]:
+    def pair_vertices(self, graph: nx.MultiGraph, odd_vertices: list[int]) -> list[tuple[int, int]]:
         """Iteratively pairs odd vertices, checking graph state at each step.
 
         Args:
@@ -71,7 +68,7 @@ class IterativeOddPairing(OddPairingStrategy):
         """
         edges_to_add: list[tuple[int, int]] = []
         ad_list = self.odd_adj_list(graph, odd_vertices)
-        odd_tracker:list = list(odd_vertices)
+        odd_tracker: list = list(odd_vertices)
 
         rd.shuffle(odd_tracker)
 
@@ -91,11 +88,11 @@ class IterativeOddPairing(OddPairingStrategy):
 
         return edges_to_add
 
+
 class MinimumWeightPerfectMatching(OddPairingStrategy):
     """Pairs vertices by minimizing edge weights (Advanced optimization)."""
 
-    def pair_vertices(self, graph: nx.MultiGraph,
-                      odd_vertices: list[int]) -> list[tuple[int, int]]:
+    def pair_vertices(self, graph: nx.MultiGraph, odd_vertices: list[int]) -> list[tuple[int, int]]:
         """MWPM pairing of vertices.
 
         Args:

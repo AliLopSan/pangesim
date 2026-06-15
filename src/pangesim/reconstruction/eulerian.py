@@ -1,4 +1,5 @@
 """Main orchestration engine executing the 4-phase Eulerian path heuristic."""
+
 from typing import Any
 from typing import Dict
 
@@ -15,9 +16,9 @@ class EulerianPathHeuristic:
 
     def __init__(
         self,
-            params: Dict[str, Any] | None = None,
-            bounds_strategy: BoundsStrategy | None = None,
-            assignment_strategy: AssignmentStrategy | None = None,
+        params: Dict[str, Any] | None = None,
+        bounds_strategy: BoundsStrategy | None = None,
+        assignment_strategy: AssignmentStrategy | None = None,
     ) -> None:
         """Constructor for the Eulerian path heuristic.
 
@@ -26,17 +27,11 @@ class EulerianPathHeuristic:
            bounds_strategy: Strategy used to compute genome bounds.
            assignment_strategy: Strategy used to assign genomes.
         """
-        self.params = params or {"alpha":1.0,"gamma":1.0}
-        self.bounds_strategy = (
-            bounds_strategy
-            if bounds_strategy is not None
-            else DummyBounds()
-        )
+        self.params = params or {"alpha": 1.0, "gamma": 1.0}
+        self.bounds_strategy = bounds_strategy if bounds_strategy is not None else DummyBounds()
 
         self.assignment_strategy = (
-            assignment_strategy
-            if assignment_strategy is not None
-            else DummyAssignment()
+            assignment_strategy if assignment_strategy is not None else DummyAssignment()
         )
 
     def reconstruct(self, matrix: AdjacencyMatrix) -> Pangenome:
@@ -50,9 +45,6 @@ class EulerianPathHeuristic:
         """
         # Phase 1: Compute bounds
         k_min, k_max, info = self.bounds_strategy.compute_bounds(matrix, self.params)
-        print("\t Successfully computed bounds kmin : ", k_min,
-              "k_max: ", k_max)
         # Phase 2: Paths assignment
-        pangenome = self.assignment_strategy.assign_genomes(adjacencies=matrix,
-                                                            k=k_min)
+        pangenome = self.assignment_strategy.assign_genomes(adjacencies=matrix, k=k_min)
         return pangenome

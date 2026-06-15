@@ -14,8 +14,6 @@ def test_dummy_pipeline():
 
     #Input for reconstruction algorithm
     h_ground = p.compute_weighted_adjacencies()
-    print("\t Created ground truth : ", type(h_ground), "with ",
-          len(h_ground),"edges")
     heuristic = EulerianPathHeuristic()
     p_recons  = heuristic.reconstruct(h_ground)
 
@@ -72,10 +70,7 @@ def test_eulerian_assignments():
     assert pangenome.check_integrity() is True
 
     for genome in pangenome.genomes:
-        all_paths = genome.get_path_sequences()
-        print("\t For genome: ",genome._genome_id," we have")
-        for path in all_paths:
-            print("\t\t ", path)
+        print(genome)
 
 def test_full_heuristic():
     """Test of the full pipeline."""
