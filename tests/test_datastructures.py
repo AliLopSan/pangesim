@@ -88,3 +88,33 @@ def test_pangenome_metrics_and_weights():
     weighted_edges = pangenome.compute_weighted_adjacencies()
     assert weighted_edges[(1, 2)] == 2
     assert weighted_edges[(2, 3)] == 1
+
+
+def test_summary():
+    """Prints summary metrics."""
+    # 1. Initialize custom Genomes
+    g1 = Genome(genome_id="g1")
+    g2 = Genome(genome_id="g2")
+
+    # Build Path for Genome 1: (1-2)
+    p1 = DLList()
+    p1.append(DLListNode(value=1))
+    p1.append(DLListNode(value=2))
+    g1.add_path(p1)
+
+    # Build Path for Genome 2: (1-2-3)
+    p2 = DLList()
+    p2.append(DLListNode(value=1))
+    p2.append(DLListNode(value=2))
+    p2.append(DLListNode(value=3))
+    g2.add_path(p2)
+
+    # 2. Assemble Pangenome
+    pangenome = Pangenome(pangenome_id="test_pan")
+    pangenome.add_genome(g1)
+    pangenome.add_genome(g2)
+
+    for g in pangenome.genomes:
+        print(g)
+
+    print(pangenome.summary())
