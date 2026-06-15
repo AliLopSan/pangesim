@@ -113,3 +113,14 @@ class OddPairingStrategy(ABC):
            odd_vertices: All odd vertices in the graph.
         """
         pass
+
+class TrailSortingStrategy(ABC):
+    """Abstract base class for sorting Eulerian trails."""
+    @abstractmethod
+    def sort(self, trails: list[list[tuple]]) -> list[list[tuple]]:
+        """List the trails w.r.t. specific criteria.
+
+        Args:
+           trails: the trails to sort.
+        """
+        pass

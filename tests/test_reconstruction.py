@@ -67,6 +67,7 @@ def test_eulerian_assignments():
         (6,8): 3, (8,7): 2, (8,9): 4,(9,10): 3,(9,11): 3
     }
     assign = EulerianTrailAssignment()
-    pan = assign.assign_genomes(sample_matrix,3)
+    pangenome = assign.assign_genomes(sample_matrix,3)
 
-    assert len(pan) == 0
+    for genome in pangenome.genomes:
+        assert genome.check_integrity() is True
