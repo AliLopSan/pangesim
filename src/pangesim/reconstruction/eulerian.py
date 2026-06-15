@@ -54,5 +54,5 @@ class EulerianPathHeuristic:
               "k_max: ", k_max)
         # Phase 2: Paths assignment
         pangenome = self.assignment_strategy.assign_genomes(adjacencies=matrix,
-                                                            k=k_max)
+                                                            k=k_min)
         return pangenome
