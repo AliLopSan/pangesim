@@ -270,3 +270,26 @@ class Pangenome:
             adjacency_counter.update(genome_edges)
 
         return dict(adjacency_counter)
+
+    def check_integrity(self) -> bool:
+        """Validates that all underlying genomes match the global graph topology.
+
+        This method acts as a defensive pipeline gate, ensuring individual
+        genome paths do not contain orphaned nodes or disjoint edges.
+
+        Returns:
+            bool: True if all integrity checks pass cleanly.
+
+        Raises:
+            ValueError: If a genome path breaks topological constraints.
+        """
+        if not self._genomes:
+            raise ValueError("Integrity Failure: Pangenome contains no member genomes.")
+
+        for genome in self._genomes:
+            if hasattr(genome, "check_integrity") and not genome.check_integrity():
+                raise ValueError(
+                    f"Genome '{genome.id}' failed internal validation."
+                )
+
+        return True
