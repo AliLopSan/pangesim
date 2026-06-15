@@ -69,5 +69,10 @@ def test_eulerian_assignments():
     assign = EulerianTrailAssignment()
     pangenome = assign.assign_genomes(sample_matrix,3)
 
+    assert pangenome.check_integrity() is True
+
     for genome in pangenome.genomes:
-        assert genome.check_integrity() is True
+        all_paths = genome.get_path_sequences()
+        print("\t For genome: ",genome._genome_id," we have")
+        for path in all_paths:
+            print("\t\t ", path)
