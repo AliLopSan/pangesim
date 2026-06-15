@@ -316,6 +316,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
 
         for trail in trails:
             build_fragment(trail)
+        genomes = [ g for g in genomes if len(g.gene_set) > 0]
 
         return genomes
 
@@ -329,9 +330,21 @@ class EulerianTrailAssignment(AssignmentStrategy):
         Returns:
             A  Pangenome containing k genomes built by Eulerian Path decomposition.
         """
+        print("\t Running genome assignation")
         trails = self.compute_trails(adjacencies)
         trails_sorted = self.trail_sorting.sort(trails)
         genomes = self.build_genomes(trails_sorted, k)
+        print("\t\t Found trails: ")
+        for trail in trails:
+            print("\t\t\t", trail)
+        print("\t\t Sorted trails: ")
+        for trail in trails_sorted:
+            print("\t\t\t", trail)
+        print("\t\t Found genomes: ")
+        for g in genomes:
+            print("\t\t\t Genome", g._genome_id)
+            for t in g.get_path_sequences():
+                print("\t\t\t\t ",t)
 
         return Pangenome(pangenome_id="Euler",genomes=genomes)
 
