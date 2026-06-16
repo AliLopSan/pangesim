@@ -9,7 +9,9 @@ import networkx as nx
 from tralda.datastructures.doubly_linked import DLList
 from tralda.datastructures.doubly_linked import DLListNode
 
+from pangesim import Pangenome
 from pangesim.reconstruction.base import AdjacencyList
+from pangesim.reconstruction.base import AdjacencyMatrix
 
 
 class ComponentTopology(NamedTuple):
@@ -171,3 +173,33 @@ def build_dll_from_list(some_list: List[int]) -> List[DLList]:
         new_path.append(v_node)
 
     return new_path
+
+
+def build_residuals(target: Pangenome, source: AdjacencyMatrix) -> AdjacencyMatrix:
+    """Builds the residuals dictionary.
+
+    A residual is the difference between the observed multiplicity in the
+    input and the endougenous weight of the edge in the pangenome.
+
+    Args:
+       target: The inferred Pangenome.
+       source: The input weighted adjacency graph.
+
+    Returns:
+       A dictionary of residuals per edge in source.
+    """
+    # Residuals dictionary will have sorted tuples
+    residuals: AdjacencyMatrix = {}
+    endogenous_weights = target.compute_weighted_adjacencies()
+
+    for (u, v), m_uv in source.items():
+        # Note that all tuples in pangenome are sorted
+        key = (u, v) if u <= v else (v, u)
+
+        if key in endogenous_weights:
+            residuals[key] = m_uv - endogenous_weights[key]
+        else:
+            # If key is not present, then w_uv is zero
+            residuals[key] = m_uv
+
+    return residuals
