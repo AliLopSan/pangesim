@@ -69,42 +69,46 @@ def test_eulerian_assignments():
 
     assert pangenome.check_integrity() is True
 
+
+def test_full_heuristic():
+    """Test of the full pipeline."""
+        # Graph structure:
+    # Component 1 (Triangle, all even): 1-2, 2-3, 3-1
+    # Component 2 (Line, two odd nodes): 4-5
+    # Component 3 (Unrooted tree): ((6,7)8,(10,11)9);
+    sample_matrix = {
+        (1, 2): 1, (2, 3): 1, (3, 1): 1,
+        (4, 5): 1,
+        (6,8): 3, (8,7): 2, (8,9): 4,(9,10): 3,(9,11): 3
+    }
+    bounds = GreedyPairingISCB()
+    assign = EulerianTrailAssignment()
+    heuristic = EulerianPathHeuristic(bounds_strategy=bounds,
+                                      assignment_strategy=assign)
+    pangenome = heuristic.reconstruct(sample_matrix)
+    assert pangenome.check_integrity() is True
+
+def test_roboust_example_phase1_2():
+    print("\t\t Testing robust example: ")
+    """Testing each step of the pipeline."""
+    sample_matrix = {
+        (1,2):3,
+        (2,3):4,(2,6):1,
+        (3,4):2,(3,10):3,
+        (4,5):3,(4,8):3,
+        (6,7):1,(7,9):1,
+        (10,9):3,(9,11):2
+    }
+    params = {"alpha": 0.5, "gamma": 1.0}
+    bounds = GreedyPairingISCB()
+    assign = EulerianTrailAssignment()
+    heuristic = EulerianPathHeuristic(params=params,
+                                      bounds_strategy=bounds,
+                                      assignment_strategy=assign)
+    pangenome = heuristic.reconstruct(sample_matrix)
+    assert pangenome.check_integrity() is True
+
     for genome in pangenome.genomes:
         print(genome)
-
-def test_full_heuristic():
-    """Test of the full pipeline."""
-        # Graph structure:
-    # Component 1 (Triangle, all even): 1-2, 2-3, 3-1
-    # Component 2 (Line, two odd nodes): 4-5
-    # Component 3 (Unrooted tree): ((6,7)8,(10,11)9);
-    sample_matrix = {
-        (1, 2): 1, (2, 3): 1, (3, 1): 1,
-        (4, 5): 1,
-        (6,8): 3, (8,7): 2, (8,9): 4,(9,10): 3,(9,11): 3
-    }
-    bounds = GreedyPairingISCB()
-    assign = EulerianTrailAssignment()
-    heuristic = EulerianPathHeuristic(bounds_strategy=bounds,
-                                      assignment_strategy=assign)
-    pangenome = heuristic.reconstruct(sample_matrix)
-    assert pangenome.check_integrity() is True
-
-def test_full_heuristic():
-    """Test of the full pipeline."""
-        # Graph structure:
-    # Component 1 (Triangle, all even): 1-2, 2-3, 3-1
-    # Component 2 (Line, two odd nodes): 4-5
-    # Component 3 (Unrooted tree): ((6,7)8,(10,11)9);
-    sample_matrix = {
-        (1, 2): 1, (2, 3): 1, (3, 1): 1,
-        (4, 5): 1,
-        (6,8): 3, (8,7): 2, (8,9): 4,(9,10): 3,(9,11): 3
-    }
-    bounds = GreedyPairingISCB()
-    assign = EulerianTrailAssignment()
-    heuristic = EulerianPathHeuristic(bounds_strategy=bounds,
-                                      assignment_strategy=assign)
-    pangenome = heuristic.reconstruct(sample_matrix)
-    assert pangenome.check_integrity() is True
+    
 
