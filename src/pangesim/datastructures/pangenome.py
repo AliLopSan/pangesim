@@ -46,11 +46,15 @@ class Genome:
         summary = [
             f"Genome {self._genome_id}:",
             f"├── Number of Paths: {self.path_count}",
+            f"├── Number of Genes: {len(self)}",
             "└── Assigned Paths:",
         ]
         paths = self.get_path_sequences()
         for i, path in enumerate(paths[:5]):
-            summary.append(f"\t{i + 1}) {path[:3]} ...")
+            if len(path)< 10:
+                summary.append(f"\t{i + 1}) {path} ")
+            else:
+                summary.append(f"\t{i + 1}) {path[:3]} ...")
         if self.path_count > 5:
             summary.append(f"\t... and {self.path_count - 5} more paths.")
         return "\n".join(summary)
@@ -98,6 +102,32 @@ class Genome:
         for node in self.iter_nodes():
             if node._next is not None:
                 yield (node, node._next)
+
+    def has_edge(self, edge:Tuple[int,int]) -> bool:
+        """Checks whether the genome contains a given edge.
+
+        Args:
+           edge: the target edge.
+
+        Returns:
+           True if edge is in the given genome.
+        """
+        u = edge[0]
+        v = edge[1]
+        if u not in self.gene_set or v not in self.gene_set:
+            return False
+
+        flag = False
+        key = (u, v) if u <= v else (v, u)
+        for x,y in self.iter_edges():
+            x_val = unwrap_node_value(x)
+            y_val = unwrap_node_value(y)
+            target = (x_val, y_val) if x_val <= y_val else (y_val, x_val)
+            if key[0] == target[0] and key[1] == target[1]:
+                flag = True
+                break
+        return flag
+
 
     def get_path_sequences(self) -> List[List[Any]]:
         """Traverse every individual path sequentially from its head pointer.
@@ -178,6 +208,60 @@ class Genome:
         new_dllist._count = count
 
         return new_dllist
+
+    def would_break_path_forest(self,edge:Tuple[int,int]) -> bool:
+        """Checks whether inserting (u,v) would break the path forest condition.
+
+        Args:
+            edge: the edge to test.
+
+        Returns:
+            True if there exists a possible violation created by the edge.
+        """
+        u = edge[0]
+        v = edge[1]
+        # If they do not exist, we are safe
+        if u not in self.gene_set and v not in self.gene_set:
+            return False
+
+        #Case 1: They already exist there
+        if self.has_edge(edge):
+            return True
+
+        # If they exist, we will find them
+        u_node: DLListNode | None = None
+        v_node: DLListNode | None = None
+
+        for node in self.iter_nodes():
+            val = unwrap_node_value(node)
+            if val == u:
+                u_node = node
+            if val == v:
+                v_node = node
+            if u_node and v_node:
+                break
+
+
+        # Case 2: Possible branching
+        # If either of them is an internal node, then it's not possible
+        if u_node and u_node._prev is not None and u_node._next is not None:
+            return True
+
+        if v_node and v_node._prev is not None and v_node._next is not None:
+            return True
+
+        # Case 3: Cycle detection
+        # If both nodes exist in the forest, make sure v is not upstream of u
+        if u_node and v_node:
+            curr = v_node
+            while curr is not None:
+                if unwrap_node_value(curr) == u:
+                    return True  # Connecting u -> v closes a cycle!
+                curr = curr._next
+
+        return False
+
+
 
     def check_integrity(self) -> bool:
         """Checks for path forest conditions.
