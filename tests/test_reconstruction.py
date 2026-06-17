@@ -2,6 +2,7 @@
 
 from pangesim.panevolve import PangenomeSimulator
 from pangesim.reconstruction import EulerianPathHeuristic
+from pangesim.reconstruction import pan_score
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.bounds import GreedyPairingISCB
@@ -123,15 +124,6 @@ def test_roboust_example_phase1_2():
     )
     pangenome = heuristic.reconstruct(sample_matrix)
     assert pangenome.check_integrity() is True
-    edge = (2, 3)
-    for g in pangenome.genomes:
-        print(g)
-        print("Is edge ", edge, "in genome? ", g.has_edge(edge))
+    score = pan_score(pangenome,sample_matrix,params["alpha"],params["gamma"])
+    print("Current pangenome score is ", score)
 
-        if not g.has_edge(edge):
-            print(
-                "If we add ",
-                edge,
-                " would we violate the path forest? ",
-                g.would_break_path_forest(edge),
-            )
