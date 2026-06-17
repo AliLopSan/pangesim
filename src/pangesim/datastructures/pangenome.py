@@ -153,6 +153,45 @@ class Genome:
                 break
         return flag
 
+    def add_edge(self, edge:Tuple[int,int]) -> bool:
+        """Inserts a given edge to genome.
+
+        Args:
+           edge: Edge to be removed
+
+        Raises:
+           ValueError if the operation would violate path forest conditions.
+        """
+        u, v = edge[0], edge[1]
+
+        # Dynamically instantiate and cache missing genes
+        for val in (u, v):
+            if val not in self.gene_set:
+                self.gene_set.add(val)
+                self._node_cache[val] = DLListNode(val)
+                self.heads.append(self._node_cache[val])
+
+        if self.has_edge((u, v)):
+            return True
+
+        u_n, v_n = self._node_cache[u], self._node_cache[v]
+
+        # Try Orientation A: u -> v
+        if u_n._next is None and v_n._prev is None and not self.would_break_path_forest((u, v)):
+            u_n._next, v_n._prev = v_n, u_n
+            if v_n in self.heads:
+                self.heads.remove(v_n)
+            return True
+
+        # Try Orientation B: v -> u
+        if v_n._next is None and u_n._prev is None and not self.would_break_path_forest((v, u)):
+            v_n._next, u_n._prev = u_n, v_n
+            if u_n in self.heads:
+                self.heads.remove(u_n)
+            return True
+
+        return False
+
     def remove_edge(self, edge:Tuple[int,int]) -> bool:
         """Removes a given edge from the genome.
 
