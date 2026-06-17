@@ -82,6 +82,29 @@ class Genome:
                     self._node_cache[value] = current
                 current = current._next
 
+    def degree(self, node_identifier: Any) -> int:
+        """Computes the degree of a node.
+
+        Accepts either a primitive value (searched via cache) or a DLListNode.
+
+        Args:
+            node_identifier: input node to verify or id.
+        """
+        node = node_identifier
+        if not isinstance(node, DLListNode):
+            node = self._node_cache.get(node_identifier)
+
+        if not node:
+            return 0
+
+        neighbors = 0
+
+        if node._prev is not None:
+            neighbors += 1
+        if node._next is not None:
+            neighbors += 1
+        return neighbors
+
     def iter_nodes(self) -> Generator[DLListNode, None, None]:
         """Yields all genes (DLListNodes) sequentially from path heads.
 
@@ -129,6 +152,40 @@ class Genome:
                 flag = True
                 break
         return flag
+
+    def remove_edge(self, edge:Tuple[int,int]) -> bool:
+        """Removes a given edge from the genome.
+
+        Args:
+           edge: Edge to be removed
+
+        Returns:
+           True if the edge existed.
+        """
+        if self.has_edge(edge):
+            u,v = edge[0], edge[1]
+            u_node = self._node_cache.get(u)
+            v_node = self._node_cache.get(v)
+
+            # Protection against isolated vertices
+            if self.degree(u_node) <= 1 or self.degree(v_node) <= 1:
+                return False
+
+            # Check Direction A: u -> v
+            if u_node._next == v_node:
+                u_node._next = None
+                v_node._prev = None
+                self.heads.append(v_node)
+                return True
+
+            # Check Direction B: v -> u
+            if v_node._next == u_node:
+                v_node._next = None
+                u_node._prev = None
+                self.heads.append(u_node)
+                return True
+        else:
+            return False
 
     def get_path_sequences(self) -> List[List[Any]]:
         """Traverse every individual path sequentially from its head pointer.
@@ -252,6 +309,17 @@ class Genome:
 
         return False
 
+    def copy(self) -> "Genome":
+        """Returns a deep copy of the genome structure."""
+        new_genome = Genome(genome_id=self._genome_id)
+        # Re-build independent path copies using your get_path_sequences structure
+        for path_seq in self.get_path_sequences():
+            new_list = DLList()
+            for val in path_seq:
+                new_list.append(DLListNode(val))
+            new_genome.add_path(new_list)
+        return new_genome
+
     def check_integrity(self) -> bool:
         """Checks for path forest conditions.
 
@@ -284,7 +352,7 @@ class Genome:
 class Pangenome:
     """A set of genomes."""
 
-    __slots__ = ("_pangenome_id", "_genomes")
+    __slots__ = ("_pangenome_id", "_genomes","core")
 
     def __init__(self, pangenome_id: Any, genomes: List[Genome] | None = None) -> None:
         """Pangenome constructor.
@@ -295,6 +363,7 @@ class Pangenome:
         """
         self._pangenome_id: Any = pangenome_id
         self._genomes: List[Genome] = genomes if genomes is not None else []
+        self.core = set()
 
     def __len__(self) -> int:
         """Returns the total number of genomes contained in the pangenome."""
@@ -317,10 +386,6 @@ class Pangenome:
     def total_gene_count(self) -> int:
         """Returns the total number of unique genes present in the pangenome."""
         return len(self.universal_gene_set)
-
-    def add_genome(self, genome: Genome) -> None:
-        """Adds a single genome to the pangenome collection."""
-        self._genomes.append(genome)
 
     def compute_core_genes(self) -> Set[Any]:
         """Computes the core gene set using an intersection loop.
@@ -358,6 +423,23 @@ class Pangenome:
 
         return dict(adjacency_counter)
 
+    def add_genome(self, genome: Genome) -> None:
+        """Adds a single genome to the pangenome collection."""
+        self._genomes.append(genome)
+        self.core = self.compute_core_genes()
+
+    def replace_genome(self,
+                       genome_id: Any,
+                       new_genome: Genome) -> None:
+        """Replaces an existing genome instance."""
+        for i, g in enumerate(self._genomes):
+            if g._genome_id == genome_id:
+                self._genomes[i] = new_genome
+                self.core = self.compute_core_genes()
+                return
+        raise KeyError(f"Genome with ID '{genome_id}' not found in pangenome.")
+
+
     def check_integrity(self) -> bool:
         """Validates that all underlying genomes match the global graph topology.
 
@@ -381,7 +463,7 @@ class Pangenome:
 
     def summary(self) -> str:
         """Overview of the pangenome object."""
-        core_genes = list(self.compute_core_genes())
+        core_genes = list(self.core)
         summary_info = [
             f"Pangenome {self._pangenome_id}:",
             f"├── Constituent genomes: {len(self)}",
