@@ -24,7 +24,7 @@ def unwrap_node_value(node: DLListNode) -> Any:
 class Genome:
     """A genome modeled as a path forest."""
 
-    __slots__ = ("_genome_id", "heads", "gene_set")
+    __slots__ = ("_genome_id", "heads", "gene_set", "_node_cache")
 
     def __init__(
         self,
@@ -36,6 +36,7 @@ class Genome:
         self._genome_id = genome_id
         self.heads = heads if heads is not None else []
         self.gene_set = gene_set if gene_set is not None else set()
+        self._node_cache: Dict[Any, DLListNode] = {}
 
     def __len__(self) -> int:
         """Returns the total number of nodes across all paths in the genome."""
@@ -51,7 +52,7 @@ class Genome:
         ]
         paths = self.get_path_sequences()
         for i, path in enumerate(paths[:5]):
-            if len(path)< 10:
+            if len(path) < 10:
                 summary.append(f"\t{i + 1}) {path} ")
             else:
                 summary.append(f"\t{i + 1}) {path[:3]} ...")
@@ -78,6 +79,7 @@ class Genome:
                 value = unwrap_node_value(current)
                 if value is not None:
                     self.gene_set.add(value)
+                    self._node_cache[value] = current
                 current = current._next
 
     def iter_nodes(self) -> Generator[DLListNode, None, None]:
@@ -103,7 +105,7 @@ class Genome:
             if node._next is not None:
                 yield (node, node._next)
 
-    def has_edge(self, edge:Tuple[int,int]) -> bool:
+    def has_edge(self, edge: Tuple[int, int]) -> bool:
         """Checks whether the genome contains a given edge.
 
         Args:
@@ -119,7 +121,7 @@ class Genome:
 
         flag = False
         key = (u, v) if u <= v else (v, u)
-        for x,y in self.iter_edges():
+        for x, y in self.iter_edges():
             x_val = unwrap_node_value(x)
             y_val = unwrap_node_value(y)
             target = (x_val, y_val) if x_val <= y_val else (y_val, x_val)
@@ -127,7 +129,6 @@ class Genome:
                 flag = True
                 break
         return flag
-
 
     def get_path_sequences(self) -> List[List[Any]]:
         """Traverse every individual path sequentially from its head pointer.
@@ -209,7 +210,7 @@ class Genome:
 
         return new_dllist
 
-    def would_break_path_forest(self,edge:Tuple[int,int]) -> bool:
+    def would_break_path_forest(self, edge: Tuple[int, int]) -> bool:
         """Checks whether inserting (u,v) would break the path forest condition.
 
         Args:
@@ -224,23 +225,13 @@ class Genome:
         if u not in self.gene_set and v not in self.gene_set:
             return False
 
-        #Case 1: They already exist there
+        # Case 1: They already exist there
         if self.has_edge(edge):
             return True
 
         # If they exist, we will find them
-        u_node: DLListNode | None = None
-        v_node: DLListNode | None = None
-
-        for node in self.iter_nodes():
-            val = unwrap_node_value(node)
-            if val == u:
-                u_node = node
-            if val == v:
-                v_node = node
-            if u_node and v_node:
-                break
-
+        u_node = self._node_cache.get(u)
+        v_node = self._node_cache.get(v)
 
         # Case 2: Possible branching
         # If either of them is an internal node, then it's not possible
@@ -260,8 +251,6 @@ class Genome:
                 curr = curr._next
 
         return False
-
-
 
     def check_integrity(self) -> bool:
         """Checks for path forest conditions.
