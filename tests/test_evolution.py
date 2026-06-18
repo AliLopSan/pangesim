@@ -56,3 +56,21 @@ def test_combination_events():
             # Check for non-trivial path forest condition
             for genome in pangenome.genomes:
                 assert genome.check_integrity() is True
+
+def test_get_a_path():
+    """Check if the path can be created from a given head in the pangenome."""
+    
+    # Initialize with no mutations so we can precisely track sizes
+    sim = PangenomeSimulator(insertion_rate=0.0, deletion_rate=0.0)
+
+    # Request a pangenome with 3 genomes (k=3) starting with 12 genes (l=12)
+    pangenome = sim.generate_pangenome(k=3, length=12)
+    
+    # Randomly choose a genome from the pangenome
+    new_genome = random.choice(pangenome._genomes)
+
+    # Randomly choose a head from the genome
+    new_head = random.choice(new_genome.heads)
+
+    # Get the path (chromosome) associated with the head
+    new_path = new_genome.get_a_path(new_head)
