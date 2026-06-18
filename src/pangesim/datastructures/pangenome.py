@@ -391,7 +391,7 @@ class Genome:
 class Pangenome:
     """A set of genomes."""
 
-    __slots__ = ("_pangenome_id", "_genomes","core")
+    __slots__ = ("_pangenome_id", "_genomes","core","core_edges")
 
     def __init__(self, pangenome_id: Any, genomes: List[Genome] | None = None) -> None:
         """Pangenome constructor.
@@ -403,6 +403,7 @@ class Pangenome:
         self._pangenome_id: Any = pangenome_id
         self._genomes: List[Genome] = genomes if genomes is not None else []
         self.core = set()
+        self.core_edges = set()
 
     def __len__(self) -> int:
         """Returns the total number of genomes contained in the pangenome."""
@@ -447,6 +448,24 @@ class Pangenome:
 
         return core_genes
 
+    def compute_core_edges(self) -> Set[Any]:
+        """Obtains the core edges.
+
+        Returns:
+               The set of core edges, if any.
+        """
+        core_edges = set()
+
+        if len(self.core) > 1:
+            for g in self.genomes:
+                for u,v in g.iter_edges():
+                    u_val = unwrap_node_value(u)
+                    v_val = unwrap_node_value(v)
+                    if u_val in self.core and v_val in self.core:
+                        key = (u_val, v_val) if u_val <= v_val else (v_val, u_val)
+                        core_edges.add(key)
+        return core_edges
+
     def compute_weighted_adjacencies(self) -> Dict[Tuple[Any, Any], int]:
         """Calculates frequencies of all adjacencies.
 
@@ -466,6 +485,7 @@ class Pangenome:
         """Adds a single genome to the pangenome collection."""
         self._genomes.append(genome)
         self.core = self.compute_core_genes()
+        self.core_edges = self.compute_core_edges()
 
     def replace_genome(self,
                        genome_id: Any,
@@ -499,6 +519,15 @@ class Pangenome:
                 raise ValueError(f"Genome '{genome.id}' failed internal validation.")
 
         return True
+
+    def copy(self) -> "Pangenome":
+        """Returns a deep copy of the pangenome structure."""
+        new_pangenome = Pangenome(pangenome_id=self._pangenome_id)
+        for genome in self._genomes:
+            new_genome = genome.copy()
+            new_pangenome.add_genome(new_genome)
+
+        return new_pangenome
 
     def summary(self) -> str:
         """Overview of the pangenome object."""
