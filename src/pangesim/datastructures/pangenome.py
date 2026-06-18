@@ -495,6 +495,7 @@ class Pangenome:
             if g._genome_id == genome_id:
                 self._genomes[i] = new_genome
                 self.core = self.compute_core_genes()
+                self.core_edges = self.compute_core_edges()
                 return
         raise KeyError(f"Genome with ID '{genome_id}' not found in pangenome.")
 
