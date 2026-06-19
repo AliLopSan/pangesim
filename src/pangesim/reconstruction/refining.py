@@ -179,29 +179,23 @@ class ResidualsRefinement(RefinementStrategy):
         Returns:
            A refined pangenome.
         """
-        print("\t Runing refinement method: ")
-        print("\t Base pangenome summary :")
-        print("\t ",target.summary())
-        for g in target._genomes:
-            print(g)
         residuals: AdjacencyMatrix = build_residuals(target=target, source=source)
         current_score = pan_score(target,
                                   source,
                                   self.params["alpha"],
                                   self.params["gamma"])
-        print("\t Current score: ",current_score)
         converged = False
         iters = 0
         pangenome = target.copy()
 
         while not converged:
+            prev_score = current_score
             if all(r == 0 for r in residuals.values()) or iters == self.max_iter:
                 break
 
             worst_edge, worst_residual = max(
                 residuals.items(), key=lambda item: abs(item[1])
             )
-            print("\t\t worst edge: ", worst_edge,"\t worst residual:",worst_residual)
 
             # Step 3: Branching strategy depending on the residual type
             if worst_residual > 0:
@@ -217,7 +211,9 @@ class ResidualsRefinement(RefinementStrategy):
                                   source,
                                   self.params["alpha"],
                                   self.params["gamma"])
-            print("\t\t New score after modifications: ", current_score)
+            #If there was no score change, get out
+            if prev_score == current_score:
+                converged = True
 
             iters += 1
 
