@@ -67,10 +67,10 @@ def test_get_a_path():
     pangenome = sim.generate_pangenome(k=3, length=12)
     
     # Randomly choose a genome from the pangenome
-    new_genome = random.choice(pangenome._genomes)
+    new_genome = rd.choice(pangenome._genomes)
 
     # Randomly choose a head from the genome
-    new_head = random.choice(new_genome.heads)
+    new_head = rd.choice(new_genome.heads)
 
     # Get the path (chromosome) associated with the head
     new_path = new_genome.get_a_path(new_head)
