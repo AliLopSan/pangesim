@@ -1,5 +1,5 @@
 """Phase 2: Assignment of Paths to Genomes."""
-
+from itertools import pairwise
 from typing import Any
 from typing import List
 from typing import Set
@@ -20,7 +20,6 @@ from pangesim.reconstruction.pairing import IterativeOddPairing
 from pangesim.reconstruction.sorting import LengthSorting
 from pangesim.reconstruction.utils import ComponentTopology
 from pangesim.reconstruction.utils import TopologicalExplorer
-from pangesim.reconstruction.utils import build_dll_from_list
 from pangesim.reconstruction.utils import component_to_networkx
 from pangesim.reconstruction.utils import is_graph_a_path
 
@@ -280,6 +279,15 @@ class EulerianTrailAssignment(AssignmentStrategy):
         Returns:
             A list of k genomes.
         """
+        def add_list_as_path(genome:Genome,fragment:List[int]) -> None:
+            """Adds list as path.
+
+            Args:
+            genome: Genome to be modified.
+            fragment: Path to tbe added.
+            """
+            for u,v in pairwise(fragment):
+                genome.add_edge((u,v))
 
         def build_fragment(fragment: List[int]) -> None:
             """Recursively build fragments.
@@ -300,8 +308,8 @@ class EulerianTrailAssignment(AssignmentStrategy):
                 for sub in sub_fragments:
                     build_fragment(sub)
             else:
-                new_path = build_dll_from_list(fragment)
-                genomes[best_i].add_path(new_path)
+                #new_path = build_dll_from_list(fragment)
+                add_list_as_path(genomes[best_i],fragment)
 
         genomes: List[Genome] = [Genome(genome_id=i) for i in range(k)]
 
