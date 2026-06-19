@@ -52,8 +52,13 @@ class EulerianPathHeuristic:
         """
         # Phase 1: Compute bounds
         k_min, k_max, info = self.bounds_strategy.compute_bounds(matrix, self.params)
+
         # Phase 2: Paths assignment
         base_pangenome = self.assignment_strategy.assign_genomes(adjacencies=matrix, k=k_min)
+        print("Computed base pangenome:")
+        print(base_pangenome.summary())
+
+        print("Refining base pangenome")
         # Phase 3: Refinement
         pangenome = self.refine_strategy.refine(source=matrix, target=base_pangenome)
         return pangenome

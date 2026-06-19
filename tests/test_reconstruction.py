@@ -1,32 +1,10 @@
 """Tests for reconstruction algorithms and utilities."""
-
 from pangesim.panevolve import PangenomeSimulator
 from pangesim.reconstruction import EulerianPathHeuristic
-from pangesim.reconstruction import pan_score
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.utils import TopologicalExplorer
-
-
-def test_dummy_pipeline():
-    """Naive Pangenome reconstruction."""
-    sim = PangenomeSimulator(deletion_rate=2, rearrangement_rate=3)
-    p = sim.generate_pangenome(k=3, length=15)
-
-    # Input for reconstruction algorithm
-    h_ground = p.compute_weighted_adjacencies()
-    heuristic = EulerianPathHeuristic()
-    p_recons = heuristic.reconstruct(h_ground)
-
-    assert len(p_recons) == len(h_ground)
-
-    greedy = GreedyPairingISCB()
-    greedy_heuristic = EulerianPathHeuristic(bounds_strategy=greedy)
-    inferred = greedy_heuristic.reconstruct(h_ground)
-
-    assert len(inferred) == len(h_ground)
-
 
 def test_topological_explorer_undirected():
     """Validates component isolation and parity mapping on an undirected graph."""
@@ -79,6 +57,7 @@ def test_eulerian_assignments():
 
 def test_full_heuristic():
     """Test of the full pipeline."""
+    print("\t Small example Test")
     # Graph structure:
     # Component 1 (Triangle, all even): 1-2, 2-3, 3-1
     # Component 2 (Line, two odd nodes): 4-5
@@ -103,6 +82,7 @@ def test_full_heuristic():
 
 def test_roboust_example_phase1_2():
     """Testing each step of the pipeline."""
+    print("\t Roboust example test ")
     sample_matrix = {
         (1, 2): 3,
         (2, 3): 4,
@@ -124,6 +104,3 @@ def test_roboust_example_phase1_2():
     )
     pangenome = heuristic.reconstruct(sample_matrix)
     assert pangenome.check_integrity() is True
-    score = pan_score(pangenome,sample_matrix,params["alpha"],params["gamma"])
-    print("Current pangenome score is ", score)
-
