@@ -16,6 +16,8 @@ def unwrap_node_value(node: DLListNode) -> Any:
     """Safely extracts the raw primitive value from a tralda node structure."""
     if hasattr(node, "_value") and hasattr(node._value, "_value"):
         return node._value._value
+    if isinstance(node.get(),int):
+        return node.get()
     if hasattr(node, "item"):
         return node.item
     return node
@@ -168,7 +170,7 @@ class Genome:
         for val in (u, v):
             if val not in self.gene_set:
                 self.gene_set.add(val)
-                self._node_cache[val] = DLListNode(val)
+                self._node_cache[val] = DLListNode(value=val)
                 self.heads.append(self._node_cache[val])
 
         if self.has_edge((u, v)):
@@ -355,7 +357,7 @@ class Genome:
         for path_seq in self.get_path_sequences():
             new_list = DLList()
             for val in path_seq:
-                new_list.append(DLListNode(val))
+                new_list.append(DLListNode(value=val))
             new_genome.add_path(new_list)
         return new_genome
 
@@ -437,7 +439,7 @@ class Pangenome:
             return set()
 
         # Initialize with the first genome's gene set
-        core_genes = self._genomes[0].gene_set
+        core_genes = self._genomes[0].gene_set.copy()
 
         # Iteratively intersect with the remaining genomes
         for genome in self._genomes[1:]:
@@ -517,7 +519,7 @@ class Pangenome:
 
         for genome in self._genomes:
             if hasattr(genome, "check_integrity") and not genome.check_integrity():
-                raise ValueError(f"Genome '{genome.id}' failed internal validation.")
+                raise ValueError(f"Genome '{genome._genome_id}' failed internal validation.")
 
         return True
 
