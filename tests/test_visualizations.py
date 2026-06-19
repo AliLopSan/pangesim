@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from pangesim.panevolve import PangenomeSimulator
-from pangesim.visualization import PangenomeVisualizer  # Using your clean subpackage names!
+from pangesim.visualization import PangenomeVisualizer
 
 
 def test_visualization(tmp_path: Path) -> None:
