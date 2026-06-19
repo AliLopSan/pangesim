@@ -79,34 +79,6 @@ class AssignmentStrategy(ABC):
         pass
 
 
-class RefinementStrategy(ABC):
-    """Refinement Strategy blueprint."""
-
-    @abstractmethod
-    def reconcile(
-        self,
-        pangenome: Pangenome,
-        observed: AdjacencyMatrix,
-        alpha: float,
-        gamma: float,
-        max_iter: int = 100,
-    ) -> Pangenome:
-        """Computes residuals and materializes the unified Pangenome object.
-
-        Args:
-            pangenome: The intial pangenome object to be refined.
-            observed: The weighted adjacencies.
-            alpha: per-genome reward in the score.
-            gamma: weight-error penalty coefficient.
-            max_iter: If convergence is not reached, then iteratively fix
-                    the last residual until max_iter rounds.
-
-        Returns:
-            The refined pangenome object.
-        """
-        pass
-
-
 class OddPairingStrategy(ABC):
     """Abstract base class for pairing odd-degree vertices."""
 
@@ -130,5 +102,21 @@ class TrailSortingStrategy(ABC):
 
         Args:
            trails: the trails to sort.
+        """
+        pass
+
+
+class RefinementStrategy(ABC):
+    """Abstract base class for refining pangenome."""
+
+    @abstractmethod
+    def refine(self, source: AdjacencyMatrix, target: Pangenome) -> Pangenome:
+        """Main refinement method.
+
+        Args:
+           source: Input Adjacency Matrix.
+           target: Initial pangenome to refine
+        Returns:
+           A refined pangenome.
         """
         pass

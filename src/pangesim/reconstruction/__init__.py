@@ -8,6 +8,7 @@ from pangesim.reconstruction.base import RefinementStrategy
 from pangesim.reconstruction.base import TrailSortingStrategy
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.eulerian import EulerianPathHeuristic
+from pangesim.reconstruction.utils import pan_score
 
 __all__ = [
     "BoundsStrategy",
@@ -18,4 +19,6 @@ __all__ = [
     "matrix_to_list",
     "EulerianPathHeuristic",
     "TrailSortingStrategy",
+    "RefinementStrategy",
+    "pan_score",
 ]
