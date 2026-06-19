@@ -1,4 +1,5 @@
 """Abstract definitions ensuring interchangeable execution strategies."""
+
 from abc import ABC
 from abc import abstractmethod
 from typing import Dict
@@ -11,10 +12,10 @@ from pangesim import Pangenome
 
 # Type alias for structural clarity
 AdjacencyMatrix = Dict[Tuple[int, int], int]
-AdjacencyList = Dict[int,List[Tuple[int,int]]]
+AdjacencyList = Dict[int, List[Tuple[int, int]]]
 
-def matrix_to_list(matrix: AdjacencyMatrix,
-                   directed: bool = False) -> AdjacencyList:
+
+def matrix_to_list(matrix: AdjacencyMatrix, directed: bool = False) -> AdjacencyList:
     """Transforms a weighted adjacency matrix representation into a list.
 
     Args:
@@ -29,21 +30,24 @@ def matrix_to_list(matrix: AdjacencyMatrix,
     for source, target in matrix:
         if source not in adj_list:
             adj_list[source] = []
-        adj_list[source].append((target,matrix[(source,target)]))
+        adj_list[source].append((target, matrix[(source, target)]))
 
         if not directed:
             if target not in adj_list:
                 adj_list[target] = []
-            adj_list[target].append((source,matrix[(source,target)]))
+            adj_list[target].append((source, matrix[(source, target)]))
     return adj_list
+
 
 class BoundsStrategy(ABC):
     """Bounds strategy blueprint for computing k bounds."""
+
     @abstractmethod
-    def compute_bounds(self,
-                       adjacencies: AdjacencyMatrix,
-                       params: Dict | None = None,
-                       ) -> Tuple[int, int,Dict[int, int]]:
+    def compute_bounds(
+        self,
+        adjacencies: AdjacencyMatrix,
+        params: Dict | None = None,
+    ) -> Tuple[int, int, Dict[int, int]]:
         """Computes the genomes bounds.
 
         Args:
@@ -60,10 +64,9 @@ class BoundsStrategy(ABC):
 
 class AssignmentStrategy(ABC):
     """Assignment strategy blueprint for computing genome assignments."""
+
     @abstractmethod
-    def assign_genomes(self,
-                      adjacencies: AdjacencyMatrix,
-                      k: int) -> Pangenome:
+    def assign_genomes(self, adjacencies: AdjacencyMatrix, k: int) -> Pangenome:
         """Decomposes graph into a list of genomes.
 
         Args:
@@ -76,40 +79,44 @@ class AssignmentStrategy(ABC):
         pass
 
 
-class RefinementStrategy(ABC):
-    """Refinement Strategy blueprint."""
-    @abstractmethod
-    def reconcile(self, pangenome:Pangenome,
-                  observed: AdjacencyMatrix,
-                  alpha: float,
-                  gamma: float,
-                  max_iter: int = 100
-                  ) -> Pangenome:
-        """Computes residuals and materializes the unified Pangenome object.
-
-        Args:
-            pangenome: The intial pangenome object to be refined.
-            observed: The weighted adjacencies.
-            alpha: per-genome reward in the score.
-            gamma: weight-error penalty coefficient.
-            max_iter: If convergence is not reached, then iteratively fix
-                    the last residual until max_iter rounds.
-
-        Returns:
-            The refined pangenome object.
-        """
-        pass
-
 class OddPairingStrategy(ABC):
     """Abstract base class for pairing odd-degree vertices."""
 
     @abstractmethod
-    def pair_vertices(self,graph: nx.MultiGraph,
-                      odd_vertices: list[int]) -> list[tuple[int, int]]:
+    def pair_vertices(self, graph: nx.MultiGraph, odd_vertices: list[int]) -> list[tuple[int, int]]:
         """Computes new edges to make a component Eulerian.
 
         Args:
            graph: a networkx multi graph.
            odd_vertices: All odd vertices in the graph.
+        """
+        pass
+
+
+class TrailSortingStrategy(ABC):
+    """Abstract base class for sorting Eulerian trails."""
+
+    @abstractmethod
+    def sort(self, trails: list[list[tuple]]) -> list[list[tuple]]:
+        """List the trails w.r.t. specific criteria.
+
+        Args:
+           trails: the trails to sort.
+        """
+        pass
+
+
+class RefinementStrategy(ABC):
+    """Abstract base class for refining pangenome."""
+
+    @abstractmethod
+    def refine(self, source: AdjacencyMatrix, target: Pangenome) -> Pangenome:
+        """Main refinement method.
+
+        Args:
+           source: Input Adjacency Matrix.
+           target: Initial pangenome to refine
+        Returns:
+           A refined pangenome.
         """
         pass

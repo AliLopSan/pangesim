@@ -2,15 +2,21 @@
 
 from collections import deque
 from typing import Dict
+from typing import List
 from typing import NamedTuple
 
 import networkx as nx
+from tralda.datastructures.doubly_linked import DLList
+from tralda.datastructures.doubly_linked import DLListNode
 
+from pangesim import Pangenome
 from pangesim.reconstruction.base import AdjacencyList
+from pangesim.reconstruction.base import AdjacencyMatrix
 
 
 class ComponentTopology(NamedTuple):
     """Encapsulates the structural characteristics of a connected component."""
+
     nodes: set[int]
     odd_vertices: list[int]
     is_eulerian: bool
@@ -22,11 +28,10 @@ class TopologicalExplorer:
     This class runs a fast BFS traversal over a custom AdjacencyList structure
     to isolate connected subgraphs and identify topological source/sink imbalances.
     """
-    __slots__ = ("adj_list", "directed","degrees")
 
-    def __init__(self,
-                 adj_list: AdjacencyList,
-                 directed: bool = False) -> None:
+    __slots__ = ("adj_list", "directed", "degrees")
+
+    def __init__(self, adj_list: AdjacencyList, directed: bool = False) -> None:
         """Initializes the explorer with a pre-constructed adjacency list.
 
         Args:
@@ -91,16 +96,16 @@ class TopologicalExplorer:
                 ComponentTopology(
                     nodes=component_nodes,
                     odd_vertices=odd_vertices,
-                    is_eulerian=len(odd_vertices) == 0
+                    is_eulerian=len(odd_vertices) == 0,
                 )
             )
 
         return components
 
+
 def component_to_networkx(
-        nodes: set[int],
-        adj_list: AdjacencyList,
-        directed: bool = False ) -> nx.MultiGraph:
+    nodes: set[int], adj_list: AdjacencyList, directed: bool = False
+) -> nx.MultiGraph:
     """Transforms a specific isolated connected component into a NetworkX graph.
 
     This utility isolates edge translation to a subset of nodes, ensuring
@@ -123,9 +128,10 @@ def component_to_networkx(
             # Avoid duplicating undirected edges in the NetworkX layer
             if not directed and node > neighbor:
                 continue
-            graph.add_edge(node, neighbor, weight=weight,native=True)
+            graph.add_edge(node, neighbor, weight=weight, native=True)
 
     return graph
+
 
 def is_graph_a_path(graph: nx.MultiGraph) -> bool:
     """Checks if given graph is a path.
@@ -139,7 +145,8 @@ def is_graph_a_path(graph: nx.MultiGraph) -> bool:
         return False
     return max(dict(graph.degree()).values()) <= 2
 
-def print_adj_list(graph: nx.MultiGraph)->None:
+
+def print_adj_list(graph: nx.MultiGraph) -> None:
     """Prints the adjacency list of the given graph.
 
     Args:
@@ -148,3 +155,73 @@ def print_adj_list(graph: nx.MultiGraph)->None:
     for node in graph:
         neighbors = [v for v in graph.neighbors(node)]
         print("\t", node, "\t ", neighbors)
+
+
+def build_dll_from_list(some_list: List[int]) -> List[DLList]:
+    """Builds a DLList from a list of ints.
+
+    Args:
+       some_list: A list of integers.
+
+    Returns:
+       A double linked list with the given nodes and order.
+    """
+    new_path = DLList()
+
+    for v in some_list:
+        v_node = DLListNode(value=v)
+        new_path.append(v_node)
+
+    return new_path
+
+
+def build_residuals(target: Pangenome,
+                    source: AdjacencyMatrix) -> AdjacencyMatrix:
+    """Builds the residuals dictionary.
+
+    A residual is the difference between the observed multiplicity in the
+    input and the endougenous weight of the edge in the pangenome.
+
+    Args:
+       target: The inferred Pangenome.
+       source: The input weighted adjacency graph.
+
+    Returns:
+       A dictionary of residuals per edge in source.
+    """
+    # Residuals dictionary will have sorted tuples
+    residuals: AdjacencyMatrix = {}
+    endogenous_weights = target.compute_weighted_adjacencies()
+
+    for (u, v), m_uv in source.items():
+        # Note that all tuples in pangenome are sorted
+        key = (u, v) if u <= v else (v, u)
+
+        if key in endogenous_weights:
+            residuals[key] = m_uv - endogenous_weights[key]
+        else:
+            # If key is not present, then w_uv is zero
+            residuals[key] = m_uv
+
+    return residuals
+
+
+def pan_score(target: Pangenome,
+              source: AdjacencyMatrix, alpha: float, gamma: float) -> float:
+    """Scoring function for the pangenome.
+
+    Args:
+       target: The inferred Pangenome.
+       source: The input weighted adjacency graph.
+       alpha: per-genome reward in the score.
+       gamma: weight-error penalty coefficient.
+
+    Returns:
+       The score of the inferred pangenome w.r.t. the input.
+    """
+    r = build_residuals(target, source)
+    squared_r = 0
+    for edge in r:
+        squared_r = squared_r + r[edge] * r[edge]
+
+    return alpha * len(target) - gamma * squared_r

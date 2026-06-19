@@ -16,6 +16,8 @@ def unwrap_node_value(node: DLListNode) -> Any:
     """Safely extracts the raw primitive value from a tralda node structure."""
     if hasattr(node, "_value") and hasattr(node._value, "_value"):
         return node._value._value
+    if isinstance(node.get(),int):
+        return node.get()
     if hasattr(node, "item"):
         return node.item
     return node
@@ -24,7 +26,7 @@ def unwrap_node_value(node: DLListNode) -> Any:
 class Genome:
     """A genome modeled as a path forest."""
 
-    __slots__ = ("_genome_id", "heads", "gene_set")
+    __slots__ = ("_genome_id", "heads", "gene_set", "_node_cache")
 
     def __init__(
         self,
@@ -36,10 +38,29 @@ class Genome:
         self._genome_id = genome_id
         self.heads = heads if heads is not None else []
         self.gene_set = gene_set if gene_set is not None else set()
+        self._node_cache: Dict[Any, DLListNode] = {}
 
     def __len__(self) -> int:
         """Returns the total number of nodes across all paths in the genome."""
         return sum(1 for _ in self.iter_nodes())
+
+    def __str__(self) -> str:
+        """Returns the number of paths and a human-reable list of paths."""
+        summary = [
+            f"Genome {self._genome_id}:",
+            f"├── Number of Paths: {self.path_count}",
+            f"├── Number of Genes: {len(self)}",
+            "└── Assigned Paths:",
+        ]
+        paths = self.get_path_sequences()
+        for i, path in enumerate(paths[:5]):
+            if len(path) < 10:
+                summary.append(f"\t{i + 1}) {path} ")
+            else:
+                summary.append(f"\t{i + 1}) {path[:3]} ...")
+        if self.path_count > 5:
+            summary.append(f"\t... and {self.path_count - 5} more paths.")
+        return "\n".join(summary)
 
     @property
     def path_count(self) -> int:
@@ -60,7 +81,31 @@ class Genome:
                 value = unwrap_node_value(current)
                 if value is not None:
                     self.gene_set.add(value)
+                    self._node_cache[value] = current
                 current = current._next
+
+    def degree(self, node_identifier: Any) -> int:
+        """Computes the degree of a node.
+
+        Accepts either a primitive value (searched via cache) or a DLListNode.
+
+        Args:
+            node_identifier: input node to verify or id.
+        """
+        node = node_identifier
+        if not isinstance(node, DLListNode):
+            node = self._node_cache.get(node_identifier)
+
+        if not node:
+            return 0
+
+        neighbors = 0
+
+        if node._prev is not None:
+            neighbors += 1
+        if node._next is not None:
+            neighbors += 1
+        return neighbors
 
     def iter_nodes(self) -> Generator[DLListNode, None, None]:
         """Yields all genes (DLListNodes) sequentially from path heads.
@@ -84,6 +129,104 @@ class Genome:
         for node in self.iter_nodes():
             if node._next is not None:
                 yield (node, node._next)
+
+    def has_edge(self, edge: Tuple[int, int]) -> bool:
+        """Checks whether the genome contains a given edge.
+
+        Args:
+           edge: the target edge.
+
+        Returns:
+           True if edge is in the given genome.
+        """
+        u = edge[0]
+        v = edge[1]
+        if u not in self.gene_set or v not in self.gene_set:
+            return False
+
+        flag = False
+        key = (u, v) if u <= v else (v, u)
+        for x, y in self.iter_edges():
+            x_val = unwrap_node_value(x)
+            y_val = unwrap_node_value(y)
+            target = (x_val, y_val) if x_val <= y_val else (y_val, x_val)
+            if key[0] == target[0] and key[1] == target[1]:
+                flag = True
+                break
+        return flag
+
+    def add_edge(self, edge:Tuple[int,int]) -> bool:
+        """Inserts a given edge to genome.
+
+        Args:
+           edge: Edge to be removed
+
+        Raises:
+           ValueError if the operation would violate path forest conditions.
+        """
+        u, v = edge[0], edge[1]
+
+        # Dynamically instantiate and cache missing genes
+        for val in (u, v):
+            if val not in self.gene_set:
+                self.gene_set.add(val)
+                self._node_cache[val] = DLListNode(value=val)
+                self.heads.append(self._node_cache[val])
+
+        if self.has_edge((u, v)):
+            return True
+
+        u_n, v_n = self._node_cache[u], self._node_cache[v]
+
+        # Try Orientation A: u -> v
+        if u_n._next is None and v_n._prev is None and not self.would_break_path_forest((u, v)):
+            u_n._next, v_n._prev = v_n, u_n
+            if v_n in self.heads:
+                self.heads.remove(v_n)
+            return True
+
+        # Try Orientation B: v -> u
+        if v_n._next is None and u_n._prev is None and not self.would_break_path_forest((v, u)):
+            v_n._next, u_n._prev = u_n, v_n
+            if u_n in self.heads:
+                self.heads.remove(u_n)
+            return True
+
+        return False
+
+    def remove_edge(self, edge:Tuple[int,int]) -> bool:
+        """Removes a given edge from the genome.
+
+        Args:
+           edge: Edge to be removed
+
+        Returns:
+           True if the edge existed.
+        """
+        if self.has_edge(edge):
+            u,v = edge[0], edge[1]
+            u_node = self._node_cache.get(u)
+            v_node = self._node_cache.get(v)
+
+            # Protection against isolated vertices
+            if self.degree(u_node) <= 1 or self.degree(v_node) <= 1:
+                return False
+
+            # Check Direction A: u -> v
+            if u_node._next == v_node:
+                u_node._next = None
+                v_node._prev = None
+                self.heads.append(v_node)
+                return True
+
+            # Check Direction B: v -> u
+            if v_node._next == u_node:
+                v_node._next = None
+                u_node._prev = None
+                self.heads.append(u_node)
+                return True
+        else:
+            return False
 
     def get_path_sequences(self) -> List[List[Any]]:
         """Traverse every individual path sequentially from its head pointer.
@@ -165,6 +308,59 @@ class Genome:
 
         return new_dllist
 
+    def would_break_path_forest(self, edge: Tuple[int, int]) -> bool:
+        """Checks whether inserting (u,v) would break the path forest condition.
+
+        Args:
+            edge: the edge to test.
+
+        Returns:
+            True if there exists a possible violation created by the edge.
+        """
+        u = edge[0]
+        v = edge[1]
+        # If they do not exist, we are safe
+        if u not in self.gene_set and v not in self.gene_set:
+            return False
+
+        # Case 1: They already exist there
+        if self.has_edge(edge):
+            return True
+
+        # If they exist, we will find them
+        u_node = self._node_cache.get(u)
+        v_node = self._node_cache.get(v)
+
+        # Case 2: Possible branching
+        # If either of them is an internal node, then it's not possible
+        if u_node and u_node._prev is not None and u_node._next is not None:
+            return True
+
+        if v_node and v_node._prev is not None and v_node._next is not None:
+            return True
+
+        # Case 3: Cycle detection
+        # If both nodes exist in the forest, make sure v is not upstream of u
+        if u_node and v_node:
+            curr = v_node
+            while curr is not None:
+                if unwrap_node_value(curr) == u:
+                    return True  # Connecting u -> v closes a cycle!
+                curr = curr._next
+
+        return False
+
+    def copy(self) -> "Genome":
+        """Returns a deep copy of the genome structure."""
+        new_genome = Genome(genome_id=self._genome_id)
+        # Re-build independent path copies using your get_path_sequences structure
+        for path_seq in self.get_path_sequences():
+            new_list = DLList()
+            for val in path_seq:
+                new_list.append(DLListNode(value=val))
+            new_genome.add_path(new_list)
+        return new_genome
+
     def check_integrity(self) -> bool:
         """Checks for path forest conditions.
 
@@ -197,7 +393,7 @@ class Genome:
 class Pangenome:
     """A set of genomes."""
 
-    __slots__ = ("_pangenome_id", "_genomes")
+    __slots__ = ("_pangenome_id", "_genomes","core","core_edges")
 
     def __init__(self, pangenome_id: Any, genomes: List[Genome] | None = None) -> None:
         """Pangenome constructor.
@@ -208,6 +404,8 @@ class Pangenome:
         """
         self._pangenome_id: Any = pangenome_id
         self._genomes: List[Genome] = genomes if genomes is not None else []
+        self.core = set()
+        self.core_edges = set()
 
     def __len__(self) -> int:
         """Returns the total number of genomes contained in the pangenome."""
@@ -231,10 +429,6 @@ class Pangenome:
         """Returns the total number of unique genes present in the pangenome."""
         return len(self.universal_gene_set)
 
-    def add_genome(self, genome: Genome) -> None:
-        """Adds a single genome to the pangenome collection."""
-        self._genomes.append(genome)
-
     def compute_core_genes(self) -> Set[Any]:
         """Computes the core gene set using an intersection loop.
 
@@ -245,7 +439,7 @@ class Pangenome:
             return set()
 
         # Initialize with the first genome's gene set
-        core_genes = self._genomes[0].gene_set
+        core_genes = self._genomes[0].gene_set.copy()
 
         # Iteratively intersect with the remaining genomes
         for genome in self._genomes[1:]:
@@ -255,6 +449,24 @@ class Pangenome:
             core_genes.intersection_update(genome.gene_set)
 
         return core_genes
+
+    def compute_core_edges(self) -> Set[Any]:
+        """Obtains the core edges.
+
+        Returns:
+               The set of core edges, if any.
+        """
+        core_edges = set()
+
+        if len(self.core) > 1:
+            for g in self.genomes:
+                for u,v in g.iter_edges():
+                    u_val = unwrap_node_value(u)
+                    v_val = unwrap_node_value(v)
+                    if u_val in self.core and v_val in self.core:
+                        key = (u_val, v_val) if u_val <= v_val else (v_val, u_val)
+                        core_edges.add(key)
+        return core_edges
 
     def compute_weighted_adjacencies(self) -> Dict[Tuple[Any, Any], int]:
         """Calculates frequencies of all adjacencies.
@@ -270,3 +482,64 @@ class Pangenome:
             adjacency_counter.update(genome_edges)
 
         return dict(adjacency_counter)
+
+    def add_genome(self, genome: Genome) -> None:
+        """Adds a single genome to the pangenome collection."""
+        self._genomes.append(genome)
+        self.core = self.compute_core_genes()
+        self.core_edges = self.compute_core_edges()
+
+    def replace_genome(self,
+                       genome_id: Any,
+                       new_genome: Genome) -> None:
+        """Replaces an existing genome instance."""
+        for i, g in enumerate(self._genomes):
+            if g._genome_id == genome_id:
+                self._genomes[i] = new_genome
+                self.core = self.compute_core_genes()
+                self.core_edges = self.compute_core_edges()
+                return
+        raise KeyError(f"Genome with ID '{genome_id}' not found in pangenome.")
+
+
+    def check_integrity(self) -> bool:
+        """Validates that all underlying genomes match the global graph topology.
+
+        This method acts as a defensive pipeline gate, ensuring individual
+        genome paths do not contain orphaned nodes or disjoint edges.
+
+        Returns:
+            bool: True if all integrity checks pass cleanly.
+
+        Raises:
+            ValueError: If a genome path breaks topological constraints.
+        """
+        if not self._genomes:
+            raise ValueError("Integrity Failure: Pangenome contains no member genomes.")
+
+        for genome in self._genomes:
+            if hasattr(genome, "check_integrity") and not genome.check_integrity():
+                raise ValueError(f"Genome '{genome._genome_id}' failed internal validation.")
+
+        return True
+
+    def copy(self) -> "Pangenome":
+        """Returns a deep copy of the pangenome structure."""
+        new_pangenome = Pangenome(pangenome_id=self._pangenome_id)
+        for genome in self._genomes:
+            new_genome = genome.copy()
+            new_pangenome.add_genome(new_genome)
+
+        return new_pangenome
+
+    def summary(self) -> str:
+        """Overview of the pangenome object."""
+        core_genes = list(self.core)
+        summary_info = [
+            f"Pangenome {self._pangenome_id}:",
+            f"├── Constituent genomes: {len(self)}",
+            f"└── Core genes: {len(core_genes)}",
+        ]
+        if len(core_genes) > 0:
+            summary_info.append(f"> {core_genes[:5]}")
+        return "\n".join(summary_info)
