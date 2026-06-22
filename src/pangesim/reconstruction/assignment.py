@@ -1,4 +1,5 @@
 """Phase 2: Assignment of Paths to Genomes."""
+
 from itertools import pairwise
 from typing import Any
 from typing import List
@@ -279,15 +280,16 @@ class EulerianTrailAssignment(AssignmentStrategy):
         Returns:
             A list of k genomes.
         """
-        def add_list_as_path(genome:Genome,fragment:List[int]) -> None:
+
+        def add_list_as_path(genome: Genome, fragment: List[int]) -> None:
             """Adds list as path.
 
             Args:
             genome: Genome to be modified.
             fragment: Path to tbe added.
             """
-            for u,v in pairwise(fragment):
-                genome.add_edge((u,v))
+            for u, v in pairwise(fragment):
+                genome.add_edge((u, v))
 
         def build_fragment(fragment: List[int]) -> None:
             """Recursively build fragments.
@@ -308,8 +310,8 @@ class EulerianTrailAssignment(AssignmentStrategy):
                 for sub in sub_fragments:
                     build_fragment(sub)
             else:
-                #new_path = build_dll_from_list(fragment)
-                add_list_as_path(genomes[best_i],fragment)
+                # new_path = build_dll_from_list(fragment)
+                add_list_as_path(genomes[best_i], fragment)
 
         genomes: List[Genome] = [Genome(genome_id=i) for i in range(k)]
 
