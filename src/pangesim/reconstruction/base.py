@@ -120,3 +120,19 @@ class RefinementStrategy(ABC):
            A refined pangenome.
         """
         pass
+
+
+class RefinementOperator(ABC):
+    """Abstract base class for refinement operator."""
+
+    @abstractmethod
+    def improve(self, pangenome: Pangenome) -> bool:
+        """Look for local improvement.
+
+        Args:
+            pangenome: Input pangenome to improve.
+
+        Returns:
+            True if improvement is possible, False otherwise.
+        """
+        pass

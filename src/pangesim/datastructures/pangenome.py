@@ -161,8 +161,8 @@ class Genome:
         Args:
            edge: Edge to be removed
 
-        Raises:
-           ValueError if the operation would violate path forest conditions.
+        Returns:
+           True if it is possible to add edge, False otherwise.
         """
         u, v = edge[0], edge[1]
 
@@ -486,6 +486,34 @@ class Pangenome:
     def add_genome(self, genome: Genome) -> None:
         """Adds a single genome to the pangenome collection."""
         self._genomes.append(genome)
+        self.core = self.compute_core_genes()
+        self.core_edges = self.compute_core_edges()
+
+    def remove_genome(self, genome_id: Any) -> None:
+        """Removes a genome from the pangenome collection by its identifier.
+
+        After removal, the core gene and core edge states are completely
+        recomputed to maintain global sync.
+
+        Args:
+            genome_id: The unique identifier (_genome_id) of the genome to remove.
+
+        Raises:
+            KeyError: If a genome with the provided genome_id does not exist.
+        """
+        target_index = -1
+
+        for i, genome in enumerate(self._genomes):
+            if genome._genome_id == genome_id:
+                target_index = i
+                break
+
+        # Defensive failure:
+        if target_index == -1:
+            raise KeyError(f"Genome with ID '{genome_id}' not found in pangenome.")
+
+        self._genomes.pop(target_index)
+
         self.core = self.compute_core_genes()
         self.core_edges = self.compute_core_edges()
 
