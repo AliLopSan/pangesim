@@ -175,8 +175,7 @@ def build_dll_from_list(some_list: List[int]) -> List[DLList]:
     return new_path
 
 
-def build_residuals(target: Pangenome,
-                    source: AdjacencyMatrix) -> AdjacencyMatrix:
+def build_residuals(target: Pangenome, source: AdjacencyMatrix) -> AdjacencyMatrix:
     """Builds the residuals dictionary.
 
     A residual is the difference between the observed multiplicity in the
@@ -206,8 +205,7 @@ def build_residuals(target: Pangenome,
     return residuals
 
 
-def pan_score(target: Pangenome,
-              source: AdjacencyMatrix, alpha: float, gamma: float) -> float:
+def pan_score(target: Pangenome, source: AdjacencyMatrix, alpha: float, gamma: float) -> float:
     """Scoring function for the pangenome.
 
     Args:

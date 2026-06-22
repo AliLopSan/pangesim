@@ -27,7 +27,5 @@ def test_visualization(tmp_path: Path) -> None:
         o_file = tmp_path / f"p_{layout}_layout.pdf"
 
         # 3. Assertions: Assert that the engine actually created a non-empty file
-        assert o_file.exists(), (
-            f"Visualization artifact for {layout} layout was not generated."
-        )
+        assert o_file.exists(), f"Visualization artifact for {layout} layout was not generated."
         assert o_file.stat().st_size > 0, f"Generated PDF for {layout} layout is empty."
