@@ -1,10 +1,11 @@
 """Tests for reconstruction algorithms and utilities."""
-from pangesim.panevolve import PangenomeSimulator
+
 from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.utils import TopologicalExplorer
+
 
 def test_topological_explorer_undirected():
     """Validates component isolation and parity mapping on an undirected graph."""
@@ -75,7 +76,7 @@ def test_defaults():
     heuristic = EulerianPathHeuristic()
     pangenome = heuristic.reconstruct(sample_matrix)
     assert pangenome.check_integrity() is True
-    
+
 
 def test_full_heuristic():
     """Test of the full pipeline."""
