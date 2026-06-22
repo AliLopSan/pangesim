@@ -16,7 +16,7 @@ def unwrap_node_value(node: DLListNode) -> Any:
     """Safely extracts the raw primitive value from a tralda node structure."""
     if hasattr(node, "_value") and hasattr(node._value, "_value"):
         return node._value._value
-    if isinstance(node.get(),int):
+    if isinstance(node.get(), int):
         return node.get()
     if hasattr(node, "item"):
         return node.item
@@ -155,14 +155,14 @@ class Genome:
                 break
         return flag
 
-    def add_edge(self, edge:Tuple[int,int]) -> bool:
+    def add_edge(self, edge: Tuple[int, int]) -> bool:
         """Inserts a given edge to genome.
 
         Args:
            edge: Edge to be removed
 
-        Raises:
-           ValueError if the operation would violate path forest conditions.
+        Returns:
+           True if it is possible to add edge, False otherwise.
         """
         u, v = edge[0], edge[1]
 
@@ -194,7 +194,7 @@ class Genome:
 
         return False
 
-    def remove_edge(self, edge:Tuple[int,int]) -> bool:
+    def remove_edge(self, edge: Tuple[int, int]) -> bool:
         """Removes a given edge from the genome.
 
         Args:
@@ -204,7 +204,7 @@ class Genome:
            True if the edge existed.
         """
         if self.has_edge(edge):
-            u,v = edge[0], edge[1]
+            u, v = edge[0], edge[1]
             u_node = self._node_cache.get(u)
             v_node = self._node_cache.get(v)
 
@@ -393,7 +393,7 @@ class Genome:
 class Pangenome:
     """A set of genomes."""
 
-    __slots__ = ("_pangenome_id", "_genomes","core","core_edges")
+    __slots__ = ("_pangenome_id", "_genomes", "core", "core_edges")
 
     def __init__(self, pangenome_id: Any, genomes: List[Genome] | None = None) -> None:
         """Pangenome constructor.
@@ -460,7 +460,7 @@ class Pangenome:
 
         if len(self.core) > 1:
             for g in self.genomes:
-                for u,v in g.iter_edges():
+                for u, v in g.iter_edges():
                     u_val = unwrap_node_value(u)
                     v_val = unwrap_node_value(v)
                     if u_val in self.core and v_val in self.core:
@@ -489,9 +489,35 @@ class Pangenome:
         self.core = self.compute_core_genes()
         self.core_edges = self.compute_core_edges()
 
-    def replace_genome(self,
-                       genome_id: Any,
-                       new_genome: Genome) -> None:
+    def remove_genome(self, genome_id: Any) -> None:
+        """Removes a genome from the pangenome collection by its identifier.
+
+        After removal, the core gene and core edge states are completely
+        recomputed to maintain global sync.
+
+        Args:
+            genome_id: The unique identifier (_genome_id) of the genome to remove.
+
+        Raises:
+            KeyError: If a genome with the provided genome_id does not exist.
+        """
+        target_index = -1
+
+        for i, genome in enumerate(self._genomes):
+            if genome._genome_id == genome_id:
+                target_index = i
+                break
+
+        # Defensive failure:
+        if target_index == -1:
+            raise KeyError(f"Genome with ID '{genome_id}' not found in pangenome.")
+
+        self._genomes.pop(target_index)
+
+        self.core = self.compute_core_genes()
+        self.core_edges = self.compute_core_edges()
+
+    def replace_genome(self, genome_id: Any, new_genome: Genome) -> None:
         """Replaces an existing genome instance."""
         for i, g in enumerate(self._genomes):
             if g._genome_id == genome_id:
@@ -500,7 +526,6 @@ class Pangenome:
                 self.core_edges = self.compute_core_edges()
                 return
         raise KeyError(f"Genome with ID '{genome_id}' not found in pangenome.")
-
 
     def check_integrity(self) -> bool:
         """Validates that all underlying genomes match the global graph topology.
