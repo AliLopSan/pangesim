@@ -4,6 +4,7 @@ from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.sorting import WeightSorting
 from pangesim.visualization import PangenomeVisualizer
+from pangesim.reconstruction.operators import MergeOperator
 
 
 def run_evaluation():
@@ -32,16 +33,37 @@ def run_evaluation():
     pangenome = heuristic.reconstruct(sample_matrix)
     vis = PangenomeVisualizer(pangenome)
     vis.plot_pangenome_grid(output_path=out_path,
-                            filename="by_length.pdf")
+                            filename="by_length_before.pdf")
+    print("\t Using regular Eulerian Trail Assignment")
+    print(pangenome.summary())
+    success = True
+    while success == True:
+        m_1 = MergeOperator()
+        success = m_1.improve(pangenome)
+    print("\t Pangenome after merge operator: ")
+    print(pangenome.summary())
+    vis = PangenomeVisualizer(pangenome)
+    vis.plot_pangenome_grid(output_path=out_path,
+                            filename="by_length_after.pdf")
 
     #Eulerian paths by weight
     assign = EulerianTrailAssignment(trail_sorting=WeightSorting())
     heuristic = EulerianPathHeuristic(bounds_strategy=bounds,
                                       assignment_strategy=assign)
     pangenome = heuristic.reconstruct(sample_matrix)
+    print(pangenome.summary())
     vis = PangenomeVisualizer(pangenome)
     vis.plot_pangenome_grid(output_path=out_path,
-                            filename="by_weight.pdf")
+                            filename="by_weight_before.pdf")
+    success = True
+    while success == True:
+        m_1 = MergeOperator()
+        success = m_1.improve(pangenome)
+    print("\t Pangenome after merge operator: ")
+    print(pangenome.summary())
+    vis = PangenomeVisualizer(pangenome)
+    vis.plot_pangenome_grid(output_path=out_path,
+                            filename="by_weight_after.pdf")
 
 if __name__ == "__main__":
     run_evaluation()
