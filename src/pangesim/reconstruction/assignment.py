@@ -335,7 +335,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
         if isinstance(self.trail_sorting, LengthSorting):
             trails_sorted = self.trail_sorting.sort(trails)
         else:
-            trails_sorted = self.trail_sorting.sort(trails,adjacencies)
+            trails_sorted = self.trail_sorting.sort(trails, adjacencies)
         genomes = self.build_genomes(trails_sorted, k)
 
         return Pangenome(pangenome_id="Euler", genomes=genomes)
