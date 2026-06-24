@@ -46,7 +46,7 @@ def main():
     vis = PangenomeVisualizer(p1)
 
     # Save the plot instead of just showing it
-    vis.plot_pangenome_grid(output_path=output_path,filename="pangenome_example.png")
+    vis.plot_pangenome_grid(output_path=output_path, filename="pangenome_example.png")
 
     print("Done!")
 
