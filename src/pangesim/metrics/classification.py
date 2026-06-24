@@ -22,7 +22,7 @@ class CoreContingencyTable(PangenomeMetric):
             inferred: The pangenome whose properties are compared against the 'truth'.
 
         Returns:
-            A dictionary containing the true positives, false positives, etc.
+            A dictionary containing performance metrics.
         """
         true_core = ground_truth.compute_core_genes()
         inf_core = inferred.compute_core_genes()
@@ -46,7 +46,19 @@ class CoreContingencyTable(PangenomeMetric):
                 if g not in inf_core:
                     tn += 1
 
-        return {"tp": tp, "fp": fp, "fn": fn, "tn": tn}
+        accuracy = (tp + tn) / (tp + tn + fp + fn) if tp + tn + fp + fn > 0 else float("nan")
+        precision = tp / (tp + fp) if tp + fp > 0 else float("nan")
+        recall = tp / (tp + fn) if tp + fn > 0 else float("nan")
+
+        return {
+            "tp": tp,
+            "fp": fp,
+            "fn": fn,
+            "tn": tn,
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+        }
 
 
 class EdgeContingencyTable(PangenomeMetric):
@@ -92,4 +104,16 @@ class EdgeContingencyTable(PangenomeMetric):
         order = len(inferred.universal_gene_set)
         tn = (order - (order - 1) // 2) - (tp + fp + fn)
 
-        return {"tp": tp, "fp": fp, "fn": fn, "tn": tn}
+        accuracy = (tp + tn) / (tp + tn + fp + fn) if tp + tn + fp + fn > 0 else float("nan")
+        precision = tp / (tp + fp) if tp + fp > 0 else float("nan")
+        recall = tp / (tp + fn) if tp + fn > 0 else float("nan")
+
+        return {
+            "tp": tp,
+            "fp": fp,
+            "fn": fn,
+            "tn": tn,
+            "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+        }

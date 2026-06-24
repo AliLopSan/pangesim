@@ -24,7 +24,7 @@ class PangenomeSummaryMetrics(PangenomeMetric):
         Returns:
         A dictionary with the global metrics.
         """
-        k = abs(len(ground_truth) - len(inferred))
-        c = abs(len(ground_truth.core) - len(inferred.core))
+        k = len(ground_truth) - len(inferred)
+        c = len(ground_truth.core) - len(inferred.core)
 
-        return {"k_diff": k, "c_diff": c}
+        return {"k_diff": abs(k), "c_diff": abs(c)}
