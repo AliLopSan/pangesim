@@ -42,6 +42,10 @@ class EulerianPathHeuristic:
         self.refine_strategy = (
             refine_strategy if refine_strategy is not None else ResidualsRefinement()
         )
+        # State persistance via instance attributes
+        self.k_min: int | None = None
+        self.k_max: int | None = None
+        self.k_info: Dict[Any, Any] | None = None
 
     def reconstruct(
         self,
@@ -62,10 +66,12 @@ class EulerianPathHeuristic:
         callbacks = callbacks or []
 
         # Phase 1: Compute bounds
-        k_min, k_max, info = self.bounds_strategy.compute_bounds(matrix, self.params)
+        self.k_min, self.k_max, self.k_info = self.bounds_strategy.compute_bounds(
+            matrix, self.params
+        )
 
         # Phase 2: Paths assignment
-        base_pangenome = self.assignment_strategy.assign_genomes(adjacencies=matrix, k=k_min)
+        base_pangenome = self.assignment_strategy.assign_genomes(adjacencies=matrix, k=self.k_min)
         # Event listener for Base Pangenome State
         for callback in callbacks:
             callback(
