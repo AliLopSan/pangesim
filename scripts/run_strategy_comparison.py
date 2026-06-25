@@ -14,10 +14,13 @@ from pangesim.metrics.summary import PangenomeSummaryMetrics
 from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction.assignment import DummyAssignment
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
+from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.bounds import GreedyPairingISCB
+from pangesim.reconstruction.operators import MergeOperator
+from pangesim.reconstruction.operators import SplitOperator
 from pangesim.reconstruction.sorting import WeightSorting
 from pangesim.reconstruction.utils import pan_score
-from pangesim.visualization import HeuristicPerformanceVisualizer
+from pangesim.visualization import TrajectoryVisualizer
 
 
 class PipelineTracker:
@@ -115,6 +118,74 @@ def sample_pangenome():
     return ground_truth
 
 
+def optimize_with_operators(
+    pangenome: Pangenome,
+    matrix: AdjacencyMatrix,
+    ground_truth: Pangenome,
+    k_min: int,
+    k_max: int,
+    tracker: PipelineTracker,
+    alpha: float,
+    gamma: float,
+) -> Pangenome:
+    """Orchestrates Phase 4: Optimizes pangenome using split/merge operators within bounds."""
+    improved = True
+    pangenome = pangenome.copy()
+
+    current_score = pan_score(target=pangenome, source=matrix, alpha=alpha, gamma=gamma)
+    print(f"\nStarting Phase 4 Optimization. Initial Score: {current_score:.4f}")
+
+    while improved:
+        improved = False
+        current_k = len(pangenome.genomes)
+
+        # --- Operator 1: Merge Genomes ---
+        if current_k > k_min:
+            candidate_pan = pangenome.copy()
+            m_1 = MergeOperator()
+
+            while len(candidate_pan) > k_max:
+                m_1.improve(candidate_pan)
+
+            merge_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            if merge_score > current_score:
+                pangenome = candidate_pan
+                current_score = merge_score
+                improved = True
+                tracker(
+                    step_name="Phase 4: Successful Merge",
+                    pangenome=pangenome,
+                    iteration=len(tracker.history),
+                    ground_truth=ground_truth,
+                    alpha=alpha,
+                    gamma=gamma,
+                )
+
+        # --- Operator 2: Split Genomes ---
+        if current_k <= k_max:
+            candidate_pan = pangenome.copy()
+            # Execute your edge-splitting strategy wrapper
+            s_1 = SplitOperator()
+            s_1.improve(candidate_pan)
+
+            split_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            if split_score > current_score:
+                pangenome = candidate_pan
+                current_score = split_score
+                improved = True
+                tracker(
+                    step_name="Phase 4: Successful Split",
+                    pangenome=pangenome,
+                    iteration=len(tracker.history),
+                    ground_truth=ground_truth,
+                    alpha=alpha,
+                    gamma=gamma,
+                )
+
+    print(f"Phase 4 Complete. Final Optimized Score: {current_score:.4f}")
+    return pangenome
+
+
 def run_evaluation_trial() -> None:
     """Executes evaluation pipeline on mock data and displays comparative diagnostics."""
     true_pangenome = sample_pangenome()
@@ -127,15 +198,34 @@ def run_evaluation_trial() -> None:
     heuristic = EulerianPathHeuristic()
 
     print("Running heuristic pipeline reconstruction...")
-    # Execute with hooks activated
-    heuristic.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker])
+    inf_pangenome = heuristic.reconstruct(
+        matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker]
+    )
+    optimize_with_operators(
+        pangenome=inf_pangenome,
+        matrix=mock_matrix,
+        ground_truth=true_pangenome,
+        k_min=heuristic.k_min,
+        k_max=heuristic.k_max,
+        tracker=tracker,
+        alpha=heuristic.params["alpha"],
+        gamma=heuristic.params["gamma"],
+    )
 
     # Convert logged history into a scannable DataFrame for quick interpretation
     df_results = pd.DataFrame(tracker.history)
 
-    viz = HeuristicPerformanceVisualizer()
-    viz.plot_trajectory_dashboard(
-        tracker_history=tracker.history, save_path="../data/default_heuristic_k_genes.pdf"
+    viz = TrajectoryVisualizer()
+    viz.plot_score(
+        tracker_history=tracker.history, save_path="../data/score_full_pipeline.pdf"
+    )
+    viz.plot_k_bounds(
+        tracker_history=tracker.history,kmin=heuristic.k_min,
+        kmax=heuristic.k_max,
+        save_path="../data/k_bounds_full_pipeline.pdf"
+    )
+    viz.plot_core_diff(
+        tracker_history=tracker.history, save_path="../data/core_full_pipeline.pdf"
     )
 
     print(df_results.head())
@@ -149,11 +239,19 @@ def compare_strategies() -> None:
     # Edge Assignment
     print("\t Running Dummy Edge assignement ...")
     tracker_1 = PipelineTracker()
-    strategy1 = EulerianPathHeuristic(assignment_strategy=DummyAssignment())
-    strategy1.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker_1])
-    viz_1 = HeuristicPerformanceVisualizer()
-    viz_1.plot_trajectory_dashboard(
-        tracker_history=tracker_1.history, save_path="../data/strategy_1.pdf"
+    strategy_1 = EulerianPathHeuristic(assignment_strategy=DummyAssignment())
+    strategy_1.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker_1])
+    viz = TrajectoryVisualizer()
+    viz.plot_score(
+        tracker_history=tracker_1.history, save_path="../data/s1_score.pdf"
+    )
+    viz.plot_k_bounds(
+        tracker_history=tracker_1.history,kmin=strategy_1.k_min,
+        kmax=strategy_1.k_max,
+        save_path="../data/s1_k_bounds.pdf"
+    )
+    viz.plot_core_diff(
+        tracker_history=tracker_1.history, save_path="../data/s1_core.pdf"
     )
 
     # Eulerian by length Assignment
@@ -163,9 +261,17 @@ def compare_strategies() -> None:
         bounds_strategy=GreedyPairingISCB(), assignment_strategy=EulerianTrailAssignment()
     )
     strategy_2.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker_2])
-    viz_2 = HeuristicPerformanceVisualizer()
-    viz_2.plot_trajectory_dashboard(
-        tracker_history=tracker_2.history, save_path="../data/strategy_2.pdf"
+    viz = TrajectoryVisualizer()
+    viz.plot_score(
+        tracker_history=tracker_2.history, save_path="../data/s2_score.pdf"
+    )
+    viz.plot_k_bounds(
+        tracker_history=tracker_2.history,kmin=strategy_2.k_min,
+        kmax=strategy_2.k_max,
+        save_path="../data/s2_k_bounds.pdf"
+    )
+    viz.plot_core_diff(
+        tracker_history=tracker_2.history, save_path="../data/s2_core.pdf"
     )
 
     # Eulerian by weight Assignment
@@ -176,41 +282,18 @@ def compare_strategies() -> None:
         bounds_strategy=GreedyPairingISCB(), assignment_strategy=assign
     )
     strategy_3.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker_3])
-    viz_3 = HeuristicPerformanceVisualizer()
-    viz_3.plot_trajectory_dashboard(
-        tracker_history=tracker_3.history, save_path="../data/strategy_3.pdf"
+    viz = TrajectoryVisualizer()
+    viz.plot_score(
+        tracker_history=tracker_3.history, save_path="../data/s3_score.pdf"
     )
-
-
-def run_evaluation():
-    """Tests on different strategies over a simple ground-truth graph."""
-    ground_truth = sample_pangenome()
-    sample_matrix = ground_truth.compute_weighted_adjacencies()
-
-    # Eulerian paths by length
-    bounds = GreedyPairingISCB()
-    assign = EulerianTrailAssignment()
-    heuristic = EulerianPathHeuristic(bounds_strategy=bounds, assignment_strategy=assign)
-    pangenome = heuristic.reconstruct(sample_matrix)
-    summary = PangenomeSummaryMetrics()
-    results_1 = summary.evaluate(ground_truth, pangenome)
-    metric = CoreContingencyTable()
-    class_1 = metric.evaluate(ground_truth, pangenome)
-    print("Results of Eulerian paths by length.")
-    print(results_1)
-    print(class_1)
-
-    # Eulerian paths by weight
-    assign = EulerianTrailAssignment(trail_sorting=WeightSorting())
-    heuristic = EulerianPathHeuristic(bounds_strategy=bounds, assignment_strategy=assign)
-    pangenome = heuristic.reconstruct(sample_matrix)
-    summary = PangenomeSummaryMetrics()
-    results_2 = summary.evaluate(ground_truth, pangenome)
-    metric = CoreContingencyTable()
-    class_2 = metric.evaluate(ground_truth, pangenome)
-    print("Results of Eulerian paths by weight.")
-    print(results_2)
-    print(class_2)
+    viz.plot_k_bounds(
+        tracker_history=tracker_3.history,kmin=strategy_3.k_min,
+        kmax=strategy_3.k_max,
+        save_path="../data/s3_k_bounds.pdf"
+    )
+    viz.plot_core_diff(
+        tracker_history=tracker_3.history, save_path="../data/s3_core.pdf"
+    )
 
 
 if __name__ == "__main__":
