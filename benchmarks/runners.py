@@ -1,0 +1,58 @@
+"""Orchestrates pipeline execution profiles across different strategies."""
+
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
+
+from benchmarks import PipelineTracker
+from pangesim import Pangenome
+from pangesim.reconstruction import EulerianPathHeuristic
+from pangesim.reconstruction.assignment import DummyAssignment
+from pangesim.reconstruction.assignment import EulerianTrailAssignment
+from pangesim.reconstruction.base import AdjacencyMatrix
+from pangesim.reconstruction.sorting import WeightSorting
+
+
+def evaluate_strategy_run(
+    strategy_key: str,
+    matrix: AdjacencyMatrix,
+    ground_truth: Pangenome,
+    params: Dict[str, float],
+) -> Tuple[List[Dict[str, Any]], int, int]:
+    """Configures an orchestrator, runs the pipeline, and returns tracking outputs.
+
+    Args:
+        strategy_key: Unique identifier selecting the specific path-assignment strategy.
+        matrix: Input weighted adjacency matrix representing edge frequencies.
+        ground_truth: The benchmark pangenome used for comparative accuracy metrics.
+        params: Hyperparameters dict containing alpha and gamma.
+
+    Returns:
+        A tuple containing:
+            - history: List of optimization dictionaries recorded at every step.
+            - k_min: The calculated integer lower bound limit for number of genomes.
+            - k_max: The calculated integer upper bound limit for number of genomes.
+    """
+    if strategy_key == "edge_assignment":
+        assignment = DummyAssignment()
+    elif strategy_key == "eulerian_length":
+        assignment = EulerianTrailAssignment()
+    else:
+        assignment = EulerianTrailAssignment(trail_sorting=WeightSorting())
+
+    tracker = PipelineTracker()
+
+    heuristic = EulerianPathHeuristic(
+        params=params,
+        assignment_strategy=assignment,
+    )
+
+    # Execute core reconstruction pipeline
+    heuristic.reconstruct(matrix=matrix, ground_truth=ground_truth, callbacks=[tracker])
+
+    # Extract the runtime bounds metadata safely before the instance scope terminates
+    k_min = heuristic.k_min if heuristic.k_min is not None else 0
+    k_max = heuristic.k_max if heuristic.k_max is not None else 0
+
+    return tracker.history, k_min, k_max
