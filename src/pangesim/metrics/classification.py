@@ -1,9 +1,13 @@
 """Classification metrics."""
 
+import logging
 from typing import Dict
 
 from pangesim import Pangenome
 from pangesim.metrics.base import PangenomeMetric
+
+# Standard internal logger for pipeline monitoring
+logger = logging.getLogger(__name__)
 
 
 class CoreContingencyTable(PangenomeMetric):
@@ -72,18 +76,38 @@ class EdgeContingencyTable(PangenomeMetric):
     def evaluate(self, ground_truth: Pangenome, inferred: Pangenome) -> Dict[str, float]:
         """Computes contingency table for core genes.
 
+        If the universal gene sets fo not match, calculating edge classification
+        if mathematically undefined. In this case entries are logged and
+        float("nan") values are returned to preserve execution continuity.
+
         Args:
             ground_truth: The benchmark pangenome.
             inferred: The pangenome whose properties are compared against the 'truth'.
 
         Returns:
             A dictionary containing the true positives, false positives, etc.
-
-        Raises:
-            ValueError if pangenomes do not contain the same universal gene set.
         """
         if ground_truth.universal_gene_set != inferred.universal_gene_set:
-            raise ValueError("pangenomes must have the same universal gene set")
+            mismatched_genes = ground_truth.universal_gene_set ^ inferred.universal_gene_set
+            mismatch_size = len(mismatched_genes)
+            gt_size = len(ground_truth.universal_gene_set)
+            mismatch_pct = (mismatch_size / gt_size) * 100 if gt_size > 0 else 0.0
+            logger.warning(
+                "[Metrics] Universal gene set mismatch discovered. "
+                "Symmetric difference: %d genes (%.2f%% of ground truth's genes)"
+                "Skipping edge contingency table computation.",
+                mismatch_size,
+                mismatch_pct,
+            )
+            return {
+                "tp": float("nan"),
+                "fp": float("nan"),
+                "fn": float("nan"),
+                "tn": float("nan"),
+                "accuracy": float("nan"),
+                "precision": float("nan"),
+                "recall": float("nan"),
+            }
         true_adjacencies = ground_truth.compute_weighted_adjacencies()
         pred_adjacencies = inferred.compute_weighted_adjacencies()
 
