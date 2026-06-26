@@ -216,17 +216,14 @@ def run_evaluation_trial() -> None:
     df_results = pd.DataFrame(tracker.history)
 
     viz = TrajectoryVisualizer()
-    viz.plot_score(
-        tracker_history=tracker.history, save_path="../data/score_full_pipeline.pdf"
-    )
+    viz.plot_score(tracker_history=tracker.history, save_path="../data/score_full_pipeline.pdf")
     viz.plot_k_bounds(
-        tracker_history=tracker.history,kmin=heuristic.k_min,
+        tracker_history=tracker.history,
+        kmin=heuristic.k_min,
         kmax=heuristic.k_max,
-        save_path="../data/k_bounds_full_pipeline.pdf"
+        save_path="../data/k_bounds_full_pipeline.pdf",
     )
-    viz.plot_core_diff(
-        tracker_history=tracker.history, save_path="../data/core_full_pipeline.pdf"
-    )
+    viz.plot_core_diff(tracker_history=tracker.history, save_path="../data/core_full_pipeline.pdf")
 
     print(df_results.head())
 
@@ -242,17 +239,14 @@ def compare_strategies() -> None:
     strategy_1 = EulerianPathHeuristic(assignment_strategy=DummyAssignment())
     strategy_1.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker_1])
     viz = TrajectoryVisualizer()
-    viz.plot_score(
-        tracker_history=tracker_1.history, save_path="../data/s1_score.pdf"
-    )
+    viz.plot_score(tracker_history=tracker_1.history, save_path="../data/s1_score.pdf")
     viz.plot_k_bounds(
-        tracker_history=tracker_1.history,kmin=strategy_1.k_min,
+        tracker_history=tracker_1.history,
+        kmin=strategy_1.k_min,
         kmax=strategy_1.k_max,
-        save_path="../data/s1_k_bounds.pdf"
+        save_path="../data/s1_k_bounds.pdf",
     )
-    viz.plot_core_diff(
-        tracker_history=tracker_1.history, save_path="../data/s1_core.pdf"
-    )
+    viz.plot_core_diff(tracker_history=tracker_1.history, save_path="../data/s1_core.pdf")
 
     # Eulerian by length Assignment
     print("\t Running Eulerian by length Assignment ...")
@@ -262,17 +256,14 @@ def compare_strategies() -> None:
     )
     strategy_2.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker_2])
     viz = TrajectoryVisualizer()
-    viz.plot_score(
-        tracker_history=tracker_2.history, save_path="../data/s2_score.pdf"
-    )
+    viz.plot_score(tracker_history=tracker_2.history, save_path="../data/s2_score.pdf")
     viz.plot_k_bounds(
-        tracker_history=tracker_2.history,kmin=strategy_2.k_min,
+        tracker_history=tracker_2.history,
+        kmin=strategy_2.k_min,
         kmax=strategy_2.k_max,
-        save_path="../data/s2_k_bounds.pdf"
+        save_path="../data/s2_k_bounds.pdf",
     )
-    viz.plot_core_diff(
-        tracker_history=tracker_2.history, save_path="../data/s2_core.pdf"
-    )
+    viz.plot_core_diff(tracker_history=tracker_2.history, save_path="../data/s2_core.pdf")
 
     # Eulerian by weight Assignment
     print("\t Running Eulerian by weight Assignment ...")
@@ -283,17 +274,14 @@ def compare_strategies() -> None:
     )
     strategy_3.reconstruct(matrix=mock_matrix, ground_truth=true_pangenome, callbacks=[tracker_3])
     viz = TrajectoryVisualizer()
-    viz.plot_score(
-        tracker_history=tracker_3.history, save_path="../data/s3_score.pdf"
-    )
+    viz.plot_score(tracker_history=tracker_3.history, save_path="../data/s3_score.pdf")
     viz.plot_k_bounds(
-        tracker_history=tracker_3.history,kmin=strategy_3.k_min,
+        tracker_history=tracker_3.history,
+        kmin=strategy_3.k_min,
         kmax=strategy_3.k_max,
-        save_path="../data/s3_k_bounds.pdf"
+        save_path="../data/s3_k_bounds.pdf",
     )
-    viz.plot_core_diff(
-        tracker_history=tracker_3.history, save_path="../data/s3_core.pdf"
-    )
+    viz.plot_core_diff(tracker_history=tracker_3.history, save_path="../data/s3_core.pdf")
 
 
 if __name__ == "__main__":
