@@ -181,14 +181,14 @@ class ResidualsRefinement(RefinementStrategy):
         residuals: AdjacencyMatrix = build_residuals(target=target, source=source)
         current_score = pan_score(target, source, self.params["alpha"], self.params["gamma"])
         converged = False
-        iters = 0
+        iters = 1
         pangenome = target.copy()
 
         # Initital snapshot for callable
         for callback in callbacks:
             callback(
                 step_name="Phase 3: Refinement",
-                iteration=0,
+                iteration=iters,
                 pangenome=pangenome,
                 ground_truth=ground_truth,
                 alpha=self.params["alpha"],

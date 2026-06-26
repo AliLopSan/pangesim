@@ -75,7 +75,7 @@ class EulerianPathHeuristic:
         # Event listener for Base Pangenome State
         for callback in callbacks:
             callback(
-                step_name="Phase 2: Base Assignment",
+                step_name="Phase 2: Base Pangenome",
                 iteration=0,
                 pangenome=base_pangenome,
                 ground_truth=ground_truth,
