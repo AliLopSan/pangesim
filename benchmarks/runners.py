@@ -11,7 +11,78 @@ from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction.assignment import DummyAssignment
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import AdjacencyMatrix
+from pangesim.reconstruction.operators import MergeOperator
+from pangesim.reconstruction.operators import SplitOperator
 from pangesim.reconstruction.sorting import WeightSorting
+from pangesim.reconstruction.utils import pan_score
+
+
+def optimize_with_operators(
+    pangenome: Pangenome,
+    matrix: AdjacencyMatrix,
+    ground_truth: Pangenome,
+    k_min: int,
+    k_max: int,
+    tracker: PipelineTracker,
+    alpha: float,
+    gamma: float,
+) -> Pangenome:
+    """Phase 4: Optimize pangenome using split/merge operators within bounds."""
+    improved = True
+    pangenome = pangenome.copy()
+
+    current_score = pan_score(target=pangenome, source=matrix, alpha=alpha, gamma=gamma)
+    print(f"\nStarting Phase 4 Optimization. Initial Score: {current_score:.4f}")
+
+    while improved:
+        improved = False
+        current_k = len(pangenome.genomes)
+
+        # --- Operator 1: Merge Genomes ---
+        if current_k > k_min:
+            candidate_pan = pangenome.copy()
+            m_1 = MergeOperator()
+
+            while len(candidate_pan) > k_max:
+                m_1.improve(candidate_pan)
+
+            merge_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            if merge_score > current_score:
+                pangenome = candidate_pan
+                current_score = merge_score
+                improved = True
+                tracker(
+                    step_name="Phase 4: Successful Merge",
+                    pangenome=pangenome,
+                    iteration=len(tracker.history),
+                    ground_truth=ground_truth,
+                    alpha=alpha,
+                    gamma=gamma,
+                )
+
+        # --- Operator 2: Split Genomes ---
+        if current_k <= k_max:
+            candidate_pan = pangenome.copy()
+            # Execute your edge-splitting strategy wrapper
+            s_1 = SplitOperator()
+            s_1.improve(candidate_pan)
+
+            split_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            if split_score > current_score:
+                pangenome = candidate_pan
+                current_score = split_score
+                improved = True
+                tracker(
+                    step_name="Phase 4: Successful Split",
+                    pangenome=pangenome,
+                    iteration=len(tracker.history),
+                    ground_truth=ground_truth,
+                    alpha=alpha,
+                    gamma=gamma,
+                )
+
+    print(f"Phase 4 Complete. Final Optimized Score: {current_score:.4f}")
+    return pangenome
 
 
 def evaluate_strategy_run(
@@ -49,7 +120,19 @@ def evaluate_strategy_run(
     )
 
     # Execute core reconstruction pipeline
-    heuristic.reconstruct(matrix=matrix, ground_truth=ground_truth, callbacks=[tracker])
+    inf_pangenome = heuristic.reconstruct(
+        matrix=matrix, ground_truth=ground_truth, callbacks=[tracker]
+    )
+    optimize_with_operators(
+        pangenome=inf_pangenome,
+        matrix=matrix,
+        ground_truth=ground_truth,
+        k_min=heuristic.k_min,
+        k_max=heuristic.k_max,
+        tracker=tracker,
+        alpha=params["alpha"],
+        gamma=params["gamma"],
+    )
 
     # Extract the runtime bounds metadata safely before the instance scope terminates
     k_min = heuristic.k_min if heuristic.k_min is not None else 0
