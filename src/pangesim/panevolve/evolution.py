@@ -98,9 +98,32 @@ class SimpleModel(MutationModel):
             # The upstream node loses its forward link, terminating that fragment
             upstream_node._next = None
 
-    # Jiazhen's code: four mutation methods below
+    def _apply_rearrangements(self, genome: Genome, num_events: int) -> None:
+        """Rearranges paths by swapping the heads of two distinct path segments.
+
+        This changes the structural adjacencies without losing or isolating genes.
+        """
+        if len(genome.heads) < 2:
+            return
+
+        for _ in range(num_events):
+            # Choose two path entries at random
+            idx_a, idx_b = random.sample(range(len(genome.heads)), 2)
+            head_a = genome.heads[idx_a]
+            head_b = genome.heads[idx_b]
+
+            # Swap their trailing lineages
+            head_a._next, head_b._next = head_b._next, head_a._next
+
+            if head_a._next is not None:
+                head_a._next._prev = head_a
+            if head_b._next is not None:
+                head_b._next._prev = head_b
+
     def _apply_inversions(self, genome: Genome, num_events: int) -> None:
         """Invert the segment of the path from node i (not the first) to the last node.
+
+        The length of the path should >= 3.
 
         This changes the structural adjacencies without losing or isolating genes.
         """
@@ -122,7 +145,7 @@ class SimpleModel(MutationModel):
                 # Loop from the last node, change prev and next each time
                 start_node = path1._last
                 current_node = path1._last
-                
+
                 for _ in range(1,path1._count-1):
                     next_node = current_node._prev
                     current_node._next = next_node
@@ -136,6 +159,8 @@ class SimpleModel(MutationModel):
 
     def _apply_fissions(self, genome: Genome, num_events: int) -> None:
         """Break the path at a randomly selected node, add them to the genome.
+
+        The length of the path should >= 4, so the paths after fission both have >= 2 nodes.
 
         This changes the structural adjacencies without losing or isolating genes.
         """
@@ -185,7 +210,7 @@ class SimpleModel(MutationModel):
                     random_head2._prev = path1._last
 
                     # path2 is fused to path1, remove it from heads
-                    genome.heads.pop(ind2)
+                    genome.heads.pop(ind_h2)
 
 
     def _apply_translocations(self, genome: Genome, num_events: int) -> None:
@@ -207,7 +232,7 @@ class SimpleModel(MutationModel):
                     path1 = genome.get_a_path(random_head1)
                     path2 = genome.get_a_path(random_head2)
 
-                    # Get ind1 and ind2 (after head) for translocation 
+                    # Get ind1 and ind2 (after head) for translocation
                     ind1 = random.randint(1,path1._count - 1)
                     ind2 = random.randint(1,path2._count - 1)
 
@@ -220,7 +245,7 @@ class SimpleModel(MutationModel):
                     node_1_prev._next = node_2
                     node_2._prev = node_1_prev
                     node_2_prev._next = node_1
-                    node_1._prev = node_2_prev                   
+                    node_1._prev = node_2_prev
 
 class IDPool:
     """Manages unique identifiers across evolutionary lineages."""
@@ -254,6 +279,10 @@ class PangenomeSimulator:
         self.insertion_rate = insertion_rate
         self.deletion_rate = deletion_rate
         self.rearrangement_rate = rearrangement_rate
+        self.inversion_rate = inversion_rate
+        self.fission_rate = fission_rate
+        self.fusion_rate = fusion_rate
+        self.translocation_rate = translocation_rate
 
         self.model = mutation_model if mutation_model is not None else SimpleModel()
         self.gene_id_pool = IDPool()
@@ -331,7 +360,7 @@ class PangenomeSimulator:
             num_rea = self._draw_poisson_events(self.rearrangement_rate, branch_len)
             num_inv = self._draw_poisson_events(self.inversion_rate, branch_len)
             num_fis = self._draw_poisson_events(self.fission_rate, branch_len)
-            num_fus = self._draw_poisson_events(self.fussion_rate, branch_len)
+            num_fus = self._draw_poisson_events(self.fusion_rate, branch_len)
             num_trsl = self._draw_poisson_events(self.translocation_rate, branch_len)
 
             # Apply mutations
@@ -346,9 +375,9 @@ class PangenomeSimulator:
             if num_fis > 0:
                 self.model._apply_fissions(child_genome, num_fis)
             if num_fus > 0:
-                self.model._apply_fussions(child_genome, num_fus)  
+                self.model._apply_fussions(child_genome, num_fus)
             if num_trsl > 0:
-                self.model._apply_translocations(child_genome, num_trsl)                                        
+                self.model._apply_translocations(child_genome, num_trsl)
 
             # Cache the child state for downstream branches or final leaf processing
             node_genomes[v] = child_genome

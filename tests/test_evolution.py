@@ -85,6 +85,31 @@ def test_get_a_path():
 
 
 def test_mutations():
-    """Test the added mutation functions: inv, fiss, fuss, and trsl."""
-    pass
+    """Test the added mutation functions: inv, fiss, fuss, and trsl.
+    
+    The code is similar to test_combination_events
+    """
+    del_rate = 0
+    rea_rate = 0
 
+    inv_rates = [0, 1, 5, 100]
+    fis_rates = [0, 1, 5, 100]
+    fus_rates = [0, 1, 5, 100]
+    trsl_rates = [0, 1, 5, 100]
+
+    for d1 in inv_rates:
+        for d2 in fis_rates:
+            for d3 in fus_rates:
+                for d4 in trsl_rates:
+                    sim = PangenomeSimulator(deletion_rate=del_rate, rearrangement_rate=rea_rate,
+                        inversion_rate=d1, fission_rate=d2, fusion_rate=d3, translocation_rate=d4)
+
+                    genomes = rd.randint(2, 15)
+                    genes = rd.randint(2, 200)
+
+                    # Request a pangenome with k genome starting with l genes
+                    pangenome = sim.generate_pangenome(k=genomes, length=genes)
+
+                    # Check for non-trivial path forest condition
+                    for genome in pangenome.genomes:
+                        assert genome.check_integrity() is True                       
