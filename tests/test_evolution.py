@@ -87,7 +87,7 @@ def test_get_a_path():
 def test_mutations():
     """Test the added mutation functions: inv, fiss, fuss, and trsl.
     
-    The code is similar to test_combination_events
+    The code is similar to test_combination_events.
     """
     del_rate = 0
     rea_rate = 0
