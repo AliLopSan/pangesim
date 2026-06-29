@@ -1,0 +1,15 @@
+"""Central configuration for optimization hyperparameter spaces."""
+
+PARAM_GRID = [
+    {"alpha": 0.25, "gamma": 1.0},
+    {"alpha": 0.5, "gamma": 1.0},
+    {"alpha": 1.0, "gamma": 1.0},
+    {"alpha": 1.0, "gamma": 0.5},
+    {"alpha": 1.0, "gamma": 0.25},
+]
+
+STRATEGIES = {
+    "edge_assignment": "Edge Assignment",
+    "eulerian_length": "Eulerian by Length",
+    "eulerian_weight": "Eulerian by Weight",
+}

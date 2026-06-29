@@ -1,0 +1,40 @@
+import pandas as pd
+
+from benchmarks.config import PARAM_GRID
+from benchmarks.config import STRATEGIES
+from benchmarks.fixtures import get_mock_pangenome_scenario
+from benchmarks.runners import evaluate_strategy_run
+
+
+def main() -> None:
+    """Experiment run for a simple mock pangenome."""
+    print("Loading experimental scenario fixtures...")
+    true_pangenome = get_mock_pangenome_scenario()
+    mock_matrix = true_pangenome.compute_weighted_adjacencies()
+
+    all_results = []
+
+    # Run every strategy across every parameter set
+    for strat_key, strat_label in STRATEGIES.items():
+        for params in PARAM_GRID:
+            print(f"Evaluating {strat_label} (alpha={params['alpha']}, gamma={params['gamma']})...")
+
+            run_history, calculated_kmin, calculated_kmax = evaluate_strategy_run(
+                strategy_key=strat_key,
+                matrix=mock_matrix,
+                ground_truth=true_pangenome,
+                params=params,
+            )
+
+            # Convert to DataFrame and tag it with structural metadata
+            df_run = pd.DataFrame(run_history)
+            df_run["Strategy"] = strat_label
+            df_run["Config"] = f"$\\alpha$={params['alpha']}, $\\gamma$={params['gamma']}"
+
+            all_results.append(df_run)
+
+    # Combine everything into one master evaluation matrix
+    master_df = pd.concat(all_results, ignore_index=True)
+
+    print("\nMaster execution dataframe compiled successfully.")
+    print(master_df.head())

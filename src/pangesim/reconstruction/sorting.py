@@ -1,3 +1,8 @@
+"""Sorting strategies for Eulerian trails."""
+
+from itertools import pairwise
+from typing import List
+
 from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.base import TrailSortingStrategy
 
@@ -13,7 +18,7 @@ class LengthSorting(TrailSortingStrategy):
         """
         self.descending = descending
 
-    def sort(self, trails):
+    def sort(self, trails: List[List[int]]) -> List[List[int]]:
         """Main sorting function.
 
         Args:
@@ -36,8 +41,22 @@ class WeightSorting(TrailSortingStrategy):
         """
         self.descending = descending
 
-    # TODO:recheck this
-    def sort(self, trails, matrix: AdjacencyMatrix):
+    def get_trail_weight(self, trail: List[int], matrix: AdjacencyMatrix) -> int:
+        """Computes the weight of a trail.
+
+        Args:
+            trail: Trail to compute as list of ints.
+            matrix: Input weighted adjacencies.
+        """
+        weight = 0
+
+        if len(trail) > 1:
+            for u, v in pairwise(trail):
+                edge = (u, v) if u < v else (v, u)
+                weight += matrix.get(edge, 0)
+        return weight
+
+    def sort(self, trails: List[List[int]], matrix: AdjacencyMatrix) -> List[List[int]]:
         """Main sorting function.
 
         Args:
@@ -47,7 +66,8 @@ class WeightSorting(TrailSortingStrategy):
         Returns:
            A sorted list of trails.
         """
-        # We calculate the sum of weights for each trail
-        return sorted(
-            trails, key=lambda t: sum(matrix[u][v] for u, v in t), reverse=self.descending
+        sorted_trails = sorted(
+            trails, key=lambda t: self.get_trail_weight(t, matrix), reverse=self.descending
         )
+        # We calculate the sum of weights for each trail
+        return sorted_trails

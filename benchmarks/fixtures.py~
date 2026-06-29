@@ -1,0 +1,2 @@
+""" Pre-configured mock pangenome for benchmarking."""
+from pangesim import Genome

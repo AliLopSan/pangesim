@@ -1,5 +1,6 @@
 """Classes for Pangenome refinment."""
 
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -155,7 +156,13 @@ class ResidualsRefinement(RefinementStrategy):
 
         pan.replace_genome(genome_id=best_genome._genome_id, new_genome=best_genome)
 
-    def refine(self, source: AdjacencyMatrix, target: Pangenome) -> Pangenome:
+    def refine(
+        self,
+        source: AdjacencyMatrix,
+        target: Pangenome,
+        ground_truth: Pangenome | None = None,
+        callbacks: List[Callable] | None = None,
+    ) -> Pangenome:
         """Main refinement method.
 
         Refines a pangenome by iteratively minimizing edge residuals
@@ -164,14 +171,29 @@ class ResidualsRefinement(RefinementStrategy):
         Args:
            source: Input Adjacency Matrix.
            target: Initial pangenome to refine
+           ground_truth: Benchmark pangenome for strategy comparison.
+           callbacks: Event callback observer.
+
         Returns:
            A refined pangenome.
         """
+        callbacks = callbacks or []
         residuals: AdjacencyMatrix = build_residuals(target=target, source=source)
         current_score = pan_score(target, source, self.params["alpha"], self.params["gamma"])
         converged = False
-        iters = 0
+        iters = 1
         pangenome = target.copy()
+
+        # Initital snapshot for callable
+        for callback in callbacks:
+            callback(
+                step_name="Phase 3: Refinement",
+                iteration=iters,
+                pangenome=pangenome,
+                ground_truth=ground_truth,
+                alpha=self.params["alpha"],
+                gamma=self.params["gamma"],
+            )
 
         while not converged:
             prev_score = current_score
@@ -191,10 +213,22 @@ class ResidualsRefinement(RefinementStrategy):
             # recalculte residuals
             residuals = build_residuals(target=pangenome, source=source)
             current_score = pan_score(pangenome, source, self.params["alpha"], self.params["gamma"])
+
+            iters += 1
+
+            # Step tracking hook
+            for callback in callbacks:
+                callback(
+                    step_name=f"Iteration {iters}",
+                    iteration=iters,
+                    pangenome=pangenome,
+                    ground_truth=ground_truth,
+                    alpha=self.params["alpha"],
+                    gamma=self.params["gamma"],
+                )
+
             # If there was no score change, get out
             if prev_score == current_score:
                 converged = True
-
-            iters += 1
 
         return pangenome
