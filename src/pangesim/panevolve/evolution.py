@@ -120,6 +120,132 @@ class SimpleModel(MutationModel):
             if head_b._next is not None:
                 head_b._next._prev = head_b
 
+    def _apply_inversions(self, genome: Genome, num_events: int) -> None:
+        """Invert the segment of the path from node i (not the first) to the last node.
+
+        The length of the path should >= 3.
+
+        This changes the structural adjacencies without losing or isolating genes.
+        """
+        for _ in range(num_events):
+            # Randomly choose a path, an index and inversion thereafter
+            random_head1 = random.choice(genome.heads)
+
+            # Get the path (DLList)
+            path1 = genome.get_a_path(random_head1)
+
+            # Randomly choose an index (> 0 and < count) for inversion
+            if path1._count > 2:
+                random_i = random.randint(1,path1._count - 2)
+
+                # node i at random_i (strictly between first and last)
+                node_i = path1.node_at(random_i)
+                node_i_prev = node_i._prev
+
+                # Loop from the last node, change prev and next each time
+                start_node = path1._last
+                current_node = path1._last
+
+                for _ in range(1,path1._count-1):
+                    next_node = current_node._prev
+                    current_node._next = next_node
+                    next_node._prev = current_node
+                    current_node = next_node
+
+                # Make sure the both ends are properly linked
+                current_node._next = None
+                node_i_prev._next = start_node
+                start_node._prev = node_i_prev
+
+    def _apply_fissions(self, genome: Genome, num_events: int) -> None:
+        """Break the path at a randomly selected node, add them to the genome.
+
+        The length of the path should >= 4, so the paths after fission both have >= 2 nodes.
+
+        This changes the structural adjacencies without losing or isolating genes.
+        """
+        for _ in range(num_events):
+            # Randomly choose a path
+            random_head1 = random.choice(genome.heads)
+
+            # Get the path (DLList)
+            path1 = genome.get_a_path(random_head1)
+
+            # Randomly choose an index (> 1 and < count-1) for inversion
+            # The paths after fission must have at least 2 nodes each
+            if path1._count > 3:
+                random_i = random.randint(2,path1._count - 2)
+
+                # node i at random_i (strictly between first and last of path1)
+                # node i is the head of the new path made of the tail portion of path1
+                # path1 is trunctated the the node before node i
+                node_i = path1.node_at(random_i)
+                node_i_prev = node_i._prev
+                node_i_prev._next = None
+                node_i._prev = None
+
+                # Get the path of made of the tail portion
+                path2 = genome.get_a_path(node_i)
+
+                # Add path2 to the genome (including putting genes in the set)
+                genome.add_path(path2)
+
+    def _apply_fussions(self, genome: Genome, num_events: int) -> None:
+        """Fuse randomly selected path i and j, i as the head portion."""
+        if len(genome.heads) > 1:
+
+            for _ in range(num_events):
+                # Randomly choose two different paths
+                random_head1 = random.choice(genome.heads)
+                random_head2 = random.choice(genome.heads)
+                ind_h1 = genome.heads.index(random_head1)
+                ind_h2 = genome.heads.index(random_head2)
+
+                if ind_h1 != ind_h2:
+                    # Get path1: the head portion of the fused path
+                    path1 = genome.get_a_path(random_head1)
+
+                    # Fusion
+                    path1._last._next = random_head2
+                    random_head2._prev = path1._last
+
+                    # path2 is fused to path1, remove it from heads
+                    genome.heads.pop(ind_h2)
+
+
+    def _apply_translocations(self, genome: Genome, num_events: int) -> None:
+        """Randomly choose two paths and break points, then exchange their tail portions.
+
+        This changes the structural adjacencies without losing or isolating genes.
+        """
+        if len(genome.heads) > 1:
+
+            for _ in range(num_events):
+                # Randomly choose two different paths
+                random_head1 = random.choice(genome.heads)
+                random_head2 = random.choice(genome.heads)
+                ind_h1 = genome.heads.index(random_head1)
+                ind_h2 = genome.heads.index(random_head2)
+
+                if ind_h1 != ind_h2:
+                    # Get path1 and path2
+                    path1 = genome.get_a_path(random_head1)
+                    path2 = genome.get_a_path(random_head2)
+
+                    # Get ind1 and ind2 (after head) for translocation
+                    ind1 = random.randint(1,path1._count - 1)
+                    ind2 = random.randint(1,path2._count - 1)
+
+                    # Translocation
+                    node_1 = path1.node_at(ind1)
+                    node_2 = path2.node_at(ind2)
+                    node_1_prev = node_1._prev
+                    node_2_prev = node_2._prev
+
+                    node_1_prev._next = node_2
+                    node_2._prev = node_1_prev
+                    node_2_prev._next = node_1
+                    node_1._prev = node_2_prev
 
 class IDPool:
     """Manages unique identifiers across evolutionary lineages."""
@@ -143,12 +269,20 @@ class PangenomeSimulator:
         insertion_rate: float = 0.0,
         deletion_rate: float = 0.0,
         rearrangement_rate: float = 0.0,
+        inversion_rate: float = 0.0,
+        fission_rate: float = 0.0,
+        fusion_rate: float = 0.0,
+        translocation_rate: float = 0.0,
         mutation_model: MutationModel | None = None,
     ) -> None:
         """Initializes the pangenome simulator with the given rates and models."""
         self.insertion_rate = insertion_rate
         self.deletion_rate = deletion_rate
         self.rearrangement_rate = rearrangement_rate
+        self.inversion_rate = inversion_rate
+        self.fission_rate = fission_rate
+        self.fusion_rate = fusion_rate
+        self.translocation_rate = translocation_rate
 
         self.model = mutation_model if mutation_model is not None else SimpleModel()
         self.gene_id_pool = IDPool()
@@ -224,6 +358,10 @@ class PangenomeSimulator:
             num_ins = self._draw_poisson_events(self.insertion_rate, branch_len)
             num_del = self._draw_poisson_events(self.deletion_rate, branch_len)
             num_rea = self._draw_poisson_events(self.rearrangement_rate, branch_len)
+            num_inv = self._draw_poisson_events(self.inversion_rate, branch_len)
+            num_fis = self._draw_poisson_events(self.fission_rate, branch_len)
+            num_fus = self._draw_poisson_events(self.fusion_rate, branch_len)
+            num_trsl = self._draw_poisson_events(self.translocation_rate, branch_len)
 
             # Apply mutations
             if num_ins > 0:
@@ -232,6 +370,14 @@ class PangenomeSimulator:
                 self.model._apply_deletions(child_genome, num_del)
             if num_rea > 0:
                 self.model._apply_rearrangements(child_genome, num_rea)
+            if num_inv > 0:
+                self.model._apply_inversions(child_genome, num_inv)
+            if num_fis > 0:
+                self.model._apply_fissions(child_genome, num_fis)
+            if num_fus > 0:
+                self.model._apply_fussions(child_genome, num_fus)
+            if num_trsl > 0:
+                self.model._apply_translocations(child_genome, num_trsl)
 
             # Cache the child state for downstream branches or final leaf processing
             node_genomes[v] = child_genome
