@@ -54,7 +54,7 @@ class TrajectoryVisualizer(BaseVisualizer):
         """
         df = pd.DataFrame(tracker_history)
         plt.figure(figsize=(8, 4))
-        sns.lineplot(data=df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=2)
+        sns.lineplot(data=df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=1.5)
 
         # Identify where Phase 3 ends to locate the Phase 4 demarcation boundary
         p3_iters = [row["Iteration"] for row in tracker_history if "Phase 3" in row["Step"]]
@@ -68,7 +68,7 @@ class TrajectoryVisualizer(BaseVisualizer):
                     x=p4_start_idx,
                     color="#D35400",
                     linestyle=":",
-                    lw=2,
+                    lw=1.5,
                     label=r"\text{Phase 4 Activation}",
                 )
 
@@ -107,7 +107,7 @@ class TrajectoryVisualizer(BaseVisualizer):
         plt.figure(figsize=(8, 4))
 
         # Optimization trajectory curve
-        sns.lineplot(data=config_df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=2)
+        sns.lineplot(data=config_df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=1.5)
 
         y_min = config_df["Score"].min()
         y_max = config_df["Score"].max()
@@ -147,7 +147,7 @@ class TrajectoryVisualizer(BaseVisualizer):
                     x=p4_start_idx,
                     color="#D35400",
                     linestyle=":",
-                    lw=2,
+                    lw=1.5,
                     label=r"\text{Phase 4 Activation}",
                     alpha=0.6,
                 )
