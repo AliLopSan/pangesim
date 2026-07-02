@@ -89,24 +89,31 @@ Metrics include:
 ```text
 .
 ├── src/pangesim/
-│   ├── analysis/
-│   ├── io/
 │   ├── datastructures/
+│   ├── metrics/
 │   ├── panevolve/ #main simulator
 │   ├── reconstruction/ #algorithms and heuristics
-│   ├── tools/
 │   └── visualization/
 │
-├── script/
-│   ├── run_benchmark.py
-│   └── run_results.py
+|
+├── benchmarks/ # Pangenome Reconstruction Experiments
+│   ├── config.py # Heuristic and simulation parameters
+│   ├── fixtures.py # Mock pangenome generator
+│   ├── run_single_scenario.py
+│   ├── runners.py
+│   └── tracking.py
+|
+├── scripts/ # Pangenome generation Experiments
+│   ├── run_example.py
+│   ├── run_peeling.py
+│   └── run_strategy_comparison.py
 │
 ├── docs/
 │   ├── images/
-│   ├── gifs/
-│   └── figures/
+│   ├── CHANGELOG.md
+│   └── contributing.md
 │
-├── data/
+├── tests/ # Unit tests
 │
 └── README.md
 ```
