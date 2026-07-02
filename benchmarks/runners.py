@@ -1,11 +1,13 @@
 """Orchestrates pipeline execution profiles across different strategies."""
 
+import time
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
 
 from benchmarks import PipelineTracker
+from benchmarks.fixtures import random_simulated_pangenome
 from pangesim import Pangenome
 from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction.assignment import DummyAssignment
@@ -29,10 +31,12 @@ def optimize_with_operators(
 ) -> Pangenome:
     """Phase 4: Optimize pangenome using split/merge operators within bounds."""
     improved = True
+    max_iters = 100
     pangenome = pangenome.copy()
 
     current_score = pan_score(target=pangenome, source=matrix, alpha=alpha, gamma=gamma)
-    print(f"\nStarting Phase 4 Optimization. Initial Score: {current_score:.4f}")
+    #print(f"\nStarting Phase 4 Optimization. Initial Score: {current_score:.4f}")
+    i = 0
 
     while improved:
         improved = False
@@ -80,8 +84,11 @@ def optimize_with_operators(
                     alpha=alpha,
                     gamma=gamma,
                 )
+        i += 1
+        if i == max_iters:
+            improved = False
 
-    print(f"Phase 4 Complete. Final Optimized Score: {current_score:.4f}")
+    #print(f"Phase 4 Complete. Final Optimized Score: {current_score:.4f}")
     return pangenome
 
 
@@ -139,3 +146,60 @@ def evaluate_strategy_run(
     k_max = heuristic.k_max if heuristic.k_max is not None else 0
 
     return tracker.history, k_min, k_max
+
+
+def evaluate_scalability_run(num_genes: int, replicate: int) -> Dict[str, Any]:
+    """Main runner to test scalability.
+
+    Args:
+        num_genes: Number of genes per genome.
+        replicate: Current replicate number.
+
+    Returns:
+        A dict with the total runtime, as well as phases 1-3 and phase 4.
+    """
+    # Simulate random scenario
+    tracker = PipelineTracker()
+    ground_truth = random_simulated_pangenome(num_genes)
+    matrix = ground_truth.compute_weighted_adjacencies()
+    params = {"alpha": 1.0, "gamma": 1.0}
+    assignment = EulerianTrailAssignment()
+    heuristic = EulerianPathHeuristic(
+        params=params, assignment_strategy=assignment)
+
+    # start clock
+    t0 = time.perf_counter()
+    inf_pangenome = heuristic.reconstruct(matrix=matrix,
+                                          ground_truth=ground_truth,
+                                          callbacks=[tracker])
+
+    # End of phases 1-3
+    t1 = time.perf_counter()
+    """
+    optimize_with_operators(
+        pangenome=inf_pangenome,
+        matrix=matrix,
+        ground_truth=ground_truth,
+        k_min=heuristic.k_min,
+        k_max=heuristic.k_max,
+        tracker=tracker,
+        alpha=params["alpha"],
+        gamma=params["gamma"],
+    )
+    """
+    # End of phase 4
+    t2 = time.perf_counter()
+
+    duration_phases_1_3 = t1 - t0
+    duration_phase_4 = t2 - t1
+    total_duration = t2 - t0
+
+    return {
+        "gene size": num_genes,
+        "replicate": replicate,
+        "genomes gt":len(ground_truth),
+        "genomes inf":len(inf_pangenome),
+        "runtime_phases_1-3": duration_phases_1_3,
+        "runtime_phase_4": duration_phase_4,
+        "total_runtime": total_duration,
+    }

@@ -1,7 +1,36 @@
 """Pre-configured mock pangenome for benchmarking."""
 
+import random as rd
+
 from pangesim import Genome
 from pangesim import Pangenome
+from pangesim.panevolve import PangenomeSimulator
+
+
+def random_simulated_pangenome(num_genes: int) -> Pangenome:
+    """Returns a random simulated pangenome with n genes.
+
+    Args:
+       num_genes: number of genes.
+
+    Raises:
+       TypeError: If num_genes is not an integer.
+       ValueError: If num_genes is less than 2.
+    """
+    if not isinstance(num_genes, int):
+        raise TypeError(f"num_genes must be an integer, got {type(num_genes).__name__}")
+    if num_genes < 2:
+        raise ValueError(f"num_genes must be at least 2, got {num_genes}")
+
+    num_genomes = rd.randint(2, 60)
+    d = rd.randint(1, 10)
+    r = rd.randint(1, 10)
+
+    sim = PangenomeSimulator(deletion_rate=d, rearrangement_rate=r)
+
+    pangenome = sim.generate_pangenome(k=num_genomes, length=num_genes)
+
+    return pangenome
 
 
 def get_mock_pangenome_scenario() -> Pangenome:
