@@ -2,8 +2,10 @@
 
 from pangesim.visualization.graph import PangenomeVisualizer
 from pangesim.visualization.performance import TrajectoryVisualizer
+from pangesim.visualization.performance import RuntimeVisualizer
 
 __all__ = [
     "PangenomeVisualizer",
     "TrajectoryVisualizer",
+    "RuntimeVisualizer",
 ]
