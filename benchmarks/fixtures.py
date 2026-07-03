@@ -22,9 +22,9 @@ def random_simulated_pangenome(num_genes: int) -> Pangenome:
     if num_genes < 2:
         raise ValueError(f"num_genes must be at least 2, got {num_genes}")
 
-    num_genomes = rd.randint(2, 60)
-    d = rd.randint(1, 10)
-    r = rd.randint(1, 10)
+    num_genomes = rd.randint(2, 70)
+    d = rd.randint(2, 20)
+    r = rd.randint(2, 20)
 
     sim = PangenomeSimulator(deletion_rate=d, rearrangement_rate=r)
 
