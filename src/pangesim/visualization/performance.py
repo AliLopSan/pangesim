@@ -332,3 +332,37 @@ class TrajectoryVisualizer(BaseVisualizer):
         plt.tight_layout()
 
         self._finalize_plot(save_path)
+
+
+class RuntimeVisualizer(BaseVisualizer):
+    """Generates production-ready scaling plots."""
+
+    def plot_phase_runtime(self, df: pd.DataFrame, output_path: str) -> None:
+        """Plots the execution runtime across increasing gene sizes with error bands.
+
+        Args:
+            df: DataFrame containing columns ["gene size", "runtime_phases_1-3"].
+            output_path: System path where the resulting PDF file will be saved.
+        """
+        fig, ax = plt.subplots(figsize=(7, 4.5))
+
+        # sns.lineplot automatically groups replicates to calculate mean and variance
+        sns.lineplot(
+            data=df,
+            x="gene size",
+            y="runtime_phases_1-3",
+            ax=ax,
+            marker="o",
+            linewidth=2,
+            errorbar="sd",  # Standard deviation band across the 5 replicates
+            color="#1f77b4"
+        )
+
+        ax.set_title(r"\textbf{Scalability Profile: Phases 1--3}")
+        ax.set_xlabel(r"Pangenome Scale (\textit{Number of Genes})")
+        ax.set_ylabel(r"Execution Runtime (\textit{Seconds})")
+
+        # Clean layout boundaries and saving as PDF for vector scaling in LaTeX
+        plt.tight_layout()
+        plt.savefig(output_path, format="pdf", dpi=300)
+        plt.close()
