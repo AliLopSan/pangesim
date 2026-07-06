@@ -13,7 +13,10 @@ import seaborn as sns
 class BaseVisualizer:
     """Configures global LaTeX rendering and typography size preferences for plots."""
 
-    def __init__(self, title_size: int = 16, label_size: int = 14, tick_size: int = 12) -> None:
+    def __init__(self,
+                 title_size: int = 50,
+                 label_size: int = 25,
+                 tick_size: int = 30) -> None:
         """Initializes global matplotlib runtime configuration (rc) parameters.
 
         Args:
@@ -21,19 +24,18 @@ class BaseVisualizer:
             label_size: Font size for x and y axis titles.
             tick_size: Font size for numerical/categorical axis markers.
         """
-        plt.rcParams.update(
-            {
-                "text.usetex": True,
-                "font.family": "serif",
-                "text.latex.preamble": r"\usepackage{amsmath}",
-                "axes.titlesize": title_size,  # Controls ax.set_title size
-                "axes.labelsize": label_size,  # Controls x/ylabel size
-                "xtick.labelsize": tick_size,  # Controls x-axis tick scale
-                "ytick.labelsize": tick_size,  # Controls y-axis tick scale
-                "legend.fontsize": tick_size,  # Controls internal legend text
-            }
-        )
-        sns.set_theme(style="whitegrid")
+        # Latex-compatible configuration for papers
+        custom_rc = {
+            "text.usetex": True,
+            "font.family": "serif",
+            "text.latex.preamble": r"\usepackage{amsmath}",
+            "axes.titlesize": title_size,  # Controls ax.set_title size
+            "axes.labelsize": label_size,  # Controls x/ylabel size
+            "xtick.labelsize": tick_size,  # Controls x-axis tick scale
+            "ytick.labelsize": tick_size,  # Controls y-axis tick scale
+            "legend.fontsize": tick_size,  # Controls internal legend text
+        }
+        sns.set_theme(style="whitegrid", rc=custom_rc)
 
 
 class TrajectoryVisualizer(BaseVisualizer):
@@ -336,6 +338,65 @@ class TrajectoryVisualizer(BaseVisualizer):
 
 class RuntimeVisualizer(BaseVisualizer):
     """Generates production-ready scaling plots."""
+    def plot_total_runtime(self, df: pd.DataFrame, output_path: str) -> None:
+        """Plots the execution runtime across increasing gene sizes with error bands.
+
+        Args:
+            df: DataFrame containing columns ["gene size", "runtime_phases_1-3"].
+            output_path: System path where the resulting PDF file will be saved.
+        """
+        fig, ax = plt.subplots(figsize=(8, 7))
+
+        # sns.lineplot automatically groups replicates to calculate mean and variance
+        sns.lineplot(
+            data=df,
+            x="gene size",
+            y="total_runtime",
+            ax=ax,
+            marker="o",
+            linewidth=2,
+            errorbar="sd",  # Standard deviation band across the 5 replicates
+            color="#1f77b4"
+        )
+
+        #ax.set_title(r"\textbf{Scalability Profile: Full Pipeline}")
+        ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
+        ax.set_ylabel(r"Execution Runtime (\textit{Seconds})")
+
+        # Clean layout boundaries and saving as PDF for vector scaling in LaTeX
+        plt.tight_layout()
+        plt.savefig(output_path, format="pdf", dpi=300)
+        plt.close()
+
+    def plot_phase4_runtime(self, df: pd.DataFrame, output_path: str) -> None:
+        """Plots the execution runtime across increasing gene sizes with error bands.
+
+        Args:
+            df: DataFrame containing columns ["gene size", "runtime_phases_1-3"].
+            output_path: System path where the resulting PDF file will be saved.
+        """
+        fig, ax = plt.subplots(figsize=(8, 7))
+
+        # sns.lineplot automatically groups replicates to calculate mean and variance
+        sns.lineplot(
+            data=df,
+            x="gene size",
+            y="runtime_phase_4",
+            ax=ax,
+            marker="o",
+            linewidth=2,
+            errorbar="sd",  # Standard deviation band across the 5 replicates
+            color="#1f77b4"
+        )
+
+        #ax.set_title(r"\textbf{Scalability Profile: Phase 4}")
+        ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
+        ax.set_ylabel(r"Execution Runtime (\textit{Seconds})")
+
+        # Clean layout boundaries and saving as PDF for vector scaling in LaTeX
+        plt.tight_layout()
+        plt.savefig(output_path, format="pdf", dpi=300)
+        plt.close()
 
     def plot_phase_runtime(self, df: pd.DataFrame, output_path: str) -> None:
         """Plots the execution runtime across increasing gene sizes with error bands.
@@ -344,7 +405,7 @@ class RuntimeVisualizer(BaseVisualizer):
             df: DataFrame containing columns ["gene size", "runtime_phases_1-3"].
             output_path: System path where the resulting PDF file will be saved.
         """
-        fig, ax = plt.subplots(figsize=(7, 4.5))
+        fig, ax = plt.subplots(figsize=(8, 7))
 
         # sns.lineplot automatically groups replicates to calculate mean and variance
         sns.lineplot(
@@ -358,8 +419,8 @@ class RuntimeVisualizer(BaseVisualizer):
             color="#1f77b4"
         )
 
-        ax.set_title(r"\textbf{Scalability Profile: Phases 1--3}")
-        ax.set_xlabel(r"Pangenome Scale (\textit{Number of Genes})")
+        #ax.set_title(r"\textbf{Scalability Profile: Phases 1--3}")
+        ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"Execution Runtime (\textit{Seconds})")
 
         # Clean layout boundaries and saving as PDF for vector scaling in LaTeX
