@@ -46,11 +46,8 @@ def optimize_with_operators(
         if current_k > k_min:
             candidate_pan = pangenome.copy()
             m_1 = MergeOperator()
-
-            while len(candidate_pan) > k_max:
-                m_1.improve(candidate_pan)
-
-            merge_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            merge_score = pan_score(target=candidate_pan,
+                                    source=matrix, alpha=alpha, gamma=gamma)
             if merge_score > current_score:
                 pangenome = candidate_pan
                 current_score = merge_score
@@ -71,7 +68,8 @@ def optimize_with_operators(
             s_1 = SplitOperator()
             s_1.improve(candidate_pan)
 
-            split_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            split_score = pan_score(target=candidate_pan,
+                                    source=matrix, alpha=alpha, gamma=gamma)
             if split_score > current_score:
                 pangenome = candidate_pan
                 current_score = split_score
@@ -175,7 +173,7 @@ def evaluate_scalability_run(num_genes: int, replicate: int) -> Dict[str, Any]:
 
     # End of phases 1-3
     t1 = time.perf_counter()
-    """
+
     optimize_with_operators(
         pangenome=inf_pangenome,
         matrix=matrix,
@@ -186,7 +184,7 @@ def evaluate_scalability_run(num_genes: int, replicate: int) -> Dict[str, Any]:
         alpha=params["alpha"],
         gamma=params["gamma"],
     )
-    """
+
     # End of phase 4
     t2 = time.perf_counter()
 
