@@ -46,6 +46,7 @@ def optimize_with_operators(
         if current_k > k_min:
             candidate_pan = pangenome.copy()
             m_1 = MergeOperator()
+            m_1.improve(candidate_pan)
             merge_score = pan_score(target=candidate_pan,
                                     source=matrix, alpha=alpha, gamma=gamma)
             if merge_score > current_score:
@@ -200,4 +201,60 @@ def evaluate_scalability_run(num_genes: int, replicate: int) -> Dict[str, Any]:
         "runtime_phases_1-3": duration_phases_1_3,
         "runtime_phase_4": duration_phase_4,
         "total_runtime": total_duration,
+    }
+
+def evaluate_error_run(num_genes: int, replicate: int,
+                             params:Dict[str, float]) -> Dict[str, Any]:
+    """Main runner to test rsme.
+
+    Args:
+        num_genes: Number of genes per genome.
+        replicate: Current replicate number.
+        params: Hyperparameters dict containing alpha and gamma.
+
+    Returns:
+        A dict with the total runtime, as well as phases 1-3 and phase 4.
+    """
+    # Simulate random scenario
+    tracker = PipelineTracker()
+    ground_truth = random_simulated_pangenome(num_genes)
+    matrix = ground_truth.compute_weighted_adjacencies()
+    assignment = EulerianTrailAssignment()
+    heuristic = EulerianPathHeuristic(
+        params=params, assignment_strategy=assignment)
+
+    t0 = time.perf_counter()
+    inf_pangenome = heuristic.reconstruct(matrix=matrix,
+                                          ground_truth=ground_truth,
+                                          callbacks=[tracker])
+
+    t1 = time.perf_counter()
+
+    optimize_with_operators(
+        pangenome=inf_pangenome,
+        matrix=matrix,
+        ground_truth=ground_truth,
+        k_min=heuristic.k_min,
+        k_max=heuristic.k_max,
+        tracker=tracker,
+        alpha=params["alpha"],
+        gamma=params["gamma"],
+    )
+
+    t2 = time.perf_counter()
+
+    duration_phases_1_3 = t1 - t0
+    duration_phase_4 = t2 - t1
+    total_duration = t2 - t0
+
+    return {
+        "gene size": num_genes,
+        "replicate": replicate,
+        "genomes gt":len(ground_truth),
+        "genomes inf":len(inf_pangenome),
+        "runtime_phases_1-3": duration_phases_1_3,
+        "runtime_phase_4": duration_phase_4,
+        "total_runtime": total_duration,
+        "alpha": params["alpha"],
+        "gamma": params["gamma"]
     }
