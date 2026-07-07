@@ -1,5 +1,5 @@
 """Module for assessing optimization performance of pangenome reconstruction."""
-
+from pathlib import Path
 from typing import Any
 from typing import Dict
 from typing import List
@@ -427,3 +427,68 @@ class RuntimeVisualizer(BaseVisualizer):
         plt.tight_layout()
         plt.savefig(output_path, format="pdf", dpi=300)
         plt.close()
+
+
+
+class ErrorVisualizer(BaseVisualizer):
+    """Visualizer class for error metrics."""
+    def plot_genomes_mape(self, df: pd.DataFrame,
+                          params: Dict[str, float], output_path: Path)->None:
+        """Plots the mean absolute percentage error.
+
+        Args:
+            df: DataFrame containing columns ["genomes gt", "genomes inf"].
+            params: Dictionary that specifies the alpha and gamma parameters
+            output_path: System path where the resulting PDF file will be saved.
+        """
+        df = df.copy()
+
+        # Boolean mask for params dict
+        mask = True
+        for key, value in params.items():
+            if key in df.columns:
+                mask &= (df[key] == value)
+            else:
+                raise KeyError(f"Hyperparameter '{key}' not found in DataFrame columns.")
+
+        # Slice the dataframe down to just the target configuration
+        filtered_df = df[mask]
+
+        # Guard against empty data slices
+        if filtered_df.empty:
+            print(f"[Warning] No rows match the parameters: {params}. Skipping plot.")
+            return
+
+        # Row-level MAPE on the filtered subset
+        filtered_df["MAPE"] = (
+            (filtered_df["genomes gt"] - filtered_df["genomes inf"]).abs()
+            / filtered_df["genomes gt"]
+            * 100
+        )
+        #Main plotter
+        fig, ax = plt.subplots(figsize=(8, 7))
+        sns.lineplot(
+            data=filtered_df,
+            x="gene size",
+            y="MAPE",
+            ax=ax,
+            marker="o",
+            linewidth=2.5,
+            errorbar="sd",  # Calculates variance across the 5 replicates for THIS config
+            color="#C0392B"
+        )
+
+        # 5. Clean LaTeX Typography & Title Context
+        title_str = rf" $\alpha = {params.get('alpha')}$, $\gamma = {params.get('gamma')}$"
+        ax.set_title(title_str, pad=15)
+
+        ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
+        ax.set_ylabel(r"Mean Absolute Percentage Error (\textit{MAPE \%})")
+        ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
+        ax.set_ylim(bottom=0)
+
+        plt.tight_layout()
+        plt.savefig(output_path, format="pdf", dpi=300)
+        plt.close()
+
+
