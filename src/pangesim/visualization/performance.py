@@ -37,8 +37,37 @@ class BaseVisualizer:
         }
         sns.set_theme(style="whitegrid", rc=custom_rc)
 
+class IndVisualizer:
+    """Configures global LaTeX rendering and typography size preferences for plots."""
 
-class TrajectoryVisualizer(BaseVisualizer):
+    def __init__(self,
+                 title_size: int = 40,
+                 label_size: int = 25,
+                 tick_size: int = 30,
+                 legend_size:int = 20) -> None:
+        """Initializes global matplotlib runtime configuration (rc) parameters.
+
+        Args:
+            title_size: Font size for all plot headers.
+            label_size: Font size for x and y axis titles.
+            legend_size: Font size for legends.
+            tick_size: Font size for numerical/categorical axis markers.
+        """
+        # Latex-compatible configuration for papers
+        custom_rc = {
+            "text.usetex": True,
+            "font.family": "serif",
+            "text.latex.preamble": r"\usepackage{amsmath}",
+            "axes.titlesize": title_size,  # Controls ax.set_title size
+            "axes.labelsize": label_size,  # Controls x/ylabel size
+            "xtick.labelsize": tick_size,  # Controls x-axis tick scale
+            "ytick.labelsize": tick_size,  # Controls y-axis tick scale
+            "legend.fontsize": legend_size,  # Controls internal legend text
+        }
+        sns.set_theme(style="whitegrid", rc=custom_rc)
+
+
+class TrajectoryVisualizer(IndVisualizer):
     """Handles single-scenario evaluation plots tracking optimization over iterations."""
 
     def __init__(self, **kwargs) -> None:
@@ -55,8 +84,9 @@ class TrajectoryVisualizer(BaseVisualizer):
             save_path: Optional file path to export the resulting figure.
         """
         df = pd.DataFrame(tracker_history)
-        plt.figure(figsize=(8, 4))
-        sns.lineplot(data=df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=1.5)
+        plt.figure(figsize=(12, 8))
+        sns.lineplot(data=df, x="Iteration",
+                     y="Score", color="#5B2C6F", marker="o", lw=1.5)
 
         # Identify where Phase 3 ends to locate the Phase 4 demarcation boundary
         p3_iters = [row["Iteration"] for row in tracker_history if "Phase 3" in row["Step"]]
@@ -81,7 +111,7 @@ class TrajectoryVisualizer(BaseVisualizer):
                     y_max,
                     r"\textbf{Phase 4 start}",
                     color="#D35400",
-                    fontsize=10,
+                    fontsize=20,
                     rotation=90,
                     va="top",
                     ha="left",
@@ -106,10 +136,11 @@ class TrajectoryVisualizer(BaseVisualizer):
             config_label: The LaTeX formatted string describing the current hyperparameters.
             save_path: Optional file path to export the resulting figure.
         """
-        plt.figure(figsize=(8, 4))
+        plt.figure(figsize=(14, 9))
 
         # Optimization trajectory curve
-        sns.lineplot(data=config_df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=1.5)
+        sns.lineplot(data=config_df, x="Iteration",
+                     y="Score", color="#5B2C6F", marker="o", lw=1.5)
 
         y_min = config_df["Score"].min()
         y_max = config_df["Score"].max()
@@ -134,10 +165,10 @@ class TrajectoryVisualizer(BaseVisualizer):
                     text_baseline,
                     r"\textbf{Phase 3 start}",
                     color="#D35400",
-                    fontsize=5,
+                    fontsize=15,
                     rotation=90,
-                    va="bottom",
-                    ha="left",
+                    va="top",
+                    ha="right",
                 )
 
         # Identify where Phase 3 ends to mark Phase 4 Start
@@ -158,16 +189,16 @@ class TrajectoryVisualizer(BaseVisualizer):
                     text_baseline,
                     r"\textbf{Phase 4 start}",
                     color="#D35400",
-                    fontsize=5,
+                    fontsize=15,
                     rotation=90,
-                    va="bottom",
+                    va="top",
                     ha="left",
                 )
 
         # 3. Clean styling configurations
         # clean_config = config_label.replace("$", "")
-        title_text = rf"\textbf{{Score Tracking: {strategy_label}}} ({config_label})"
-        plt.title(title_text, fontsize=11)
+        title_text = rf"{config_label}"
+        plt.title(title_text)
         plt.xlabel(r"Iterations ($t$)")
         plt.ylabel(r"Score($P$) $= \alpha k - \gamma \sum(m_{uv} - w_{uv})^2$")
         plt.tight_layout()
@@ -190,20 +221,38 @@ class TrajectoryVisualizer(BaseVisualizer):
             save_path: Optional file path to export the resulting figure.
         """
         df = pd.DataFrame(tracker_history)
-        plt.figure(figsize=(8, 4))
+        plt.figure(figsize=(12, 9))
 
         sns.lineplot(
             data=df, x="Iteration", y="Number of Genomes Delta", color="#1F618D", marker="s", lw=2
         )
-        plt.axhline(y=kmin, color="crimson", linestyle="--", alpha=0.8)
-        plt.axhline(y=kmax, color="crimson", linestyle="--", alpha=0.8)
-        plt.text(
-            0, kmin + 0.1, rf"$k_{{\min}} = {kmin}$", color="crimson", fontsize=11, va="bottom"
-        )
-        plt.text(
-            0, kmax + 0.1, rf"$k_{{\max}} = {kmax}$", color="crimson", fontsize=11, va="bottom"
+        ax = plt.gca()
+
+        box_text = (
+            rf"\begin{{tabular}}{{l}} "
+            rf"$k_{{{{\min}}}} = {kmin}$ \\ "
+            rf"$k_{{{{\max}}}} = {kmax}$ "
+            rf"\end{{tabular}}"
         )
 
+        box_style = dict(
+            boxstyle="round,pad=0.5",
+            facecolor="white",
+            edgecolor="crimson",
+            alpha=0.9,
+        )
+
+        ax.text(
+            0.95,
+            0.95,
+            box_text,
+            transform=ax.transAxes,
+            fontsize=20,
+            color="crimson",
+            va="top",
+            ha="right",
+            bbox=box_style,
+        )
         plt.title(r"\textbf{Genome Count Tracking}")
         plt.xlabel(r"Iterations ($t$)")
         plt.ylabel(r"$|k_{true} - k_{inferred}|$")
@@ -225,7 +274,7 @@ class TrajectoryVisualizer(BaseVisualizer):
             config_label: The LaTeX formatted string describing the current hyperparameters.
             save_path: Optional file path to export the resulting figure.
         """
-        plt.figure(figsize=(8, 4))
+        plt.figure(figsize=(12, 9))
 
         sns.lineplot(
             data=config_df,
@@ -239,17 +288,33 @@ class TrajectoryVisualizer(BaseVisualizer):
         kmin = int(config_df["kmin"].iloc[0])
         kmax = int(config_df["kmax"].iloc[0])
 
-        plt.axhline(y=kmin, color="crimson", linestyle="--", alpha=0.8)
-        plt.axhline(y=kmax, color="crimson", linestyle="--", alpha=0.8)
+        ax = plt.gca()
 
-        plt.text(
-            0, kmin + 0.1, rf"$k_{{\min}} = {kmin}$", color="crimson", fontsize=11, va="bottom"
-        )
-        plt.text(
-            0, kmax + 0.1, rf"$k_{{\max}} = {kmax}$", color="crimson", fontsize=11, va="bottom"
+        box_text = (
+            rf"\begin{{tabular}}{{l}} "
+            rf"$k_{{{{\min}}}} = {kmin}$ \\ "
+            rf"$k_{{{{\max}}}} = {kmax}$ "
+            rf"\end{{tabular}}"
         )
 
-        plt.title(rf"\textbf{{Genome Count Tracking: {strategy_label}}} ({config_label})")
+        box_style = dict(
+            boxstyle="round,pad=0.5",
+            facecolor="white",
+            alpha=0.9,
+        )
+
+        ax.text(
+            0.95,
+            0.95,
+            box_text,
+            transform=ax.transAxes,
+            fontsize=25,
+            va="top",
+            ha="right",
+            bbox=box_style,
+        )
+
+        plt.title(rf"{config_label}")
         plt.xlabel(r"Iterations ($t$)")
         plt.ylabel(r"$|k_{true} - k_{inferred}|$")
         plt.tight_layout()
@@ -268,7 +333,7 @@ class TrajectoryVisualizer(BaseVisualizer):
             save_path: Optional file path to export the resulting figure.
         """
         df = pd.DataFrame(tracker_history)
-        plt.figure(figsize=(8, 4))
+        plt.figure(figsize=(12, 8))
 
         sns.lineplot(
             data=df,
@@ -288,7 +353,14 @@ class TrajectoryVisualizer(BaseVisualizer):
     def _finalize_plot(self, save_path: Optional[str]) -> None:
         plt.tight_layout()
         if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches="tight")
+            # Cast to a Path object defensively
+            save_path_obj = Path(save_path)
+        
+            # Industry Best Practice: Create ONLY the parent directory structure
+            save_path_obj.parent.mkdir(parents=True, exist_ok=True)
+        
+            # Save the actual file safely
+            plt.savefig(save_path_obj, dpi=300, bbox_inches="tight")
             plt.close()
         else:
             plt.show()
@@ -308,23 +380,26 @@ class TrajectoryVisualizer(BaseVisualizer):
             metric: The target column key to plot on the y-axis (defaults to 'Score').
             save_path: The file path where the generated figure should be exported.
         """
-        plt.figure(figsize=(9, 5))
+        plt.figure(figsize=(16, 8))
 
-        # Distinct parameter configurations map directly to line colors
         sns.lineplot(
             data=strategy_df,
             x="Iteration",
             y=metric,
             hue="Config",
-            marker="o",
+            style="Config",  
+            markers=True,    
             lw=2,
         )
 
-        title_text = rf"\textbf{{{strategy_label}: Parameter Sensitivity}}"
-
-        plt.title(title_text)
         plt.xlabel(r"Iterations ($t$)")
-        plt.ylabel(rf"\text{{{metric}}}")
+        if metric == "Number of Core Genes Delta":
+            yname = r"$|C_{true}| - |C_{inferred}|$"
+        elif metric == "Number of Genomes Delta":
+            yname = r"$|k_{true} - k_{inferred}|$"
+        else:
+            yname =rf"\text{{{metric}}}" 
+        plt.ylabel(yname)
 
         # Configure a clean LaTeX legend box anchored to the right side
         plt.legend(
@@ -405,7 +480,7 @@ class RuntimeVisualizer(BaseVisualizer):
             df: DataFrame containing columns ["gene size", "runtime_phases_1-3"].
             output_path: System path where the resulting PDF file will be saved.
         """
-        fig, ax = plt.subplots(figsize=(8, 7))
+        fig, ax = plt.subplots(figsize=(8,7))
 
         # sns.lineplot automatically groups replicates to calculate mean and variance
         sns.lineplot(
