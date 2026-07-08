@@ -12,6 +12,7 @@ from pangesim import Pangenome
 from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction.assignment import DummyAssignment
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
+from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.operators import MergeOperator
 from pangesim.reconstruction.operators import SplitOperator
@@ -63,9 +64,9 @@ def optimize_with_operators(
                 )
 
         # --- Operator 2: Split Genomes ---
-        if current_k <= k_max:
+    
+        if current_k < k_max:
             candidate_pan = pangenome.copy()
-            # Execute your edge-splitting strategy wrapper
             s_1 = SplitOperator()
             s_1.improve(candidate_pan)
 
@@ -83,6 +84,7 @@ def optimize_with_operators(
                     alpha=alpha,
                     gamma=gamma,
                 )
+      
         i += 1
         if i == max_iters:
             improved = False
@@ -111,6 +113,7 @@ def evaluate_strategy_run(
             - k_min: The calculated integer lower bound limit for number of genomes.
             - k_max: The calculated integer upper bound limit for number of genomes.
     """
+    #bounds = GreedyPairingISCB()
     if strategy_key == "edge_assignment":
         assignment = DummyAssignment()
     elif strategy_key == "eulerian_length":
@@ -124,6 +127,13 @@ def evaluate_strategy_run(
         params=params,
         assignment_strategy=assignment,
     )
+    """
+    heuristic = EulerianPathHeuristic(
+        bounds_strategy=bounds,
+        params=params,
+        assignment_strategy=assignment,
+    )
+    """
 
     # Execute core reconstruction pipeline
     inf_pangenome = heuristic.reconstruct(

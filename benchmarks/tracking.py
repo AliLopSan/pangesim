@@ -54,6 +54,8 @@ class PipelineTracker:
             "Step": step_name,
             "Iteration": iteration,
             "Score": current_score,
+            "True Genomes": len(ground_truth),
+            "Inferred Genomes":len(pangenome),
             "Number of Genomes Delta": global_stats["k_diff"],
             "Number of Core Genes Delta": global_stats["c_diff"],
             "True Positive Edges": edge_stats["tp"],

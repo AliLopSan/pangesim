@@ -8,7 +8,6 @@ from benchmarks.config import PARAM_GRID
 from pangesim.visualization import ErrorVisualizer
 from pangesim.visualization import RuntimeVisualizer
 
-
 def plot_scalability(results_dir:Path, filename:Path)->None:
     """Plots the results of the scalability test.
 
