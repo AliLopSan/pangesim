@@ -240,4 +240,8 @@ class PangenomeSimulator:
             if v.is_leaf():
                 leaf_genomes.append(child_genome)
 
-        return Pangenome(pangenome_id=f"simulated_k{k}_l{length}", genomes=leaf_genomes)
+            pan = Pangenome(pangenome_id=f"simulated_k{k}_l{length}", genomes=leaf_genomes)
+            pan.core = pan.compute_core_genes()
+            pan.core_edges = pan.compute_core_edges()
+
+        return pan
