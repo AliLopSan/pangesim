@@ -88,8 +88,9 @@ class TrajectoryVisualizer(IndVisualizer):
         sns.lineplot(data=df, x="Iteration",
                      y="Score", color="#5B2C6F", marker="o", lw=1.5)
 
+        """
         # Identify where Phase 3 ends to locate the Phase 4 demarcation boundary
-        p3_iters = [row["Iteration"] for row in tracker_history if "Phase 3" in row["Step"]]
+        p3_iters = [row["Iteration"] for row in tracker_history if "Phase 3: Refinement" in row["Step"]]
 
         if p3_iters:
             p4_start_idx = max(p3_iters) + 1
@@ -116,6 +117,7 @@ class TrajectoryVisualizer(IndVisualizer):
                     va="top",
                     ha="left",
                 )
+        """
         plt.title(r"\textbf{Optimization Score Trajectory}")
         plt.xlabel(r"Iterations ($t$)")
         plt.ylabel(r"Score($P$) $= \alpha k - \gamma \sum(m_uv - w_uv)^2$")
@@ -147,6 +149,7 @@ class TrajectoryVisualizer(IndVisualizer):
         y_range = y_max - y_min if y_max != y_min else 1.0
         text_baseline = y_min + (y_range * 0.05)
 
+        """
         # Identify where Phase 2 ends to mark Phase 3 Start
         p2_df = config_df[config_df["Step"].str.contains("Phase 2: Base Pangenome", na=False)]
         if not p2_df.empty:
@@ -172,7 +175,7 @@ class TrajectoryVisualizer(IndVisualizer):
                 )
 
         # Identify where Phase 3 ends to mark Phase 4 Start
-        p3_df = config_df[config_df["Step"].str.contains("Phase 3", na=False)]
+        p3_df = config_df[config_df["Step"].str.contains("Phase 3: Refinement", na=False)]
         if not p3_df.empty:
             p4_start_idx = p3_df["Iteration"].max() + 1
             if p4_start_idx in config_df["Iteration"].values:
@@ -194,6 +197,7 @@ class TrajectoryVisualizer(IndVisualizer):
                     va="top",
                     ha="left",
                 )
+        """
 
         # 3. Clean styling configurations
         # clean_config = config_label.replace("$", "")

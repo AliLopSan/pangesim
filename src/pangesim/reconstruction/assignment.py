@@ -332,6 +332,7 @@ class EulerianTrailAssignment(AssignmentStrategy):
             A  Pangenome containing k genomes built by Eulerian Path decomposition.
         """
         trails = self.compute_trails(adjacencies)
+        print("[assignment] Found",len(trails)," trails ")
         if isinstance(self.trail_sorting, LengthSorting):
             trails_sorted = self.trail_sorting.sort(trails)
         else:

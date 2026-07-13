@@ -17,7 +17,7 @@ def plot_scalability(results_dir:Path, filename:Path)->None:
     """
     df = pd.read_csv(filename)
 
-    out_dir = Path("results/run_20260707/runtime_plots")
+    out_dir = Path("results/run_20260713/runtime_plots")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     #Plot total run-time
@@ -43,7 +43,7 @@ def plot_mape(results_dir:Path, params:Dict[str,float],filename:Path )->None:
     """
     df = pd.read_csv(filename)
 
-    out_dir = Path("results/run_20260707/mape_plots")
+    out_dir = Path("results/run_20260713/mape_plots")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Automated filename layout using components from the params dict
@@ -60,8 +60,8 @@ def plot_mape(results_dir:Path, params:Dict[str,float],filename:Path )->None:
 
 if __name__ == "__main__":
     print("\tRunning  Harry Plotter ...")
-    results = Path("results/run_20260707/")
-    df_file = results / "error_metrics.csv"
+    results = Path("results/run_20260713")
+    df_file = results / "error_metrics_ISMB_bounds.csv"
     plot_scalability(results_dir=results, filename=df_file)
     for params in PARAM_GRID:
         plot_mape(results_dir=results, params=params, filename=df_file)

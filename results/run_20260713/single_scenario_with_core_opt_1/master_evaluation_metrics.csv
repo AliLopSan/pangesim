@@ -1,0 +1,586 @@
+Step,Iteration,Score,True Genomes,Inferred Genomes,Number of Genomes Delta,Number of Core Genes Delta,True Positive Edges,Edge Accuracy,Edge Precision,Edge Recall,True Positive Core Genes,Core Gene Accuracy,Core Gene Precision,Core Gene Recall,Strategy,Strategy_Key,Config,kmin,kmax
+Phase 2: Base Pangenome,0,-7114.25,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Phase 3: Refinement,1,-6965.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 2,2,-6953.0,7,200,193,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 3,3,-6941.0,7,201,194,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 4,4,-6929.0,7,202,195,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 5,5,-6917.0,7,203,196,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 6,6,-6905.0,7,204,197,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 7,7,-6893.0,7,205,198,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 8,8,-6881.0,7,206,199,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 9,9,-6869.0,7,207,200,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 10,10,-6857.0,7,208,201,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 11,11,-6845.0,7,209,202,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 12,12,-6833.0,7,210,203,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 13,13,-6821.0,7,211,204,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 14,14,-6809.0,7,212,205,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 15,15,-6797.0,7,213,206,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 16,16,-6785.0,7,214,207,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 17,17,-6773.0,7,215,208,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 18,18,-6761.0,7,216,209,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 19,19,-6749.0,7,217,210,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 20,20,-6737.0,7,218,211,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 21,21,-6725.0,7,219,212,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 22,22,-6713.0,7,220,213,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 23,23,-6701.0,7,221,214,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 24,24,-6689.0,7,222,215,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 25,25,-6677.0,7,223,216,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 26,26,-6665.0,7,224,217,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 27,27,-6653.0,7,225,218,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 28,28,-6641.0,7,226,219,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 29,29,-6629.0,7,227,220,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 30,30,-6617.0,7,228,221,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 31,31,-6605.0,7,229,222,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 32,32,-6593.0,7,230,223,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 33,33,-6581.0,7,231,224,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 34,34,-6569.0,7,232,225,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 35,35,-6557.0,7,233,226,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 36,36,-6545.0,7,234,227,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 37,37,-6533.0,7,235,228,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 38,38,-6521.0,7,236,229,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 39,39,-6509.0,7,237,230,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 40,40,-6497.0,7,238,231,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 41,41,-6485.0,7,239,232,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 42,42,-6473.0,7,240,233,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 43,43,-6461.0,7,241,234,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 44,44,-6449.0,7,242,235,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 45,45,-6437.0,7,243,236,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 46,46,-6425.0,7,244,237,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 47,47,-6413.0,7,245,238,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 48,48,-6401.0,7,246,239,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 49,49,-6389.0,7,247,240,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 50,50,-6377.0,7,248,241,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 51,51,-6365.0,7,249,242,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 52,52,-6353.0,7,250,243,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 53,53,-6341.0,7,251,244,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 54,54,-6329.0,7,252,245,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 55,55,-6317.0,7,253,246,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 56,56,-6305.0,7,254,247,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 57,57,-6293.0,7,255,248,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 58,58,-6281.0,7,256,249,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 59,59,-6269.0,7,257,250,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 60,60,-6257.0,7,258,251,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 61,61,-6245.0,7,259,252,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 62,62,-6233.0,7,260,253,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 63,63,-6221.0,7,261,254,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 64,64,-6209.0,7,262,255,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 65,65,-6197.0,7,263,256,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 66,66,-6185.0,7,264,257,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 67,67,-6173.0,7,265,258,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 68,68,-6161.0,7,266,259,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 69,69,-6149.0,7,267,260,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 70,70,-6137.0,7,268,261,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 71,71,-6125.0,7,269,262,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 72,72,-6113.0,7,270,263,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 73,73,-6101.0,7,271,264,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 74,74,-6089.0,7,272,265,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 75,75,-6077.0,7,273,266,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 76,76,-6065.0,7,274,267,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 77,77,-6053.0,7,275,268,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 78,78,-6041.0,7,276,269,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 79,79,-6029.0,7,277,270,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 80,80,-6017.0,7,278,271,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 81,81,-6005.0,7,279,272,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 82,82,-5993.0,7,280,273,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 83,83,-5981.0,7,281,274,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 84,84,-5969.0,7,282,275,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 85,85,-5957.0,7,283,276,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 86,86,-5945.0,7,284,277,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 87,87,-5933.0,7,285,278,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 88,88,-5921.0,7,286,279,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 89,89,-5909.0,7,287,280,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 90,90,-5897.0,7,288,281,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 91,91,-5885.0,7,289,282,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 92,92,-5873.0,7,290,283,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 93,93,-5861.0,7,291,284,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 94,94,-5849.0,7,292,285,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 95,95,-5837.0,7,293,286,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 96,96,-5825.0,7,294,287,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 97,97,-5813.0,7,295,288,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 98,98,-5801.0,7,296,289,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 99,99,-5789.0,7,297,290,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 100,100,-5777.0,7,298,291,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Phase 2: Base Pangenome,0,-7064.5,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Phase 3: Refinement,1,-6965.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 2,2,-6953.0,7,200,193,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 3,3,-6941.0,7,201,194,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 4,4,-6929.0,7,202,195,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 5,5,-6917.0,7,203,196,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 6,6,-6905.0,7,204,197,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 7,7,-6893.0,7,205,198,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 8,8,-6881.0,7,206,199,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 9,9,-6869.0,7,207,200,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 10,10,-6857.0,7,208,201,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 11,11,-6845.0,7,209,202,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 12,12,-6833.0,7,210,203,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 13,13,-6821.0,7,211,204,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 14,14,-6809.0,7,212,205,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 15,15,-6797.0,7,213,206,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 16,16,-6785.0,7,214,207,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 17,17,-6773.0,7,215,208,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 18,18,-6761.0,7,216,209,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 19,19,-6749.0,7,217,210,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 20,20,-6737.0,7,218,211,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 21,21,-6725.0,7,219,212,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 22,22,-6713.0,7,220,213,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 23,23,-6701.0,7,221,214,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 24,24,-6689.0,7,222,215,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 25,25,-6677.0,7,223,216,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 26,26,-6665.0,7,224,217,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 27,27,-6653.0,7,225,218,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 28,28,-6641.0,7,226,219,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 29,29,-6629.0,7,227,220,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 30,30,-6617.0,7,228,221,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 31,31,-6605.0,7,229,222,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 32,32,-6593.0,7,230,223,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 33,33,-6581.0,7,231,224,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 34,34,-6569.0,7,232,225,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 35,35,-6557.0,7,233,226,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 36,36,-6545.0,7,234,227,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 37,37,-6533.0,7,235,228,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 38,38,-6521.0,7,236,229,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 39,39,-6509.0,7,237,230,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 40,40,-6497.0,7,238,231,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 41,41,-6485.0,7,239,232,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 42,42,-6473.0,7,240,233,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 43,43,-6461.0,7,241,234,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 44,44,-6449.0,7,242,235,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 45,45,-6437.0,7,243,236,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 46,46,-6425.0,7,244,237,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 47,47,-6413.0,7,245,238,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 48,48,-6401.0,7,246,239,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 49,49,-6389.0,7,247,240,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 50,50,-6377.0,7,248,241,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 51,51,-6365.0,7,249,242,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 52,52,-6353.0,7,250,243,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 53,53,-6341.0,7,251,244,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 54,54,-6329.0,7,252,245,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 55,55,-6317.0,7,253,246,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 56,56,-6305.0,7,254,247,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 57,57,-6293.0,7,255,248,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 58,58,-6281.0,7,256,249,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 59,59,-6269.0,7,257,250,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 60,60,-6257.0,7,258,251,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 61,61,-6245.0,7,259,252,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 62,62,-6233.0,7,260,253,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 63,63,-6221.0,7,261,254,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 64,64,-6209.0,7,262,255,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 65,65,-6197.0,7,263,256,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 66,66,-6185.0,7,264,257,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 67,67,-6173.0,7,265,258,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 68,68,-6161.0,7,266,259,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 69,69,-6149.0,7,267,260,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 70,70,-6137.0,7,268,261,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 71,71,-6125.0,7,269,262,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 72,72,-6113.0,7,270,263,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 73,73,-6101.0,7,271,264,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 74,74,-6089.0,7,272,265,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 75,75,-6077.0,7,273,266,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 76,76,-6065.0,7,274,267,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 77,77,-6053.0,7,275,268,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 78,78,-6041.0,7,276,269,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 79,79,-6029.0,7,277,270,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 80,80,-6017.0,7,278,271,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 81,81,-6005.0,7,279,272,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 82,82,-5993.0,7,280,273,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 83,83,-5981.0,7,281,274,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 84,84,-5969.0,7,282,275,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 85,85,-5957.0,7,283,276,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 86,86,-5945.0,7,284,277,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 87,87,-5933.0,7,285,278,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 88,88,-5921.0,7,286,279,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 89,89,-5909.0,7,287,280,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 90,90,-5897.0,7,288,281,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 91,91,-5885.0,7,289,282,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 92,92,-5873.0,7,290,283,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 93,93,-5861.0,7,291,284,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 94,94,-5849.0,7,292,285,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 95,95,-5837.0,7,293,286,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 96,96,-5825.0,7,294,287,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 97,97,-5813.0,7,295,288,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 98,98,-5801.0,7,296,289,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 99,99,-5789.0,7,297,290,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 100,100,-5777.0,7,298,291,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Phase 2: Base Pangenome,0,-6965.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Phase 3: Refinement,1,-6965.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 2,2,-6953.0,7,200,193,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 3,3,-6941.0,7,201,194,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 4,4,-6929.0,7,202,195,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 5,5,-6917.0,7,203,196,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 6,6,-6905.0,7,204,197,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 7,7,-6893.0,7,205,198,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 8,8,-6881.0,7,206,199,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 9,9,-6869.0,7,207,200,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 10,10,-6857.0,7,208,201,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 11,11,-6845.0,7,209,202,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 12,12,-6833.0,7,210,203,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 13,13,-6821.0,7,211,204,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 14,14,-6809.0,7,212,205,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 15,15,-6797.0,7,213,206,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 16,16,-6785.0,7,214,207,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 17,17,-6773.0,7,215,208,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 18,18,-6761.0,7,216,209,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 19,19,-6749.0,7,217,210,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 20,20,-6737.0,7,218,211,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 21,21,-6725.0,7,219,212,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 22,22,-6713.0,7,220,213,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 23,23,-6701.0,7,221,214,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 24,24,-6689.0,7,222,215,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 25,25,-6677.0,7,223,216,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 26,26,-6665.0,7,224,217,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 27,27,-6653.0,7,225,218,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 28,28,-6641.0,7,226,219,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 29,29,-6629.0,7,227,220,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 30,30,-6617.0,7,228,221,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 31,31,-6605.0,7,229,222,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 32,32,-6593.0,7,230,223,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 33,33,-6581.0,7,231,224,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 34,34,-6569.0,7,232,225,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 35,35,-6557.0,7,233,226,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 36,36,-6545.0,7,234,227,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 37,37,-6533.0,7,235,228,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 38,38,-6521.0,7,236,229,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 39,39,-6509.0,7,237,230,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 40,40,-6497.0,7,238,231,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 41,41,-6485.0,7,239,232,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 42,42,-6473.0,7,240,233,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 43,43,-6461.0,7,241,234,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 44,44,-6449.0,7,242,235,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 45,45,-6437.0,7,243,236,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 46,46,-6425.0,7,244,237,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 47,47,-6413.0,7,245,238,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 48,48,-6401.0,7,246,239,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 49,49,-6389.0,7,247,240,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 50,50,-6377.0,7,248,241,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 51,51,-6365.0,7,249,242,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 52,52,-6353.0,7,250,243,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 53,53,-6341.0,7,251,244,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 54,54,-6329.0,7,252,245,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 55,55,-6317.0,7,253,246,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 56,56,-6305.0,7,254,247,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 57,57,-6293.0,7,255,248,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 58,58,-6281.0,7,256,249,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 59,59,-6269.0,7,257,250,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 60,60,-6257.0,7,258,251,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 61,61,-6245.0,7,259,252,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 62,62,-6233.0,7,260,253,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 63,63,-6221.0,7,261,254,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 64,64,-6209.0,7,262,255,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 65,65,-6197.0,7,263,256,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 66,66,-6185.0,7,264,257,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 67,67,-6173.0,7,265,258,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 68,68,-6161.0,7,266,259,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 69,69,-6149.0,7,267,260,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 70,70,-6137.0,7,268,261,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 71,71,-6125.0,7,269,262,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 72,72,-6113.0,7,270,263,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 73,73,-6101.0,7,271,264,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 74,74,-6089.0,7,272,265,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 75,75,-6077.0,7,273,266,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 76,76,-6065.0,7,274,267,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 77,77,-6053.0,7,275,268,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 78,78,-6041.0,7,276,269,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 79,79,-6029.0,7,277,270,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 80,80,-6017.0,7,278,271,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 81,81,-6005.0,7,279,272,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 82,82,-5993.0,7,280,273,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 83,83,-5981.0,7,281,274,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 84,84,-5969.0,7,282,275,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 85,85,-5957.0,7,283,276,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 86,86,-5945.0,7,284,277,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 87,87,-5933.0,7,285,278,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 88,88,-5921.0,7,286,279,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 89,89,-5909.0,7,287,280,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 90,90,-5897.0,7,288,281,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 91,91,-5885.0,7,289,282,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 92,92,-5873.0,7,290,283,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 93,93,-5861.0,7,291,284,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 94,94,-5849.0,7,292,285,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 95,95,-5837.0,7,293,286,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 96,96,-5825.0,7,294,287,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 97,97,-5813.0,7,295,288,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 98,98,-5801.0,7,296,289,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 99,99,-5789.0,7,297,290,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 100,100,-5777.0,7,298,291,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Phase 2: Base Pangenome,0,-3383.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Phase 3: Refinement,1,-6965.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 2,2,-6953.0,7,200,193,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 3,3,-6941.0,7,201,194,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 4,4,-6929.0,7,202,195,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 5,5,-6917.0,7,203,196,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 6,6,-6905.0,7,204,197,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 7,7,-6893.0,7,205,198,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 8,8,-6881.0,7,206,199,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 9,9,-6869.0,7,207,200,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 10,10,-6857.0,7,208,201,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 11,11,-6845.0,7,209,202,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 12,12,-6833.0,7,210,203,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 13,13,-6821.0,7,211,204,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 14,14,-6809.0,7,212,205,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 15,15,-6797.0,7,213,206,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 16,16,-6785.0,7,214,207,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 17,17,-6773.0,7,215,208,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 18,18,-6761.0,7,216,209,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 19,19,-6749.0,7,217,210,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 20,20,-6737.0,7,218,211,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 21,21,-6725.0,7,219,212,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 22,22,-6713.0,7,220,213,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 23,23,-6701.0,7,221,214,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 24,24,-6689.0,7,222,215,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 25,25,-6677.0,7,223,216,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 26,26,-6665.0,7,224,217,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 27,27,-6653.0,7,225,218,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 28,28,-6641.0,7,226,219,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 29,29,-6629.0,7,227,220,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 30,30,-6617.0,7,228,221,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 31,31,-6605.0,7,229,222,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 32,32,-6593.0,7,230,223,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 33,33,-6581.0,7,231,224,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 34,34,-6569.0,7,232,225,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 35,35,-6557.0,7,233,226,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 36,36,-6545.0,7,234,227,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 37,37,-6533.0,7,235,228,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 38,38,-6521.0,7,236,229,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 39,39,-6509.0,7,237,230,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 40,40,-6497.0,7,238,231,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 41,41,-6485.0,7,239,232,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 42,42,-6473.0,7,240,233,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 43,43,-6461.0,7,241,234,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 44,44,-6449.0,7,242,235,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 45,45,-6437.0,7,243,236,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 46,46,-6425.0,7,244,237,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 47,47,-6413.0,7,245,238,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 48,48,-6401.0,7,246,239,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 49,49,-6389.0,7,247,240,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 50,50,-6377.0,7,248,241,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 51,51,-6365.0,7,249,242,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 52,52,-6353.0,7,250,243,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 53,53,-6341.0,7,251,244,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 54,54,-6329.0,7,252,245,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 55,55,-6317.0,7,253,246,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 56,56,-6305.0,7,254,247,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 57,57,-6293.0,7,255,248,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 58,58,-6281.0,7,256,249,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 59,59,-6269.0,7,257,250,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 60,60,-6257.0,7,258,251,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 61,61,-6245.0,7,259,252,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 62,62,-6233.0,7,260,253,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 63,63,-6221.0,7,261,254,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 64,64,-6209.0,7,262,255,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 65,65,-6197.0,7,263,256,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 66,66,-6185.0,7,264,257,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 67,67,-6173.0,7,265,258,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 68,68,-6161.0,7,266,259,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 69,69,-6149.0,7,267,260,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 70,70,-6137.0,7,268,261,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 71,71,-6125.0,7,269,262,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 72,72,-6113.0,7,270,263,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 73,73,-6101.0,7,271,264,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 74,74,-6089.0,7,272,265,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 75,75,-6077.0,7,273,266,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 76,76,-6065.0,7,274,267,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 77,77,-6053.0,7,275,268,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 78,78,-6041.0,7,276,269,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 79,79,-6029.0,7,277,270,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 80,80,-6017.0,7,278,271,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 81,81,-6005.0,7,279,272,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 82,82,-5993.0,7,280,273,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 83,83,-5981.0,7,281,274,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 84,84,-5969.0,7,282,275,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 85,85,-5957.0,7,283,276,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 86,86,-5945.0,7,284,277,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 87,87,-5933.0,7,285,278,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 88,88,-5921.0,7,286,279,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 89,89,-5909.0,7,287,280,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 90,90,-5897.0,7,288,281,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 91,91,-5885.0,7,289,282,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 92,92,-5873.0,7,290,283,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 93,93,-5861.0,7,291,284,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 94,94,-5849.0,7,292,285,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 95,95,-5837.0,7,293,286,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 96,96,-5825.0,7,294,287,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 97,97,-5813.0,7,295,288,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 98,98,-5801.0,7,296,289,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 99,99,-5789.0,7,297,290,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 100,100,-5777.0,7,298,291,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Phase 2: Base Pangenome,0,-1592.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Phase 3: Refinement,1,-6965.0,7,199,192,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 2,2,-6953.0,7,200,193,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 3,3,-6941.0,7,201,194,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 4,4,-6929.0,7,202,195,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 5,5,-6917.0,7,203,196,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 6,6,-6905.0,7,204,197,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 7,7,-6893.0,7,205,198,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 8,8,-6881.0,7,206,199,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 9,9,-6869.0,7,207,200,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 10,10,-6857.0,7,208,201,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 11,11,-6845.0,7,209,202,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 12,12,-6833.0,7,210,203,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 13,13,-6821.0,7,211,204,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 14,14,-6809.0,7,212,205,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 15,15,-6797.0,7,213,206,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 16,16,-6785.0,7,214,207,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 17,17,-6773.0,7,215,208,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 18,18,-6761.0,7,216,209,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 19,19,-6749.0,7,217,210,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 20,20,-6737.0,7,218,211,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 21,21,-6725.0,7,219,212,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 22,22,-6713.0,7,220,213,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 23,23,-6701.0,7,221,214,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 24,24,-6689.0,7,222,215,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 25,25,-6677.0,7,223,216,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 26,26,-6665.0,7,224,217,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 27,27,-6653.0,7,225,218,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 28,28,-6641.0,7,226,219,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 29,29,-6629.0,7,227,220,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 30,30,-6617.0,7,228,221,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 31,31,-6605.0,7,229,222,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 32,32,-6593.0,7,230,223,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 33,33,-6581.0,7,231,224,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 34,34,-6569.0,7,232,225,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 35,35,-6557.0,7,233,226,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 36,36,-6545.0,7,234,227,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 37,37,-6533.0,7,235,228,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 38,38,-6521.0,7,236,229,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 39,39,-6509.0,7,237,230,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 40,40,-6497.0,7,238,231,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 41,41,-6485.0,7,239,232,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 42,42,-6473.0,7,240,233,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 43,43,-6461.0,7,241,234,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 44,44,-6449.0,7,242,235,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 45,45,-6437.0,7,243,236,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 46,46,-6425.0,7,244,237,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 47,47,-6413.0,7,245,238,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 48,48,-6401.0,7,246,239,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 49,49,-6389.0,7,247,240,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 50,50,-6377.0,7,248,241,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 51,51,-6365.0,7,249,242,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 52,52,-6353.0,7,250,243,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 53,53,-6341.0,7,251,244,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 54,54,-6329.0,7,252,245,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 55,55,-6317.0,7,253,246,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 56,56,-6305.0,7,254,247,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 57,57,-6293.0,7,255,248,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 58,58,-6281.0,7,256,249,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 59,59,-6269.0,7,257,250,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 60,60,-6257.0,7,258,251,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 61,61,-6245.0,7,259,252,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 62,62,-6233.0,7,260,253,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 63,63,-6221.0,7,261,254,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 64,64,-6209.0,7,262,255,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 65,65,-6197.0,7,263,256,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 66,66,-6185.0,7,264,257,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 67,67,-6173.0,7,265,258,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 68,68,-6161.0,7,266,259,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 69,69,-6149.0,7,267,260,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 70,70,-6137.0,7,268,261,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 71,71,-6125.0,7,269,262,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 72,72,-6113.0,7,270,263,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 73,73,-6101.0,7,271,264,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 74,74,-6089.0,7,272,265,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 75,75,-6077.0,7,273,266,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 76,76,-6065.0,7,274,267,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 77,77,-6053.0,7,275,268,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 78,78,-6041.0,7,276,269,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 79,79,-6029.0,7,277,270,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 80,80,-6017.0,7,278,271,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 81,81,-6005.0,7,279,272,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 82,82,-5993.0,7,280,273,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 83,83,-5981.0,7,281,274,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 84,84,-5969.0,7,282,275,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 85,85,-5957.0,7,283,276,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 86,86,-5945.0,7,284,277,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 87,87,-5933.0,7,285,278,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 88,88,-5921.0,7,286,279,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 89,89,-5909.0,7,287,280,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 90,90,-5897.0,7,288,281,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 91,91,-5885.0,7,289,282,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 92,92,-5873.0,7,290,283,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 93,93,-5861.0,7,291,284,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 94,94,-5849.0,7,292,285,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 95,95,-5837.0,7,293,286,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 96,96,-5825.0,7,294,287,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 97,97,-5813.0,7,295,288,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 98,98,-5801.0,7,296,289,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 99,99,-5789.0,7,297,290,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 100,100,-5777.0,7,298,291,200,199,1.0,1.0,1.0,0,0.5,,0.0,Edge Assignment,edge_assignment,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Phase 2: Base Pangenome,0,-7163.75,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Phase 2: Base Pangenome,0,-7163.5,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Phase 2: Base Pangenome,0,-7163.0,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Phase 2: Base Pangenome,0,-3581.0,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Phase 2: Base Pangenome,0,-1790.0,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Length,eulerian_length,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Phase 2: Base Pangenome,0,-7163.75,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.25,\, \gamma = 1.0$",7,39011
+Phase 2: Base Pangenome,0,-7163.5,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 0.5,\, \gamma = 1.0$",7,19509
+Phase 2: Base Pangenome,0,-7163.0,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 1.0$",7,9758
+Phase 2: Base Pangenome,0,-3581.0,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.5$",7,4882
+Phase 2: Base Pangenome,0,-1790.0,7,1,6,200,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Phase 3: Refinement,1,-7163.0,7,1,6,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 2,2,-4973.0,7,2,5,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 3,3,-3181.0,7,3,4,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 4,4,-1787.0,7,4,3,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 5,5,-791.0,7,5,2,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 6,6,-193.0,7,6,1,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444
+Iteration 7,7,7.0,7,7,0,0,199,1.0,1.0,1.0,200,1.0,1.0,1.0,Eulerian by Weight,eulerian_weight,"$\alpha = 1.0,\, \gamma = 0.25$",7,2444

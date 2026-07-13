@@ -122,23 +122,18 @@ def evaluate_strategy_run(
         assignment = EulerianTrailAssignment(trail_sorting=WeightSorting())
 
     tracker = PipelineTracker()
-
-    heuristic = EulerianPathHeuristic(
-        params=params,
-        assignment_strategy=assignment,
-    )
-    """
+    bounds = GreedyPairingISCB()
     heuristic = EulerianPathHeuristic(
         bounds_strategy=bounds,
         params=params,
         assignment_strategy=assignment,
     )
-    """
 
     # Execute core reconstruction pipeline
     inf_pangenome = heuristic.reconstruct(
         matrix=matrix, ground_truth=ground_truth, callbacks=[tracker]
     )
+    """
     optimize_with_operators(
         pangenome=inf_pangenome,
         matrix=matrix,
@@ -149,6 +144,7 @@ def evaluate_strategy_run(
         alpha=params["alpha"],
         gamma=params["gamma"],
     )
+    """
 
     # Extract the runtime bounds metadata safely before the instance scope terminates
     k_min = heuristic.k_min if heuristic.k_min is not None else 0
@@ -230,7 +226,8 @@ def evaluate_error_run(num_genes: int, replicate: int,
     ground_truth = random_simulated_pangenome(num_genes)
     matrix = ground_truth.compute_weighted_adjacencies()
     assignment = EulerianTrailAssignment()
-    heuristic = EulerianPathHeuristic(
+    bounds = GreedyPairingISCB()
+    heuristic = EulerianPathHeuristic(bounds_strategy=bounds,
         params=params, assignment_strategy=assignment)
 
     t0 = time.perf_counter()
@@ -239,7 +236,7 @@ def evaluate_error_run(num_genes: int, replicate: int,
                                           callbacks=[tracker])
 
     t1 = time.perf_counter()
-
+    """
     optimize_with_operators(
         pangenome=inf_pangenome,
         matrix=matrix,
@@ -250,7 +247,7 @@ def evaluate_error_run(num_genes: int, replicate: int,
         alpha=params["alpha"],
         gamma=params["gamma"],
     )
-
+    """
     t2 = time.perf_counter()
 
     duration_phases_1_3 = t1 - t0
