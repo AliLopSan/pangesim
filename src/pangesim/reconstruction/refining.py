@@ -21,8 +21,7 @@ class ResidualsRefinement(RefinementStrategy):
 
     __slots__ = ("params", "max_iter")
 
-    def __init__(self, params: Dict[str, float] | None = None,
-                 max_iter: int | None = None) -> None:
+    def __init__(self, params: Dict[str, float] | None = None, max_iter: int | None = None) -> None:
         """Constructor for ResidualsRefinement.
 
         Args:
@@ -102,9 +101,7 @@ class ResidualsRefinement(RefinementStrategy):
             best_genome.add_edge(edge)
 
             new_pan.replace_genome(best_genome._genome_id, best_genome)
-            best_score = pan_score(
-                new_pan, adj, self.params["alpha"], self.params["gamma"]
-            )
+            best_score = pan_score(new_pan, adj, self.params["alpha"], self.params["gamma"])
 
             # Evaluate remaining slack options
             while slack:
@@ -112,12 +109,10 @@ class ResidualsRefinement(RefinementStrategy):
                 candidate_ix = slack.pop()
                 candidate_genome = pan.genomes[candidate_ix].copy()
                 candidate_genome.add_edge(edge)
-                candidate_pan.replace_genome(candidate_genome._genome_id,
-                                             candidate_genome)
-                candidate_score = pan_score(candidate_pan,
-                                            adj,
-                                            self.params["alpha"],
-                                            self.params["gamma"])
+                candidate_pan.replace_genome(candidate_genome._genome_id, candidate_genome)
+                candidate_score = pan_score(
+                    candidate_pan, adj, self.params["alpha"], self.params["gamma"]
+                )
                 if candidate_score > best_score:
                     best_genome = candidate_genome
                     best_score = candidate_score
@@ -130,10 +125,7 @@ class ResidualsRefinement(RefinementStrategy):
             # Cost logic for generating an entirely new genome line
             g = self.new_genome_with_edge(new_pan, edge)
             new_pan.add_genome(g)
-            current_score = pan_score(new_pan,
-                                      adj,
-                                      self.params["alpha"],
-                                      self.params["gamma"])
+            current_score = pan_score(new_pan, adj, self.params["alpha"], self.params["gamma"])
             # If adding an entire genome hurts the score, roll back to original
             if current_score <= score:
                 new_pan = pan.copy()
@@ -158,7 +150,7 @@ class ResidualsRefinement(RefinementStrategy):
         g_list = [genome for genome in pan.genomes if genome.has_edge(edge)]
 
         if not g_list:
-            return pan # Nothing to remove, return original
+            return pan  # Nothing to remove, return original
 
         best_genome = None
         best_score = score
@@ -172,10 +164,10 @@ class ResidualsRefinement(RefinementStrategy):
             if candidate_genome.remove_edge(edge):
                 # Create a copy of the pangenome to evaluate this specific change
                 candidate_pan = pan.copy()
-                candidate_pan.replace_genome(candidate_genome._genome_id,
-                                             candidate_genome)
-                candidate_score = pan_score(candidate_pan, adj,
-                                            self.params["alpha"], self.params["gamma"])
+                candidate_pan.replace_genome(candidate_genome._genome_id, candidate_genome)
+                candidate_score = pan_score(
+                    candidate_pan, adj, self.params["alpha"], self.params["gamma"]
+                )
                 # Keep track of the best scoring modification
                 if candidate_score > best_score:
                     best_score = candidate_score
@@ -209,9 +201,7 @@ class ResidualsRefinement(RefinementStrategy):
         """
         callbacks = callbacks or []
         residuals: AdjacencyMatrix = build_residuals(target=target, source=source)
-        current_score = pan_score(
-            target, source, self.params["alpha"], self.params["gamma"]
-        )
+        current_score = pan_score(target, source, self.params["alpha"], self.params["gamma"])
         converged = False
         iters = 1
         pangenome = target.copy()
@@ -237,22 +227,16 @@ class ResidualsRefinement(RefinementStrategy):
 
             if worst_residual > 0:
                 # Fix under-represented edge
-                pangenome = self.fix_under_edge(
-                    pangenome, source, worst_edge, current_score
-                )
+                pangenome = self.fix_under_edge(pangenome, source, worst_edge, current_score)
             elif worst_residual < 0:
                 # Fix over-represented edge
-                pangenome = self.fix_over_edge(
-                    pangenome, source, worst_edge, current_score
-                )
+                pangenome = self.fix_over_edge(pangenome, source, worst_edge, current_score)
             else:
                 pass
 
             # Recalculate residuals and scores using the updated state
             residuals = build_residuals(target=pangenome, source=source)
-            current_score = pan_score(
-                pangenome, source, self.params["alpha"], self.params["gamma"]
-            )
+            current_score = pan_score(pangenome, source, self.params["alpha"], self.params["gamma"])
 
             iters += 1
 

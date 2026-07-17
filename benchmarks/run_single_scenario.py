@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 import pandas as pd
@@ -13,8 +12,8 @@ from pangesim.visualization import TrajectoryVisualizer
 def main() -> None:
     """Experiment run for a simple mock pangenome."""
     print("Loading experimental scenario fixtures...")
-    true_pangenome = random_simulated_pangenome(200)
-    print("\t True pangenome info:\n",true_pangenome.summary())
+    true_pangenome = random_simulated_pangenome(300)
+    print("\t True pangenome info:\n", true_pangenome.summary())
     mock_matrix = true_pangenome.compute_weighted_adjacencies()
 
     all_results = []
@@ -46,7 +45,7 @@ def main() -> None:
     print("\nMaster execution dataframe compiled successfully.")
     print(master_df.head())
 
-    out_dir = Path("results/run_20260713/single_scenario")
+    out_dir = Path("results/run_20260714/single_scenario")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     csv_output_path = out_dir / "master_evaluation_metrics.csv"
@@ -70,7 +69,7 @@ def main() -> None:
             metric="Score",
             save_path=output_file,
         )
-        output_file = strategy_dir/ "all_genomes_difference.pdf"
+        output_file = strategy_dir / "all_genomes_difference.pdf"
         output_file.parent.mkdir(parents=True, exist_ok=True)
         viz = TrajectoryVisualizer()
         viz.plot_strategy_parameters(

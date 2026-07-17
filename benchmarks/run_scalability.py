@@ -11,9 +11,26 @@ from pangesim.visualization import RuntimeVisualizer
 
 def main() -> None:
     """Scalability test."""
-    gene_sizes = [50, 100, 150, 200, 250, 300, 350,
-                  400, 500, 600, 700, 800, 900, 1000,
-                  1500, 2000, 2500, 3000]
+    gene_sizes = [
+        50,
+        100,
+        150,
+        200,
+        250,
+        300,
+        350,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000,
+    ]
     replicates = 5
     benchmark_data = []
 
@@ -34,10 +51,10 @@ def main() -> None:
     file_path = output_dir / "scalability_metrics.csv"
     df.to_csv(file_path, index=False)
 
-    #Plot results
+    # Plot results
     vis = RuntimeVisualizer()
     vis_path = output_dir / "scalability_plot.pdf"
-    vis.plot_phase_runtime(df,vis_path)
+    vis.plot_phase_runtime(df, vis_path)
 
 
 if __name__ == "__main__":

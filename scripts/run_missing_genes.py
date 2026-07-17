@@ -43,6 +43,7 @@ def sample_pangenome():
 
     return ground_truth
 
+
 def investigate_gene_leak():
     """Investigates gene leak."""
     truth = sample_pangenome()
@@ -50,8 +51,8 @@ def investigate_gene_leak():
     b = GreedyPairingISCB()
     w = WeightSorting()
     a = EulerianTrailAssignment(trail_sorting=w)
-    params = {"alpha":0.5, "gamma":1}
-    k_min,k_max, k_info = b.compute_bounds(matrix, params)
+    params = {"alpha": 0.5, "gamma": 1}
+    k_min, k_max, k_info = b.compute_bounds(matrix, params)
     base_pangenome = a.assign_genomes(matrix, k_min)
 
     print(truth.summary())
@@ -61,8 +62,7 @@ def investigate_gene_leak():
     print("\t Gene set base: ", base_pangenome.total_gene_count)
 
     r = ResidualsRefinement(params=params)
-    refined_pangenome = r.refine(source=matrix, target=base_pangenome,
-                                 ground_truth=truth)
+    refined_pangenome = r.refine(source=matrix, target=base_pangenome, ground_truth=truth)
 
     print("\n--After refinement ---")
     print(refined_pangenome.summary())
@@ -84,6 +84,6 @@ def investigate_gene_leak():
         print("\t Truth: ", truth.universal_gene_set)
         print("\t Refined: ", refined_pangenome.universal_gene_set)
 
+
 if __name__ == "__main__":
     investigate_gene_leak()
-

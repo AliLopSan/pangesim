@@ -3,9 +3,11 @@
 
 from benchmarks.fixtures import get_mock_pangenome_scenario
 from benchmarks.tracking import PipelineTracker
+from benchmarks.tracking import StructuralVisualizerTracker
 
 # Define the explicit public API for the benchmarks namespace package
 __all__ = [
     "get_mock_pangenome_scenario",
     "PipelineTracker",
+    "StructuralVisualizerTracker",
 ]
