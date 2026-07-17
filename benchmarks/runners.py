@@ -12,6 +12,7 @@ from pangesim import Pangenome
 from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction.assignment import DummyAssignment
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
+from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.operators import MergeOperator
 from pangesim.reconstruction.operators import SplitOperator
@@ -46,11 +47,9 @@ def optimize_with_operators(
         if current_k > k_min:
             candidate_pan = pangenome.copy()
             m_1 = MergeOperator()
-
-            while len(candidate_pan) > k_max:
-                m_1.improve(candidate_pan)
-
-            merge_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            m_1.improve(candidate_pan)
+            merge_score = pan_score(target=candidate_pan,
+                                    source=matrix, alpha=alpha, gamma=gamma)
             if merge_score > current_score:
                 pangenome = candidate_pan
                 current_score = merge_score
@@ -65,13 +64,14 @@ def optimize_with_operators(
                 )
 
         # --- Operator 2: Split Genomes ---
-        if current_k <= k_max:
+    
+        if current_k < k_max:
             candidate_pan = pangenome.copy()
-            # Execute your edge-splitting strategy wrapper
             s_1 = SplitOperator()
             s_1.improve(candidate_pan)
 
-            split_score = pan_score(target=candidate_pan, source=matrix, alpha=alpha, gamma=gamma)
+            split_score = pan_score(target=candidate_pan,
+                                    source=matrix, alpha=alpha, gamma=gamma)
             if split_score > current_score:
                 pangenome = candidate_pan
                 current_score = split_score
@@ -84,6 +84,7 @@ def optimize_with_operators(
                     alpha=alpha,
                     gamma=gamma,
                 )
+      
         i += 1
         if i == max_iters:
             improved = False
@@ -112,6 +113,7 @@ def evaluate_strategy_run(
             - k_min: The calculated integer lower bound limit for number of genomes.
             - k_max: The calculated integer upper bound limit for number of genomes.
     """
+    #bounds = GreedyPairingISCB()
     if strategy_key == "edge_assignment":
         assignment = DummyAssignment()
     elif strategy_key == "eulerian_length":
@@ -120,8 +122,9 @@ def evaluate_strategy_run(
         assignment = EulerianTrailAssignment(trail_sorting=WeightSorting())
 
     tracker = PipelineTracker()
-
+    bounds = GreedyPairingISCB()
     heuristic = EulerianPathHeuristic(
+        bounds_strategy=bounds,
         params=params,
         assignment_strategy=assignment,
     )
@@ -130,6 +133,7 @@ def evaluate_strategy_run(
     inf_pangenome = heuristic.reconstruct(
         matrix=matrix, ground_truth=ground_truth, callbacks=[tracker]
     )
+    """
     optimize_with_operators(
         pangenome=inf_pangenome,
         matrix=matrix,
@@ -140,6 +144,7 @@ def evaluate_strategy_run(
         alpha=params["alpha"],
         gamma=params["gamma"],
     )
+    """
 
     # Extract the runtime bounds metadata safely before the instance scope terminates
     k_min = heuristic.k_min if heuristic.k_min is not None else 0
@@ -175,7 +180,7 @@ def evaluate_scalability_run(num_genes: int, replicate: int) -> Dict[str, Any]:
 
     # End of phases 1-3
     t1 = time.perf_counter()
-    """
+
     optimize_with_operators(
         pangenome=inf_pangenome,
         matrix=matrix,
@@ -186,7 +191,7 @@ def evaluate_scalability_run(num_genes: int, replicate: int) -> Dict[str, Any]:
         alpha=params["alpha"],
         gamma=params["gamma"],
     )
-    """
+
     # End of phase 4
     t2 = time.perf_counter()
 
@@ -202,4 +207,61 @@ def evaluate_scalability_run(num_genes: int, replicate: int) -> Dict[str, Any]:
         "runtime_phases_1-3": duration_phases_1_3,
         "runtime_phase_4": duration_phase_4,
         "total_runtime": total_duration,
+    }
+
+def evaluate_error_run(num_genes: int, replicate: int,
+                             params:Dict[str, float]) -> Dict[str, Any]:
+    """Main runner to test rsme.
+
+    Args:
+        num_genes: Number of genes per genome.
+        replicate: Current replicate number.
+        params: Hyperparameters dict containing alpha and gamma.
+
+    Returns:
+        A dict with the total runtime, as well as phases 1-3 and phase 4.
+    """
+    # Simulate random scenario
+    tracker = PipelineTracker()
+    ground_truth = random_simulated_pangenome(num_genes)
+    matrix = ground_truth.compute_weighted_adjacencies()
+    assignment = EulerianTrailAssignment()
+    bounds = GreedyPairingISCB()
+    heuristic = EulerianPathHeuristic(bounds_strategy=bounds,
+        params=params, assignment_strategy=assignment)
+
+    t0 = time.perf_counter()
+    inf_pangenome = heuristic.reconstruct(matrix=matrix,
+                                          ground_truth=ground_truth,
+                                          callbacks=[tracker])
+
+    t1 = time.perf_counter()
+    """
+    optimize_with_operators(
+        pangenome=inf_pangenome,
+        matrix=matrix,
+        ground_truth=ground_truth,
+        k_min=heuristic.k_min,
+        k_max=heuristic.k_max,
+        tracker=tracker,
+        alpha=params["alpha"],
+        gamma=params["gamma"],
+    )
+    """
+    t2 = time.perf_counter()
+
+    duration_phases_1_3 = t1 - t0
+    duration_phase_4 = t2 - t1
+    total_duration = t2 - t0
+
+    return {
+        "gene size": num_genes,
+        "replicate": replicate,
+        "genomes gt":len(ground_truth),
+        "genomes inf":len(inf_pangenome),
+        "runtime_phases_1-3": duration_phases_1_3,
+        "runtime_phase_4": duration_phase_4,
+        "total_runtime": total_duration,
+        "alpha": params["alpha"],
+        "gamma": params["gamma"]
     }

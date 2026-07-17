@@ -1,12 +1,9 @@
-from pangesim import Pangenome
 from pangesim import Genome
-from pangesim.reconstruction import EulerianPathHeuristic
+from pangesim import Pangenome
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.refining import ResidualsRefinement
 from pangesim.reconstruction.sorting import WeightSorting
-
-from pangesim.visualization import TrajectoryVisualizer
 
 
 def sample_pangenome():
@@ -47,7 +44,7 @@ def sample_pangenome():
     return ground_truth
 
 def investigate_gene_leak():
-
+    """Investigates gene leak."""
     truth = sample_pangenome()
     matrix = truth.compute_weighted_adjacencies()
     b = GreedyPairingISCB()
@@ -81,12 +78,12 @@ def investigate_gene_leak():
 
     print("\t Truth: ", truth.universal_gene_set)
     print("\t Base: ", base_pangenome.universal_gene_set)
-        
+
     if truth.universal_gene_set != refined_pangenome.universal_gene_set:
         print("Sets are not equal")
         print("\t Truth: ", truth.universal_gene_set)
         print("\t Refined: ", refined_pangenome.universal_gene_set)
-        
+
 if __name__ == "__main__":
     investigate_gene_leak()
-    
+

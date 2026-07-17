@@ -1,10 +1,11 @@
-import os
+
+from pathlib import Path
 
 import pandas as pd
 
 from benchmarks.config import PARAM_GRID
 from benchmarks.config import STRATEGIES
-from benchmarks.fixtures import get_mock_pangenome_scenario
+from benchmarks.fixtures import random_simulated_pangenome
 from benchmarks.runners import evaluate_strategy_run
 from pangesim.visualization import TrajectoryVisualizer
 
@@ -12,7 +13,8 @@ from pangesim.visualization import TrajectoryVisualizer
 def main() -> None:
     """Experiment run for a simple mock pangenome."""
     print("Loading experimental scenario fixtures...")
-    true_pangenome = get_mock_pangenome_scenario()
+    true_pangenome = random_simulated_pangenome(200)
+    print("\t True pangenome info:\n",true_pangenome.summary())
     mock_matrix = true_pangenome.compute_weighted_adjacencies()
 
     all_results = []
@@ -44,8 +46,10 @@ def main() -> None:
     print("\nMaster execution dataframe compiled successfully.")
     print(master_df.head())
 
-    os.makedirs("results", exist_ok=True)
-    csv_output_path = os.path.join("results", "master_evaluation_metrics.csv")
+    out_dir = Path("results/run_20260713/single_scenario")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    csv_output_path = out_dir / "master_evaluation_metrics.csv"
     master_df.to_csv(csv_output_path, index=False)
 
     # 2. Slice dataframe by strategy and generate individual parameter plots
@@ -54,10 +58,11 @@ def main() -> None:
 
         # Filter rows belonging only to this specific algorithmic strategy
         strat_df = master_df[master_df["Strategy_Key"] == strat_key]
-        strategy_dir = os.path.join("results", strat_key)
-        os.makedirs(strategy_dir, exist_ok=True)
+        strategy_dir = out_dir / strat_key
+        strategy_dir.mkdir(parents=True, exist_ok=True)
 
-        output_file = os.path.join(strategy_dir, "score.pdf")
+        output_file = strategy_dir / "all_score.pdf"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         viz = TrajectoryVisualizer()
         viz.plot_strategy_parameters(
             strategy_df=strat_df,
@@ -65,7 +70,8 @@ def main() -> None:
             metric="Score",
             save_path=output_file,
         )
-        output_file = os.path.join(strategy_dir, "genomes_difference.pdf")
+        output_file = strategy_dir/ "all_genomes_difference.pdf"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         viz = TrajectoryVisualizer()
         viz.plot_strategy_parameters(
             strategy_df=strat_df,
@@ -73,7 +79,8 @@ def main() -> None:
             metric="Number of Genomes Delta",
             save_path=output_file,
         )
-        output_file = os.path.join(strategy_dir, "core_difference.pdf")
+        output_file = strategy_dir / "all_core_difference.pdf"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         viz = TrajectoryVisualizer()
         viz.plot_strategy_parameters(
             strategy_df=strat_df,
@@ -83,6 +90,8 @@ def main() -> None:
         )
         # For each parameter, compute the bounds:
         for config_label, config_df in strat_df.groupby("Config"):
+            strategy_dir = Path(strategy_dir)
+            strategy_dir.mkdir(parents=True, exist_ok=True)
             clean_filename = (
                 config_label.replace("$", "")
                 .replace("\\alpha = ", "alpha")
@@ -90,8 +99,8 @@ def main() -> None:
                 .replace(",\\, ", "_")
                 .strip()
             )
-            # Compute the bounds:
-            output_file_bounds = os.path.join(strategy_dir, f"bounds_{clean_filename}.pdf")
+            output_file_bounds = strategy_dir / f"bounds_{clean_filename}.pdf"
+            output_file_score = strategy_dir / f"score_{clean_filename}.pdf"
 
             viz.plot_k_bounds_from_dataframe(
                 config_df=config_df,
@@ -99,8 +108,6 @@ def main() -> None:
                 config_label=str(config_label),
                 save_path=output_file_bounds,
             )
-            # Compute the score evolution:
-            output_file_score = os.path.join(strategy_dir, f"score_{clean_filename}.pdf")
             viz.plot_score_from_dataframe(
                 config_df=config_df,
                 strategy_label=strat_label,
