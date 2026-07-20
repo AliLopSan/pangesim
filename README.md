@@ -1,3 +1,5 @@
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/) [![Package Manager: uv](https://img.shields.io/badge/environment-uv-purple.svg)](https://github.com/astral-sh/uv) [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # Pangesim
 
 ### Reconstructing genome sets from adjacency information using combinatorial optimization
@@ -26,13 +28,11 @@ The repository contains:
 - Evaluation metrics
 - Experimental notebooks
 
-------
+---
 
-## Why is this problem interesting?
+## The Combinatorial Challenge 
 
-A pangenome can be viewed as a collection of genome paths. Different genome collections may induce very similar adjacency frequencies. This creates a combinatorial reconstruction problem:
-
-> Given only adjacency information, can we recover the underlying genomes?
+A pangenome can be viewed as a collection of genome paths traversing an adjacency graph. Because distinct genome combinations can induce identical edge frequency distributions, reconstruction is inherently non-unique:
 
 The figure below illustrates the challenge:
 
@@ -42,58 +42,46 @@ Our input (on the left) is a graph that represents the known adjacencies between
 
 ------
 
-## Project Components
 
-### 1. Pangenome Simulator
 
-Starting from an ancestral genome and a species tree, the simulator generates synthetic pangenomes through evolutionary events such as:
+## Core Components 
 
-- Gene loss
-- Gene insertion
-- Genome rearrangements
+### 1. 🧬 Pangenome Evolution Simulator 
 
-The simulator produces a complete ground truth:
+(`panevolve`) Generates synthetic benchmark datasets starting from ancestral genomes along simulated species trees via: 
 
-- Genome paths
-- Edge frequencies
-- Core genes
-- Evolutionary history
+- Gene loss & insertion events
 
-------
+- Structural genome rearrangements 
 
-### 2. Reconstruction Heuristic
+- Ground-truth tracking for core genomes, pathway matrices, and evolutionary histories 
 
-The reconstruction algorithm attempts to infer:
+### 2. 🧩 Reconstruction & Refinement Pipeline 
 
-- The number of genomes
-- Genome structures
-- Edge multiplicities
-- Core genome composition
+(`reconstruction`) A three-phase heuristic pipeline designed to recover individual genome pathways: 
 
-using only adjacency information.
+- **Phase 1 (Eulerian trials):** Finds Eulerian trails by transforming the input adjacencies into an eulerian graph. 
 
-------
+- **Phase 2 (Assignment):** Transforms the trails into a set of genomes. 
 
-### 3. Evaluation Framework
+- **Phase 3 (Refinement):** Iterative greedy hill-climbing optimization using `fix_under_edge` and `fix_over_edge` routines to minimize edge residuals. 
 
-The simulator provides a known ground truth, allowing quantitative assessment of reconstruction quality.
+### 3. 📊 Visual Tracking Engine 
 
-Metrics include:
+(`visualization`) Features `SmartRefinementVisualizer`, a delta-aware dashboard comparing **Ground Truth (`#007FFF`)** against **Inferred Pangenomes (`#BD33A4`)** across stacked genome subgrids, complete with explicit numeric edge weights and action logs. 
 
-- Genome count accuracy
-- Core genome recovery
-- Edge precision and recall
+![Pangesim Refinement Tracking](docs/images/refinement_stepwise.gif)
 
 ## Repository Structure
 
 ```text
 .
 ├── src/pangesim/
-│   ├── datastructures/
-│   ├── metrics/
+│   ├── datastructures/#Pangenome models
+│   ├── metrics/ #Scoring functions
 │   ├── panevolve/ #main simulator
 │   ├── reconstruction/ #algorithms and heuristics
-│   └── visualization/
+│   └── visualization/ #SmartRefinementVisualizer & plot rederings
 │
 |
 ├── benchmarks/ # Pangenome Reconstruction Experiments
@@ -109,7 +97,7 @@ Metrics include:
 │   └── run_strategy_comparison.py
 │
 ├── docs/
-│   ├── images/
+│   ├── images/ #Dashboards and architecture diagrams
 │   ├── CHANGELOG.md
 │   └── contributing.md
 │
