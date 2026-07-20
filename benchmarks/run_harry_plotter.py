@@ -1,4 +1,5 @@
 """Plotter script for individual results visualization."""
+
 from pathlib import Path
 from typing import Dict
 
@@ -8,7 +9,8 @@ from benchmarks.config import PARAM_GRID
 from pangesim.visualization import ErrorVisualizer
 from pangesim.visualization import RuntimeVisualizer
 
-def plot_scalability(results_dir:Path, filename:Path)->None:
+
+def plot_scalability(results_dir: Path, filename: Path) -> None:
     """Plots the results of the scalability test.
 
     Args:
@@ -17,13 +19,13 @@ def plot_scalability(results_dir:Path, filename:Path)->None:
     """
     df = pd.read_csv(filename)
 
-    out_dir = Path("results/run_20260713/runtime_plots")
+    out_dir = Path("results/run_20260715/runtime_plots")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    #Plot total run-time
+    # Plot total run-time
     vis_1 = RuntimeVisualizer()
     f1_name = out_dir / "total_runtime.pdf"
-    vis_1.plot_total_runtime(df,f1_name)
+    vis_1.plot_total_runtime(df, f1_name)
 
     vis_2 = RuntimeVisualizer()
     f2_name = out_dir / "phase_1_3_runtime.pdf"
@@ -33,7 +35,8 @@ def plot_scalability(results_dir:Path, filename:Path)->None:
     f3_name = out_dir / "phase_4_runtime.pdf"
     vis_3.plot_phase4_runtime(df, f3_name)
 
-def plot_mape(results_dir:Path, params:Dict[str,float],filename:Path )->None:
+
+def plot_mape(results_dir: Path, params: Dict[str, float], filename: Path) -> None:
     """Plots the mape for a given dict of parameters.
 
     Args:
@@ -43,7 +46,7 @@ def plot_mape(results_dir:Path, params:Dict[str,float],filename:Path )->None:
     """
     df = pd.read_csv(filename)
 
-    out_dir = Path("results/run_20260713/mape_plots")
+    out_dir = Path("results/run_20260715/mape_plots")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Automated filename layout using components from the params dict
@@ -56,13 +59,14 @@ def plot_mape(results_dir:Path, params:Dict[str,float],filename:Path )->None:
     final_output_path = out_dir / fname
     final_output_path.parent.mkdir(parents=True, exist_ok=True)
     vis = ErrorVisualizer()
-    vis.plot_genomes_mape(df=df,params=params,output_path=final_output_path)
+    vis.plot_genomes_mape(df=df, params=params, output_path=final_output_path)
+
 
 if __name__ == "__main__":
     print("\tRunning  Harry Plotter ...")
-    results = Path("results/run_20260713")
+    results = Path("results/run_20260715")
     df_file = results / "error_metrics_ISMB_bounds.csv"
-    plot_scalability(results_dir=results, filename=df_file)
+    # plot_scalability(results_dir=results, filename=df_file)
     for params in PARAM_GRID:
         plot_mape(results_dir=results, params=params, filename=df_file)
     print("Done! :)")

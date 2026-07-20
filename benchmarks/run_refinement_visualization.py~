@@ -1,0 +1,108 @@
+from pathlib import Path
+
+from benchmarks.config import PARAM_GRID
+from benchmarks.config import STRATEGIES
+from benchmarks.fixtures import get_mock_pangenome_scenario
+from benchmarks.runners import evaluate_visualizer_strategy_run
+from pangesim.visualization.graph import SmartRefinementVisualizer
+
+
+def main() -> None:
+    """Evaluates strategy runs and records comparative step-by-step graph structures."""
+    print("Initializing structural visualization workspace...")
+    true_pangenome = get_mock_pangenome_scenario()
+    mock_matrix = true_pangenome.compute_weighted_adjacencies()
+
+    base_out_dir = Path("results/run_20260713/structural_refinement")
+    base_out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Initialize your new structural visualizer subclass with the ground truth
+    viz = RefinementVisualizer(ground_truth_pangenome=true_pangenome)
+
+    for strat_key, strat_label in STRATEGIES.items():
+        for params in PARAM_GRID:
+            print(f"Tracking structural steps for {strat_label}...")
+
+            # Using our dedicated visualizer runner that embeds the graph state
+            run_history, _, _ = evaluate_visualizer_strategy_run(
+                strategy_key=strat_key,
+                matrix=mock_matrix,
+                ground_truth=true_pangenome,
+                params=params,
+            )
+
+            # Define an isolated nested directory for this config parameter set
+            config_slug = f"alpha{params['alpha']}_gamma{params['gamma']}"
+            frame_dir = base_out_dir / strat_key / config_slug
+            frame_dir.mkdir(parents=True, exist_ok=True)
+
+            # Loop through individual iterations saved during this single parameter shot
+            for idx, step_data in enumerate(run_history):
+                # Safely pull out the full pangenome object stored at that step
+                current_inferred_model = step_data.get("inferred_pangenome_state")
+
+                if current_inferred_model is None:
+                    continue
+                viz.plot_refinement_step(
+                    inferred_pangenome=current_inferred_model,
+                    step=idx,
+                    layout_method="kamada_kawai",
+                    output_path=str(frame_dir),
+                )
+
+    print(f"\n Structural visualization sweep complete! Frames written to: {base_out_dir}")
+
+
+def mainv2():
+    """Evaluates strategy runs and records comparative step-by-step graph structures."""
+    print("Initializing structural visualization workspace...")
+    true_pangenome = get_mock_pangenome_scenario()
+    mock_matrix = true_pangenome.compute_weighted_adjacencies()
+
+    base_out_dir = Path("results/run_20260714/structural_refinement")
+    base_out_dir.mkdir(parents=True, exist_ok=True)
+    viz = SmartRefinementVisualizer(ground_truth_pangenome=true_pangenome)
+
+    for strat_key, strat_label in STRATEGIES.items():
+        for params in PARAM_GRID:
+            print(f"Tracking structural steps for {strat_label}...")
+
+            run_history, _, _ = evaluate_visualizer_strategy_run(
+                strategy_key=strat_key,
+                matrix=mock_matrix,
+                ground_truth=true_pangenome,
+                params=params,
+            )
+
+            # --- EFFICIENCY BOOST: Pre-compute positions once using the last step's graph! ---
+            if run_history:
+                final_pangenome = run_history[-1].get("inferred_pangenome_state")
+                if final_pangenome:
+                    viz.precompute_global_layout(final_pangenome)
+
+            config_slug = f"alpha{params['alpha']}_gamma{params['gamma']}"
+            frame_dir = base_out_dir / strat_key / config_slug
+            frame_dir.mkdir(parents=True, exist_ok=True)
+
+            # 2. Iterate and track deltas
+            for idx, step_data in enumerate(run_history):
+                current_inferred_model = step_data.get("inferred_pangenome_state")
+                if current_inferred_model is None:
+                    continue
+
+                # Grab the previous state in the sequence to compute the delta
+                prev_inferred_model = None
+                if idx > 0:
+                    prev_inferred_model = run_history[idx - 1].get("inferred_pangenome_state")
+
+                # Draw the locked side-by-side snapshot frame with highlights
+                viz.plot_refinement_step(
+                    inferred_pangenome=current_inferred_model,
+                    step=idx,
+                    prev_pangenome=prev_inferred_model,
+                    output_path=str(frame_dir),
+                )
+
+
+if __name__ == "__main__":
+    mainv2()

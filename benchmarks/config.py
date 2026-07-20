@@ -9,7 +9,7 @@ PARAM_GRID = [
 ]
 
 STRATEGIES = {
-    "edge_assignment": "Edge Assignment",
+    # "edge_assignment": "Edge Assignment",
     "eulerian_length": "Eulerian by Length",
     "eulerian_weight": "Eulerian by Weight",
 }

@@ -55,7 +55,7 @@ class PipelineTracker:
             "Iteration": iteration,
             "Score": current_score,
             "True Genomes": len(ground_truth),
-            "Inferred Genomes":len(pangenome),
+            "Inferred Genomes": len(pangenome),
             "Number of Genomes Delta": global_stats["k_diff"],
             "Number of Core Genes Delta": global_stats["c_diff"],
             "True Positive Edges": edge_stats["tp"],
@@ -68,3 +68,33 @@ class PipelineTracker:
             "Core Gene Recall": core_stats["recall"],
         }
         self.history.append(log_entry)
+
+
+class StructuralVisualizerTracker(PipelineTracker):
+    """Callback tracker that securely records intermediate graph states."""
+
+    def __call__(
+        self,
+        step_name: str,
+        pangenome: Any,
+        iteration: int,
+        ground_truth: Any,
+        alpha: float,
+        gamma: float,
+    ) -> None:
+        """Intercepts the tracking execution to store deep-copied graph topologies."""
+        # 1. Run the base class evaluation logic to populate self.history
+        super().__call__(
+            step_name=step_name,
+            pangenome=pangenome,
+            iteration=iteration,
+            ground_truth=ground_truth,
+            alpha=alpha,
+            gamma=gamma,
+        )
+
+        # 2. Safely grab the log entry that super().__call__ just appended
+        latest_log_entry = self.history[-1]
+
+        # 3. Inject the explicit deep copy of the pangenome graph topology
+        latest_log_entry["inferred_pangenome_state"] = pangenome.copy()

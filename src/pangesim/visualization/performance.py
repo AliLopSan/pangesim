@@ -1,4 +1,5 @@
 """Module for assessing optimization performance of pangenome reconstruction."""
+
 from pathlib import Path
 from typing import Any
 from typing import Dict
@@ -13,10 +14,7 @@ import seaborn as sns
 class BaseVisualizer:
     """Configures global LaTeX rendering and typography size preferences for plots."""
 
-    def __init__(self,
-                 title_size: int = 50,
-                 label_size: int = 25,
-                 tick_size: int = 30) -> None:
+    def __init__(self, title_size: int = 50, label_size: int = 25, tick_size: int = 30) -> None:
         """Initializes global matplotlib runtime configuration (rc) parameters.
 
         Args:
@@ -37,14 +35,13 @@ class BaseVisualizer:
         }
         sns.set_theme(style="whitegrid", rc=custom_rc)
 
+
 class IndVisualizer:
     """Configures global LaTeX rendering and typography size preferences for plots."""
 
-    def __init__(self,
-                 title_size: int = 40,
-                 label_size: int = 25,
-                 tick_size: int = 30,
-                 legend_size:int = 20) -> None:
+    def __init__(
+        self, title_size: int = 40, label_size: int = 25, tick_size: int = 30, legend_size: int = 20
+    ) -> None:
         """Initializes global matplotlib runtime configuration (rc) parameters.
 
         Args:
@@ -85,12 +82,12 @@ class TrajectoryVisualizer(IndVisualizer):
         """
         df = pd.DataFrame(tracker_history)
         plt.figure(figsize=(12, 8))
-        sns.lineplot(data=df, x="Iteration",
-                     y="Score", color="#5B2C6F", marker="o", lw=1.5)
+        sns.lineplot(data=df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=1.5)
 
-        """
         # Identify where Phase 3 ends to locate the Phase 4 demarcation boundary
-        p3_iters = [row["Iteration"] for row in tracker_history if "Phase 3: Refinement" in row["Step"]]
+        p3_iters = [
+            row["Iteration"] for row in tracker_history if "Phase 3: Refinement" in row["Step"]
+        ]
 
         if p3_iters:
             p4_start_idx = max(p3_iters) + 1
@@ -117,7 +114,7 @@ class TrajectoryVisualizer(IndVisualizer):
                     va="top",
                     ha="left",
                 )
-        """
+
         plt.title(r"\textbf{Optimization Score Trajectory}")
         plt.xlabel(r"Iterations ($t$)")
         plt.ylabel(r"Score($P$) $= \alpha k - \gamma \sum(m_uv - w_uv)^2$")
@@ -141,15 +138,13 @@ class TrajectoryVisualizer(IndVisualizer):
         plt.figure(figsize=(14, 9))
 
         # Optimization trajectory curve
-        sns.lineplot(data=config_df, x="Iteration",
-                     y="Score", color="#5B2C6F", marker="o", lw=1.5)
+        sns.lineplot(data=config_df, x="Iteration", y="Score", color="#5B2C6F", marker="o", lw=1.5)
 
         y_min = config_df["Score"].min()
         y_max = config_df["Score"].max()
         y_range = y_max - y_min if y_max != y_min else 1.0
         text_baseline = y_min + (y_range * 0.05)
 
-        """
         # Identify where Phase 2 ends to mark Phase 3 Start
         p2_df = config_df[config_df["Step"].str.contains("Phase 2: Base Pangenome", na=False)]
         if not p2_df.empty:
@@ -197,7 +192,6 @@ class TrajectoryVisualizer(IndVisualizer):
                     va="top",
                     ha="left",
                 )
-        """
 
         # 3. Clean styling configurations
         # clean_config = config_label.replace("$", "")
@@ -359,10 +353,10 @@ class TrajectoryVisualizer(IndVisualizer):
         if save_path:
             # Cast to a Path object defensively
             save_path_obj = Path(save_path)
-        
+
             # Industry Best Practice: Create ONLY the parent directory structure
             save_path_obj.parent.mkdir(parents=True, exist_ok=True)
-        
+
             # Save the actual file safely
             plt.savefig(save_path_obj, dpi=300, bbox_inches="tight")
             plt.close()
@@ -391,8 +385,8 @@ class TrajectoryVisualizer(IndVisualizer):
             x="Iteration",
             y=metric,
             hue="Config",
-            style="Config",  
-            markers=True,    
+            style="Config",
+            markers=True,
             lw=2,
         )
 
@@ -402,7 +396,7 @@ class TrajectoryVisualizer(IndVisualizer):
         elif metric == "Number of Genomes Delta":
             yname = r"$|k_{true} - k_{inferred}|$"
         else:
-            yname =rf"\text{{{metric}}}" 
+            yname = rf"\text{{{metric}}}"
         plt.ylabel(yname)
 
         # Configure a clean LaTeX legend box anchored to the right side
@@ -417,6 +411,7 @@ class TrajectoryVisualizer(IndVisualizer):
 
 class RuntimeVisualizer(BaseVisualizer):
     """Generates production-ready scaling plots."""
+
     def plot_total_runtime(self, df: pd.DataFrame, output_path: str) -> None:
         """Plots the execution runtime across increasing gene sizes with error bands.
 
@@ -435,10 +430,10 @@ class RuntimeVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#1f77b4"
+            color="#1f77b4",
         )
 
-        #ax.set_title(r"\textbf{Scalability Profile: Full Pipeline}")
+        # ax.set_title(r"\textbf{Scalability Profile: Full Pipeline}")
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"Execution Runtime (\textit{Seconds})")
 
@@ -465,10 +460,10 @@ class RuntimeVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#1f77b4"
+            color="#1f77b4",
         )
 
-        #ax.set_title(r"\textbf{Scalability Profile: Phase 4}")
+        # ax.set_title(r"\textbf{Scalability Profile: Phase 4}")
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"Execution Runtime (\textit{Seconds})")
 
@@ -484,7 +479,7 @@ class RuntimeVisualizer(BaseVisualizer):
             df: DataFrame containing columns ["gene size", "runtime_phases_1-3"].
             output_path: System path where the resulting PDF file will be saved.
         """
-        fig, ax = plt.subplots(figsize=(8,7))
+        fig, ax = plt.subplots(figsize=(8, 7))
 
         # sns.lineplot automatically groups replicates to calculate mean and variance
         sns.lineplot(
@@ -495,10 +490,10 @@ class RuntimeVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#1f77b4"
+            color="#1f77b4",
         )
 
-        #ax.set_title(r"\textbf{Scalability Profile: Phases 1--3}")
+        # ax.set_title(r"\textbf{Scalability Profile: Phases 1--3}")
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"Execution Runtime (\textit{Seconds})")
 
@@ -508,11 +503,12 @@ class RuntimeVisualizer(BaseVisualizer):
         plt.close()
 
 
-
 class ErrorVisualizer(BaseVisualizer):
     """Visualizer class for error metrics."""
-    def plot_genomes_mape(self, df: pd.DataFrame,
-                          params: Dict[str, float], output_path: Path)->None:
+
+    def plot_genomes_mape(
+        self, df: pd.DataFrame, params: Dict[str, float], output_path: Path
+    ) -> None:
         """Plots the mean absolute percentage error.
 
         Args:
@@ -526,7 +522,7 @@ class ErrorVisualizer(BaseVisualizer):
         mask = True
         for key, value in params.items():
             if key in df.columns:
-                mask &= (df[key] == value)
+                mask &= df[key] == value
             else:
                 raise KeyError(f"Hyperparameter '{key}' not found in DataFrame columns.")
 
@@ -544,7 +540,7 @@ class ErrorVisualizer(BaseVisualizer):
             / filtered_df["genomes gt"]
             * 100
         )
-        #Main plotter
+        # Main plotter
         fig, ax = plt.subplots(figsize=(8, 7))
         sns.lineplot(
             data=filtered_df,
@@ -554,7 +550,7 @@ class ErrorVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2.5,
             errorbar="sd",  # Calculates variance across the 5 replicates for THIS config
-            color="#C0392B"
+            color="#C0392B",
         )
 
         # 5. Clean LaTeX Typography & Title Context
@@ -569,5 +565,3 @@ class ErrorVisualizer(BaseVisualizer):
         plt.tight_layout()
         plt.savefig(output_path, format="pdf", dpi=300)
         plt.close()
-
-
