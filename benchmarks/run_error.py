@@ -11,7 +11,7 @@ from benchmarks.runners import evaluate_error_run
 
 def main() -> None:
     """Scalability test."""
-    gene_sizes = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600]
+    gene_sizes = [50, 100, 150, 200, 250, 300]
     replicates = 5
     benchmark_data = []
 
@@ -27,7 +27,7 @@ def main() -> None:
                     pbar.update(1)
 
     df = pd.DataFrame(benchmark_data)
-    output_dir = Path("results/run_20260715")
+    output_dir = Path("results/run_20260721")
     output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / "error_metrics_ISMB_bounds.csv"
     df.to_csv(file_path, index=False)

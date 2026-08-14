@@ -33,6 +33,29 @@ class DummyBounds(BoundsStrategy):
 class GreedyPairingISCB(BoundsStrategy):
     """Calculates k bounds using greedy multiplicity pairing."""
 
+    def compute_node_bound_int(self, node: int, neighbors: List[Tuple]) -> int:
+        """Computes the bound associated with a graph node.
+
+        Args:
+           node: Node identifier.
+           neighbors: Adjacent nodes and their corresponding multiplicity.
+
+        Returns:
+           k_v bound value for the node.
+        """
+        # Collect neighbor's multiplicities
+        multiplicities: List[int] = []
+        for u, m in neighbors:
+            if m > 0:
+                multiplicities.append(m)
+        multiplicities.sort(reverse=True)
+
+        m_1 = max(multiplicities)
+        total_degree = sum(multiplicities)
+
+        # Exact mathematical equivalent of greedy re-pairing loop:
+        return max(m_1, (total_degree + 1) // 2)
+
     def compute_node_bound(self, node: int, neighbors: List[Tuple]) -> int:
         """Computes the bound associated with a graph node.
 
@@ -57,7 +80,11 @@ class GreedyPairingISCB(BoundsStrategy):
             k_v += paired_min
             multiplicities[0] -= paired_min
             multiplicities[1] -= paired_min
-            k_v += multiplicities[0] + multiplicities[1]
+            if multiplicities[0] > 0:
+                multiplicities.append(multiplicities[0])
+            if multiplicities[1] > 0:
+                multiplicities.append(multiplicities[1])
+            #k_v += multiplicities[0] + multiplicities[1]
             multiplicities = sorted(multiplicities[2:], reverse=True)
 
         if len(multiplicities) == 1:
