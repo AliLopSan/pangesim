@@ -223,3 +223,22 @@ def pan_score(target: Pangenome, source: AdjacencyMatrix, alpha: float, gamma: f
         squared_r = squared_r + r[edge] * r[edge]
 
     return alpha * len(target) - gamma * squared_r
+
+def pan_cost(target: Pangenome, source: AdjacencyMatrix, alpha: float, gamma: float) -> float:
+    """Scoring function for the pangenome.
+
+    Args:
+       target: The inferred Pangenome.
+       source: The input weighted adjacency graph.
+       alpha: per-genome reward in the score.
+       gamma: weight-error penalty coefficient.
+
+    Returns:
+       The cost of the inferred pangenome w.r.t. the input.
+    """
+    r = build_residuals(target, source)
+    squared_r = 0
+    for edge in r:
+        squared_r = squared_r + r[edge] * r[edge]
+
+    return alpha * len(target) + gamma * squared_r
