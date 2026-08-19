@@ -17,6 +17,7 @@ from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.operators import MergeOperator
 from pangesim.reconstruction.operators import SplitOperator
+from pangesim.reconstruction.refining import CostMinRefinement
 from pangesim.reconstruction.sorting import WeightSorting
 from pangesim.reconstruction.utils import pan_score
 
@@ -314,3 +315,68 @@ def evaluate_visualizer_strategy_run(
 
     # tracker.history now contains all standard metrics PLUS your 'inferred_pangenome_state'
     return tracker.history, k_min, k_max
+
+def evaluate_comparison_run(
+    num_genes: int,
+    replicate: int,
+    params: Dict[str, float],
+    strategies: List[str] = ["score", "cost"],
+) -> List[Dict[str, Any]]:
+    """Main runner to test RMSE and compare refinement strategies.
+
+    Args:
+        num_genes: Number of genes per genome.
+        replicate: Current replicate number.
+        params: Hyperparameters dict containing alpha and gamma.
+        strategies: List of refinement strategies to compare (e.g., ['score', 'cost']).
+
+    Returns:
+        A list of dicts containing run metrics for each refinement strategy.
+    """
+    # 1. Simulate single ground truth & initial heuristic run (Phases 1-3)
+    tracker = PipelineTracker()
+    ground_truth = random_simulated_pangenome(num_genes)
+    matrix = ground_truth.compute_weighted_adjacencies()
+    assignment = EulerianTrailAssignment()
+    bounds = GreedyPairingISCB()
+    refinement = CostMinRefinement()
+
+    results = []
+
+    # 2. Evaluate each Phase 4 refinement strategy on the exact same starting pangenome
+    for strategy in strategies:
+        if strategy == "score":
+            heuristic = EulerianPathHeuristic(
+                bounds_strategy=bounds,
+                params=params,
+                assignment_strategy=assignment
+            )
+        else:
+            heuristic = EulerianPathHeuristic(
+                bounds_strategy=bounds,
+                params=params,
+                assignment_strategy=assignment,
+                refine_strategy=refinement
+            )
+
+        t0 = time.perf_counter()
+        inf_pangenome = heuristic.reconstruct(
+            matrix=matrix, ground_truth=ground_truth, callbacks=[tracker]
+        )
+        t1 = time.perf_counter()
+        duration_phases_1_3 = t1 - t0
+
+        results.append(
+            {
+                "gene_size": num_genes,
+                "replicate": replicate,
+                "strategy": strategy,
+                "genomes_gt": len(ground_truth),
+                "genomes_inf": len(inf_pangenome),
+                "runtime_phases_1_3": duration_phases_1_3,
+                "alpha": params["alpha"],
+                "gamma": params["gamma"],
+            }
+        )
+
+    return results
