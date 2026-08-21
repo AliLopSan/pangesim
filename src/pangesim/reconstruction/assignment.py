@@ -18,6 +18,7 @@ from pangesim.reconstruction import AssignmentStrategy
 from pangesim.reconstruction import TrailSortingStrategy
 from pangesim.reconstruction import matrix_to_list
 from pangesim.reconstruction.pairing import IterativeOddPairing
+from pangesim.reconstruction.pairing import MinimumWeightMatching
 from pangesim.reconstruction.sorting import LengthSorting
 from pangesim.reconstruction.utils import ComponentTopology
 from pangesim.reconstruction.utils import TopologicalExplorer
@@ -338,5 +339,280 @@ class EulerianTrailAssignment(AssignmentStrategy):
         else:
             trails_sorted = self.trail_sorting.sort(trails, adjacencies)
         genomes = self.build_genomes(trails_sorted, k)
+
+        return Pangenome(pangenome_id="Euler", genomes=genomes)
+
+
+class EulerianMatching(AssignmentStrategy):
+    """Decomposes an adjacency matrix into genome trails using eulerization.
+
+    This strategy leverages a lightweight TopologicalExplorer to partition the
+    global graph into independent subgraphs it computes the eulerization through
+    the blossom algorithm.
+    """
+
+    __slots__ = ("directed", "eulerize_strategy", "path")
+
+    def __init__(
+        self,
+        directed: bool = False,
+        eulerize_strategy: MinimumWeightMatching | None = None,
+        trail_sorting: TrailSortingStrategy | None = None
+    ) -> None:
+        """Initializes the assignment engine.
+
+        Args:
+            eulerize_strategy: If the graph is not eulerian, use this strategy.
+            directed: to be used in the future for directed cases.
+            trail_sorting: Sorting strategy to visit trails. Default is by length.
+        """
+        self.eulerize_strategy = (
+            eulerize_strategy if eulerize_strategy is not None else MinimumWeightMatching()
+        )
+        self.trail_sorting = trail_sorting if trail_sorting is not None else LengthSorting()
+        self.directed = directed
+
+    def graph_to_trails(self,
+                        eulerian_edges: List[Any],
+                        added_edges: List[Tuple[int, int]],
+                        graph: nx.MultiGraph):
+        """Given the eulerian edges, return a list of trails.
+
+        Args:
+           eulerian_edges: The list of edges in the eulerian path.
+           added_edges: Edges that were added.
+           graph: The current component.
+
+        Returns:
+           A list of lists of trails.
+        """
+        trails_list: List[List[int]] = []
+
+        # Get the nodes of the eulerian path
+        nodes: Set[int] = set()
+        node_sequence: List[int] = []
+        for u, v, k in eulerian_edges:
+            nodes.add(u)
+            node_sequence.append(u)
+
+        if len(added_edges) == 0:
+            trails_list.append(node_sequence)
+        else:
+            # split circuit at temporary edges to recover real trails
+            # build vertex sequence from circuit edges
+            vertex_seq: List[int] = [eulerian_edges[0][0]]
+            temp_positions: List[int] = []  # positions (in vertex_seq) of temp edges
+
+            for idx, (u, v, key) in enumerate(eulerian_edges):
+                vertex_seq.append(v)
+                if not graph.edges[u, v, key]["native"]:
+                    temp_positions.append(len(vertex_seq) - 1)
+
+            # cut the circular sequence at every temp-edge seam
+            # temp_positions mark indices in vertex_seq where the temp edge ends
+            cuts = sorted(set(temp_positions))
+            # rotate so first cut is at position 0
+            offset = cuts[0]
+            rotated = vertex_seq[offset:-1] + vertex_seq[:offset]
+            # new cut positions after rotation
+            new_cuts = sorted((c - offset) % (len(rotated)) for c in cuts)
+            prev = 0
+            for cut in new_cuts[1:]:  # first cut is at 0 (seam start)
+                segment = rotated[prev:cut]
+                if len(segment) >= 2:
+                    trails_list.append(segment)
+                prev = cut
+
+            # last segment
+            segment = rotated[prev:]
+            if len(segment) >= 2:
+                trails_list.append(segment)
+        return trails_list
+
+    def direct_trail(
+        self, component: ComponentTopology, graph: nx.Graph, adj_list: AdjacencyList
+    ) -> List[int]:
+        """When component is a path, return the path.
+
+        Args:
+           component: Current component.
+           graph: the component as nx Graph.
+           adj_list: The adjacency list.
+
+        Returns:
+          The component as a list of ints.
+        """
+        trail: List[int] = []
+
+        leaves = [n for n, d in graph.degree() if d == 1]
+
+        for v in nx.dfs_preorder_nodes(graph, leaves[0]):
+            trail.append(v)
+        return trail
+
+    def compute_component_trails(
+        self, component: ComponentTopology, adj_list: AdjacencyList
+    ) -> List[List[int]]:
+        """Computes eulerian trails using the given eulerization strategy.
+
+        Args:
+            component: The current component.
+            adj_list: The weighted adjacency list.
+
+        Returns:
+            A Tuple that contains:
+            - A list of Eulerian trails as lists of integers
+            - The set of edges that were added.
+        """
+        eulerian_edges: List[Tuple[int, int, int]] = []
+        added_edges: List[Tuple[int, int]] = []
+        trails_list: List[List[int]] = []
+        nx_component = component_to_networkx(
+            nodes=component.nodes, adj_list=adj_list, directed=self.directed
+        )
+
+        if is_graph_a_path(nx_component):
+            trail = self.direct_trail(component, nx_component, adj_list)
+            trails_list.append(trail)
+        else:
+
+            if nx.is_eulerian(nx_component):
+                eulerian_edges = list(nx.eulerian_circuit(nx_component, keys=True))
+            else:
+                added_edges = self.eulerize_strategy.pair_vertices(
+                        graph=nx_component,
+                    odd_vertices=component.odd_vertices)
+                nx_component.add_edges_from(added_edges, native=False)
+                eulerian_edges = list(nx.eulerian_circuit(nx_component, keys=True))
+
+            trails_list = self.graph_to_trails(
+                eulerian_edges=eulerian_edges,
+                added_edges=added_edges,
+                graph=nx_component)
+
+        return trails_list
+
+    def compute_trails(self,matrix: AdjacencyMatrix,) -> List[List[int]]:
+        """Computes eulerian trails using the given eulerization strategy.
+
+        Args:
+            matrix: The weighted adjacency list.
+
+        Returns:
+            A list of Eulerian trails as lists of integers.
+        """
+        adj_list = matrix_to_list(matrix=matrix, directed=self.directed)
+        explorer = TopologicalExplorer(adj_list, directed=self.directed)
+        components = explorer.extract_components()
+        trails: List[List[int]] = []
+        # Note for future implementations, what is the graph is directed?
+        for component in components:
+            comp_trails = self.compute_component_trails(component=component,
+                                                        adj_list=adj_list)
+            for t in comp_trails:
+                trails.append(t)
+        return trails
+
+    def _split_trail_conflicts(self, trail: List[int],
+                               used_genes: set) -> List[List[int]]:
+        """Splits a trail into subtrails.
+
+        The resulting subtrails don't revisit the genes of used_genes.
+
+        Args:
+            trail: initial trail
+            used_genes: Genes that should not be repeated.
+
+        Returns:
+           A list of maximal subtrails that do not repeat nodes.
+        """
+        fragments: List[List[int]] = []
+        current: List[int] = []
+        for v in trail:
+            if v in used_genes:
+                if len(current) >= 2:
+                    fragments.append(current)
+                current = []
+            else:
+                current.append(v)
+        if len(current) >= 2:
+            fragments.append(current)
+        return fragments
+
+    def build_genomes(self, trails: List[List[int]]) -> List[Genome]:
+        """Assigns sorted trails to genomes, creating Genome instances on the fly.
+
+        Args:
+            trails: List of trails to assign.
+
+        Returns:
+            A list of instantiated Genome objects.
+        """
+
+        def add_list_as_path(genome: Genome, fragment: List[int]) -> None:
+            """Adds a node list fragment as edges into the target genome."""
+            for u, v in pairwise(fragment):
+                genome.add_edge((u, v))
+
+        def build_fragment(fragment: List[int]) -> None:
+            """Recursively build fragments and instantiate genomes on demand."""
+            genes_in_f = set(fragment)
+
+            if not genomes:
+                # Base case: create the very first genome on the fly
+                new_genome = Genome(genome_id=0)
+                add_list_as_path(new_genome, fragment)
+                genomes.append(new_genome)
+                return
+
+            # Find the existing genome with the minimum intersection (conflicts)
+            best_i = min(
+                range(len(genomes)),
+                key=lambda i: len(genomes[i].gene_set & genes_in_f),
+            )
+            used_genes = genomes[best_i].gene_set
+            conflicts = used_genes & genes_in_f
+
+            if not conflicts:
+                # Zero conflicts with best matching genome: assign cleanly
+                add_list_as_path(genomes[best_i], fragment)
+            else:
+                # If even the best genome has conflicts, attempt splitting the fragment
+                sub_fragments = self._split_trail_conflicts(fragment, used_genes)
+
+                if len(sub_fragments) == 1 and sub_fragments[0] == fragment:
+                    # Fragment could not be split further relative to this genome;
+                    # instantiate a new genome on the fly to avoid cyclic/repeated gene conflicts
+                    new_genome = Genome(genome_id=len(genomes))
+                    add_list_as_path(new_genome, fragment)
+                    genomes.append(new_genome)
+                else:
+                    # Recursively assign non-conflicting sub-fragments
+                    for sub in sub_fragments:
+                        build_fragment(sub)
+
+        genomes: List[Genome] = []
+
+        for trail in trails:
+            build_fragment(trail)
+
+        return genomes
+
+    def assign_genomes(self, adjacencies: AdjacencyMatrix) -> Pangenome:
+        """Decomposes an adjacency matrix into a reconstructed Pangenome object.
+
+        Args:
+            adjacencies: The global weighted adjacency matrix.
+
+        Returns:
+            A  Pangenome containing k genomes built by Eulerian Path decomposition.
+        """
+        trails = self.compute_trails(adjacencies)
+        # print("[assignment] Found",len(trails)," trails ")
+        if isinstance(self.trail_sorting, LengthSorting):
+            trails_sorted = self.trail_sorting.sort(trails)
+        else:
+            trails_sorted = self.trail_sorting.sort(trails, adjacencies)
+        genomes = self.build_genomes(trails_sorted)
 
         return Pangenome(pangenome_id="Euler", genomes=genomes)

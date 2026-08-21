@@ -156,7 +156,7 @@ class GreedyPairingISCB(BoundsStrategy):
         return k_min, k_max, node_bounds
 
 
-def GreedyPairing(BoundsStrategy):
+class GreedyPairing(BoundsStrategy):
     """Calculates k bounds using greedy multiplicity pairing."""
 
     def compute_node_bound(self, node: int, neighbors: List[Tuple]) -> int:

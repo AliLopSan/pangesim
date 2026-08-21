@@ -9,6 +9,7 @@ from pangesim.reconstruction.base import RefinementStrategy
 from pangesim.reconstruction.base import TrailSortingStrategy
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.eulerian import EulerianPathHeuristic
+from pangesim.reconstruction.eulerian import PeelingHeuristic
 from pangesim.reconstruction.utils import pan_score
 
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     "RefinementStrategy",
     "pan_score",
     "RefinementOperator",
+    "PeelingHeuristic",
 ]
