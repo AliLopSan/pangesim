@@ -1,9 +1,12 @@
 """Tests for reconstruction algorithms and utilities."""
 
 from pangesim.reconstruction import EulerianPathHeuristic
+from pangesim.reconstruction import PeelingHeuristic
+from pangesim.reconstruction.assignment import EulerianMatching
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.bounds import GreedyPairingISCB
+from pangesim.reconstruction.pairing import MinimumWeightMatching
 from pangesim.reconstruction.utils import TopologicalExplorer
 
 
@@ -54,6 +57,11 @@ def test_eulerian_assignments():
     pangenome = assign.assign_genomes(sample_matrix, 3)
 
     assert pangenome.check_integrity() is True
+
+    assign_v2 = EulerianMatching()
+    pangenome_v2 = assign_v2.assign_genomes(sample_matrix)
+
+    assert pangenome_v2.check_integrity() is True
 
 
 def test_defaults():
@@ -123,5 +131,26 @@ def test_roboust_example():
     heuristic = EulerianPathHeuristic(
         params=params, bounds_strategy=bounds, assignment_strategy=assign
     )
+    pangenome = heuristic.reconstruct(sample_matrix)
+    assert pangenome.check_integrity() is True
+
+
+def test_peeling_example():
+    """Testing each step of the pipeline."""
+    sample_matrix = {
+        (1, 2): 3,
+        (2, 3): 4,
+        (2, 6): 1,
+        (3, 4): 2,
+        (3, 10): 3,
+        (4, 5): 3,
+        (4, 8): 3,
+        (6, 7): 1,
+        (7, 9): 1,
+        (10, 9): 3,
+        (9, 11): 2,
+    }
+    params = {"alpha": 0.5, "gamma": 1.0}
+    heuristic = PeelingHeuristic(params=params)
     pangenome = heuristic.reconstruct(sample_matrix)
     assert pangenome.check_integrity() is True
