@@ -1,6 +1,7 @@
 """Concrete strategies for Eulerization (transforming a non-eulerian graph into one)."""
 
 import random as rd
+from itertools import combinations
 from typing import Dict
 from typing import List
 
@@ -89,7 +90,7 @@ class IterativeOddPairing(OddPairingStrategy):
         return edges_to_add
 
 
-class MinimumWeightPerfectMatching(OddPairingStrategy):
+class MinimumWeightMatching(OddPairingStrategy):
     """Pairs vertices by minimizing edge weights (Advanced optimization)."""
 
     def pair_vertices(self, graph: nx.MultiGraph, odd_vertices: list[int]) -> list[tuple[int, int]]:
@@ -100,7 +101,31 @@ class MinimumWeightPerfectMatching(OddPairingStrategy):
            odd_vertices: A list of odd vertices to be paired.
 
         Returns:
-           A list of pairs of odd vertices.
+           A list of edges to add.
         """
-        # Future implementation goes here
-        pass
+        if len(odd_vertices) == 0:
+            return graph
+
+        #get all shortest paths between vertices of odd degree
+        odd_deg_pairs_paths = [
+            (m, {n:nx.shortest_path(graph, source=m, target=n)})
+            for m, n in combinations(odd_vertices, 2)
+        ]
+        upper_bound_on_max_path_length = len(graph) + 1
+
+        aux_graph = nx.Graph()
+        for n, ps in odd_deg_pairs_paths:
+            for m, p in ps.items():
+                if n!= m:
+                    aux_graph.add_edge(
+                        m,n,weight=upper_bound_on_max_path_length - len(p), path=p)
+        best_matching = nx.Graph(list(nx.max_weight_matching(aux_graph)))
+        edges = []
+
+        for m,n in best_matching.edges():
+            path = aux_graph[m][n]["path"]
+            for edge in list(nx.utils.pairwise(path)):
+                edges.append(edge)
+        return edges
+
+
