@@ -6,12 +6,12 @@ import pandas as pd
 from tqdm import tqdm
 
 from benchmarks.config import PARAM_GRID
-from benchmarks.runners import evaluate_error_run
+from benchmarks.runners import evaluate_error_run_peel
 
 
 def main() -> None:
     """Scalability test."""
-    gene_sizes = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600]
+    gene_sizes = list(range(25, 101, 25))
     replicates = 5
     benchmark_data = []
 
@@ -21,15 +21,16 @@ def main() -> None:
             for rep in range(1, replicates + 1):
                 for params in PARAM_GRID:
                     # Run runner run
-                    results = evaluate_error_run(num_genes=size, replicate=rep, params=params)
+                    results = evaluate_error_run_peel(num_genes=size,
+                                                      replicate=rep, params=params)
                     benchmark_data.append(results)
                     pbar.set_postfix({"current_size": size})
                     pbar.update(1)
 
     df = pd.DataFrame(benchmark_data)
-    output_dir = Path("results/run_20260715")
+    output_dir = Path("results/run_20260821")
     output_dir.mkdir(parents=True, exist_ok=True)
-    file_path = output_dir / "error_metrics_ISMB_bounds.csv"
+    file_path = output_dir / "error_metrics_peeling.csv"
     df.to_csv(file_path, index=False)
 
     print("\n\nDONE :)\n")

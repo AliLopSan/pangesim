@@ -25,7 +25,7 @@ def random_simulated_pangenome(num_genes: int) -> Pangenome:
     num_genomes = rd.randint(2, 70)
     d = rd.randint(0, 5)
     r = rd.randint(0, 5)
-    print("[fixtures]: Simulated with deletion rate: ", d, "\t rearrangement rate: ", r)
+    #print("[fixtures]: Simulated with deletion rate: ", d, "\t rearrangement rate: ", r)
 
     sim = PangenomeSimulator(deletion_rate=d, rearrangement_rate=r)
 

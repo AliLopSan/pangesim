@@ -46,7 +46,7 @@ def plot_mape(results_dir: Path, params: Dict[str, float], filename: Path) -> No
     """
     df = pd.read_csv(filename)
 
-    out_dir = Path("results/run_20260715/mape_plots")
+    out_dir = Path("results/run_20260821/mape_plots")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Automated filename layout using components from the params dict
@@ -64,8 +64,8 @@ def plot_mape(results_dir: Path, params: Dict[str, float], filename: Path) -> No
 
 if __name__ == "__main__":
     print("\tRunning  Harry Plotter ...")
-    results = Path("results/run_20260715")
-    df_file = results / "error_metrics_ISMB_bounds.csv"
+    results = Path("results/run_20260821")
+    df_file = results / "error_metrics_peeling.csv"
     # plot_scalability(results_dir=results, filename=df_file)
     for params in PARAM_GRID:
         plot_mape(results_dir=results, params=params, filename=df_file)

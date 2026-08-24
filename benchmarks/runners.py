@@ -15,11 +15,12 @@ from pangesim.reconstruction.assignment import DummyAssignment
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.bounds import GreedyPairingISCB
+from pangesim.reconstruction.bounds import GreedyPairing
 from pangesim.reconstruction.operators import MergeOperator
 from pangesim.reconstruction.operators import SplitOperator
 from pangesim.reconstruction.sorting import WeightSorting
 from pangesim.reconstruction.utils import pan_score
-
+from pangesim.reconstruction.pairing import MinimumWeightMatching
 
 def optimize_with_operators(
     pangenome: Pangenome,
@@ -314,3 +315,42 @@ def evaluate_visualizer_strategy_run(
 
     # tracker.history now contains all standard metrics PLUS your 'inferred_pangenome_state'
     return tracker.history, k_min, k_max
+
+
+def evaluate_error_run_peel(num_genes: int,
+                            replicate: int, params: Dict[str, float]) -> Dict[str, Any]:
+    """Main runner to test rsme.
+
+    Args:
+        num_genes: Number of genes per genome.
+        replicate: Current replicate number.
+        params: Hyperparameters dict containing alpha and gamma.
+
+    Returns:
+        A dict with the total runtime, as well as phases 1-3 and phase 4.
+    """
+    # Simulate random scenario
+    tracker = PipelineTracker()
+    ground_truth = random_simulated_pangenome(num_genes)
+    matrix = ground_truth.compute_weighted_adjacencies()
+    bounds = GreedyPairing()
+    pairing= MinimumWeightMatching()
+    assign  = EulerianTrailAssignment(eulerize_strategy=pairing)
+    heuristic = EulerianPathHeuristic(
+        bounds_strategy=bounds,
+        params=params,
+        assignment_strategy=assign,
+    )
+    inf_pangenome = heuristic.reconstruct(
+        matrix=matrix, ground_truth=ground_truth, callbacks=[tracker]
+    )
+
+
+    return {
+        "gene size": num_genes,
+        "replicate": replicate,
+        "genomes gt": len(ground_truth),
+        "genomes inf": len(inf_pangenome),
+        "alpha": params["alpha"],
+        "gamma": params["gamma"],
+    }
