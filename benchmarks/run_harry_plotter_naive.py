@@ -82,7 +82,7 @@ class NaiveVisualizer(BaseVisualizer):
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"Mean Absolute Percentage Error (\textit{MAPE \%})")
         ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
-        ax.set_ylim(bottom=0)
+        ax.set_ylim(bottom=-0.50)
 
         plt.tight_layout()
         plt.savefig(output_path, format="pdf", dpi=400)
@@ -92,12 +92,12 @@ class NaiveVisualizer(BaseVisualizer):
 
 if __name__ == "__main__":
     print("\tRunning  Harry Plotter Naive version ...")
-    results = Path("results/run_20260825")
+    results = Path("results/run_20260826")
     df_file = results / "metrics_naive.csv"
     df = pd.read_csv(df_file)
     vis = NaiveVisualizer()
     out_error = results / "MAPE_naive.pdf"
     out_runtime = results / "runtime_naive.pdf"
     vis.plot_genomes_mape(df=df, output_path=out_error)
-    vis.plot_genomes_mape(df=df, output_path=out_runtime)
+    vis.plot_phase_runtime(df=df, output_path=out_runtime)
     print("Done! :)")

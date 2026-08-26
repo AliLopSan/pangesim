@@ -10,7 +10,7 @@ from benchmarks.runners import evaluate_naive_error_run
 
 def main() -> None:
     """Scalability test."""
-    gene_sizes = list(range(25,501,25))
+    gene_sizes = list(range(25,1001,25))
     replicates = 5
     benchmark_data = []
 
@@ -25,7 +25,7 @@ def main() -> None:
                 pbar.update(1)
 
     df = pd.DataFrame(benchmark_data)
-    output_dir = Path("results/run_20260825")
+    output_dir = Path("results/run_20260826")
     output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / "metrics_naive.csv"
     df.to_csv(file_path, index=False)
