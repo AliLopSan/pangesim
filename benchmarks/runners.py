@@ -11,6 +11,7 @@ from benchmarks import StructuralVisualizerTracker
 from benchmarks.fixtures import random_simulated_pangenome
 from pangesim import Pangenome
 from pangesim.reconstruction import EulerianPathHeuristic
+from pangesim.reconstruction import SequentialEdgeInsertion
 from pangesim.reconstruction.assignment import DummyAssignment
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.base import AdjacencyMatrix
@@ -314,3 +315,38 @@ def evaluate_visualizer_strategy_run(
 
     # tracker.history now contains all standard metrics PLUS your 'inferred_pangenome_state'
     return tracker.history, k_min, k_max
+
+def evaluate_naive_error_run(num_genes: int, replicate: int) -> Dict[str, Any]:
+    """Main runner to test rsme.
+
+    Args:
+        num_genes: Number of genes per genome.
+        replicate: Current replicate number.
+
+    Returns:
+        A dict with all stats, including runtime and core symmetric difference.
+    """
+    ground_truth = random_simulated_pangenome(num_genes)
+    matrix = ground_truth.compute_weighted_adjacencies()
+    heuristic = SequentialEdgeInsertion()
+    t0 = time.perf_counter()
+    inf_pangenome = heuristic.reconstruct(matrix)
+
+    t1 = time.perf_counter()
+
+    duration = t1 - t0
+
+    gt_core = ground_truth.core
+    inf_core = inf_pangenome.core
+    sd_core = gt_core.symmetric_difference(inf_core)
+    return {
+        "gene size": num_genes,
+        "replicate": replicate,
+        "genomes gt": len(ground_truth),
+        "genomes inf": len(inf_pangenome),
+        "core gt": len(gt_core),
+        "core inf": len(inf_core),
+        "core sd": len(sd_core),
+        "runtime": duration
+    }
+
