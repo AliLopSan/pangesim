@@ -89,6 +89,42 @@ class NaiveVisualizer(BaseVisualizer):
         plt.close()
 
 
+    """A class for performance visualizations of Naive algorithm."""
+    def plot_raw_k_difference(self, df: pd.DataFrame, output_path: str) -> None:
+        """Plots the execution runtime across increasing gene sizes with error bands.
+
+        Args:
+            df: DataFrame containing columns ["gene size", "runtime_phases_1-3"].
+            output_path: System path where the resulting PDF file will be saved.
+        """
+        fig, ax = plt.subplots(figsize=(8, 7))
+
+        # Row-level MAPE on the filtered subset
+        df["RAW"] = df["genomes gt"] - df["genomes inf"]
+
+        # sns.lineplot automatically groups replicates to calculate mean and variance
+        sns.lineplot(
+            data=df,
+            x="gene size",
+            y="RAW",
+            ax=ax,
+            marker="o",
+            linewidth=2,
+            errorbar="sd",  # Standard deviation band across the 5 replicates
+            color="#9966CC",
+        )
+
+        # 5. Clean LaTeX Typography & Title Context
+        #ax.set_title("Sequential Edge Insertion", pad=15)
+
+        ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
+        ax.set_ylabel(r"$k_{true} - k_{inferred}$")
+        ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
+        ax.set_ylim(bottom=-1,top=10)
+
+        plt.tight_layout()
+        plt.savefig(output_path, format="pdf", dpi=400)
+        plt.close()
 
 if __name__ == "__main__":
     print("\tRunning  Harry Plotter Naive version ...")
@@ -97,7 +133,9 @@ if __name__ == "__main__":
     df = pd.read_csv(df_file)
     vis = NaiveVisualizer()
     out_error = results / "MAPE_naive.pdf"
+    out_raw = results / "RAW_diff_naive.pdf"
     out_runtime = results / "runtime_naive.pdf"
     vis.plot_genomes_mape(df=df, output_path=out_error)
     vis.plot_phase_runtime(df=df, output_path=out_runtime)
+    vis.plot_raw_k_difference(df=df, output_path=out_raw)
     print("Done! :)")
