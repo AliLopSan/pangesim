@@ -26,7 +26,7 @@ class ResidualsRefinement(RefinementStrategy):
 
         Args:
            params: Dictionary of parameters.
-           max_iter: Failsafe nuumber of iterations.
+           max_iter: Failsafe number of iterations.
         """
         self.params = params or {"alpha": 1.0, "gamma": 1.0}
         # Refinement follows until convergence or max_iter
@@ -73,8 +73,7 @@ class ResidualsRefinement(RefinementStrategy):
                     if not genome.has_edge(edge) and not genome.would_break_path_forest(edge):
                         slack_list.append(i)
             else:
-                if not genome.would_break_path_forest(edge):
-                    slack_list.append(i)
+                slack_list.append(i)
         return slack_list
 
     def fix_under_edge(
