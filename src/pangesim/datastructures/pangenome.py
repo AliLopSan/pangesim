@@ -366,26 +366,34 @@ class Genome:
 
         Returns:
            True if this is a valid path forest.
+
+        Raises:
+           Value error if one of the conditions is not satisfied.
         """
-        seen_nodes: Set[Any] = set()
-        for node in self.iter_nodes():
-            value = unwrap_node_value(node)
+        paths = self.get_path_sequences()
 
-            # Cycle condition check
-            if value in seen_nodes:
-                return False
-            seen_nodes.add(value)
+        for path_seq in self.get_path_sequences():
+            seen_nodes: Set[Any] = set()
+            for node in path_seq:
+                # Cycle condition check
+                if node in seen_nodes:
+                    raise ValueError(
+                        f"Node '{node}' in Genome '{self._genome_id}' failed cycle validation.")
+                seen_nodes.add(node)
 
-            # Isolated node check
-            if node._prev is None and node._next is None:
-                return False
+                dll_node = self._node_cache[node]
+                
+                # Isolated node check
+                if dll_node._prev is None and dll_node._next is None:
+                    raise ValueError(
+                        f"Node '{node}' of Genome '{self._genome_id}' failed isolated node validation.")
 
         ad = self.as_adjacency_list()
 
         for node in ad:
             neighbors = ad[node]
             if len(neighbors) > 2:
-                return False
+                raise ValueError(f"Genome '{self._genome_id}' failed degree validation.")
 
         return True
 
