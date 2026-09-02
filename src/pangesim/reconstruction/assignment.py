@@ -1,5 +1,6 @@
 """Phase 2: Assignment of Paths to Genomes."""
-
+import heapq
+from copy import copy
 from itertools import pairwise
 from typing import Any
 from typing import List
@@ -7,6 +8,8 @@ from typing import Set
 from typing import Tuple
 
 import networkx as nx
+from tralda.datastructures import Tree
+from tralda.datastructures import TreeNode
 from tralda.datastructures.doubly_linked import DLList
 from tralda.datastructures.doubly_linked import DLListNode
 
@@ -20,6 +23,7 @@ from pangesim.reconstruction import matrix_to_list
 from pangesim.reconstruction.pairing import IterativeOddPairing
 from pangesim.reconstruction.sorting import LengthSorting
 from pangesim.reconstruction.utils import ComponentTopology
+from pangesim.reconstruction.utils import GlobalGenomePool
 from pangesim.reconstruction.utils import TopologicalExplorer
 from pangesim.reconstruction.utils import component_to_networkx
 from pangesim.reconstruction.utils import is_graph_a_path
@@ -340,3 +344,147 @@ class EulerianTrailAssignment(AssignmentStrategy):
         genomes = self.build_genomes(trails_sorted, k)
 
         return Pangenome(pangenome_id="Euler", genomes=genomes)
+
+
+
+class MSTAssignment(AssignmentStrategy):
+    """Decomposes a given adjacency graph into a path forest by using MST."""
+    def __init__(self) -> None:
+        #Useful to look at the different MST trees
+        self.component_trees: dict[int, Tree] = {}
+        
+    def build_mst(self, adj_list:AdjacencyList,
+                    start_node: int | None = None) -> Tree:
+        """Computes the MST using Prim's algorithm and a priority queue.
+
+        Args:
+        adj_list: Connected component adj_list.
+
+        start_node: Optional argument.
+        """
+        def add_edges(
+                pq: list[tuple[int, int, int]],
+                node: int,
+                adj_list: AdjacencyList,
+                visited: set[int] ) -> None:
+            """Pushes unvisited edges connected to the given node into pq.
+
+            Args:
+            pq: Priority queue, a simple list
+
+            node: Current node.
+
+            adj_list: AdjacencyList object.
+
+            visited: the set of visited nodes.
+            """
+            for neighbor, weight in adj_list.get(node, []):
+                if neighbor not in visited:
+                    heapq.heappush(pq, (weight, node, neighbor))
+
+        if not adj_list:
+            raise ValueError("Cannot build MST from an empty adjacency list.")
+        if start_node is None:
+            start_node = next(iter(adj_list))
+
+        visited: set[int] = set()
+        pq: list[tuple[int, int, int]] = []
+
+        root = TreeNode(label=start_node)
+        node_cache: dict[int, TreeNode] = {start_node: root}
+
+        visited.add(start_node)
+        add_edges(pq, start_node, adj_list, visited)
+
+        while pq and len(visited) < len(adj_list):
+            weight, u, v = heapq.heappop(pq)
+
+            if v not in visited:
+                visited.add(v)
+                child = TreeNode(label=v)
+                node_cache[v] = child
+                parent = node_cache[u]
+                parent.add_child(child)
+                add_edges(pq, v, adj_list, visited)
+
+        return Tree(root)
+
+    def compute_component_genomes(self,
+                                  mst:Tree,
+                                  matrix:AdjacencyMatrix,
+                                  id_pool: GlobalGenomePool,) -> List[Genome]:
+        """MST peeling orchestrator.
+
+        Args:
+        mst: The Minimum Spanning Tree as Tralda Tree.
+
+        matrix: Input weighted adjacency graph.
+
+        id_pool: Global Genome Pool for id generation.
+        """
+        dll_dict = dict()
+
+        for v in mst.postorder():
+            dll_dict[v] = []
+
+        residuals = copy(matrix)
+
+        for v in mst.postorder():
+            if v.is_leaf():
+                lst = DLList([v.label])
+                dll_dict[v] = [lst]
+            else:
+                v_label = v.label
+                paths: list[DLList] = []
+
+                for child in v.children:
+                    c_label = child.label
+                    for path in dll_dict[child]:
+                        key = (v_label, c_label) if v_label < c_label else (c_label, v_label)
+                        if residuals[key] > 0:
+                            if path._last._value in key:
+                                path.append(v.label)
+                                residuals[key] -=1
+                        paths.append(path)
+                dll_dict[v] = paths
+
+        final_genomes: list[Genome] = []
+
+        for path in dll_dict[mst.root]:
+            genome_id = id_pool.get_next_id()
+            genome = Genome(genome_id=genome_id)
+            genome.add_path(path)
+            final_genomes.append(genome)
+
+        return final_genomes
+
+    def assign_genomes(self, adjacencies: AdjacencyMatrix) -> Pangenome:
+        """Decomposes an adjacency matrix into a reconstructed Pangenome object.
+
+        Args:
+            adjacencies: The global weighted adjacency matrix.
+
+        Returns:
+            A  Pangenome containing k genomes built by Eulerian Path decomposition.
+        """
+        adj_list = matrix_to_list(matrix=adjacencies, directed=False)
+        explorer = TopologicalExplorer(adj_list, directed=False)
+        components = explorer.extract_components()
+        id_pool = GlobalGenomePool(start_id=1)
+        all_genomes: list[Genome] = []
+        comp_idx = 1
+
+        for component in components:
+            mst_tree = self.build_mst(component.sub_adj_list)
+            comp_genomes = self.compute_component_genomes(
+                mst=mst_tree,
+                matrix=component.sub_adj_matrix,
+                id_pool=id_pool,
+            )
+            all_genomes.extend(comp_genomes)
+            self.component_trees[comp_idx] = mst_tree
+            comp_idx += 1
+
+        return Pangenome(pangenome_id="MST", genomes=all_genomes)
+
+
