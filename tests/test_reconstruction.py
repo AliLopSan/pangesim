@@ -5,6 +5,8 @@ from pangesim.reconstruction.assignment import EulerianTrailAssignment
 from pangesim.reconstruction.assignment import MSTAssignment
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.bounds import GreedyPairingISCB
+from pangesim.reconstruction.refining import SequentialEdgeRefinement
+from pangesim.reconstruction.utils import GlobalGenomePool
 from pangesim.reconstruction.utils import TopologicalExplorer
 
 
@@ -137,7 +139,8 @@ def test_mst_disconnected():
     sample_adjacencies = {(1, 2): 1, (2, 3): 1, (3, 1): 1, (4, 5): 1}
 
     assign = MSTAssignment()
-    pangenome = assign.assign_genomes(sample_adjacencies)
+    id_pool = GlobalGenomePool(start_id=1)
+    pangenome = assign.assign_genomes(sample_adjacencies, id_pool)
 
     print("\t For MST disconnected: ")
 
@@ -145,8 +148,15 @@ def test_mst_disconnected():
         tree = assign.component_trees[comp]
         tree.print_tree()
 
-    print(pangenome.summary())
+    print("\t\tBase Pangenome: \n",pangenome.summary())
     assert pangenome.check_integrity() is True
+
+    refiner = SequentialEdgeRefinement(id_pool)
+
+    inferred = refiner.refine(source=sample_adjacencies, target=pangenome)
+
+    assert inferred.check_integrity() is True
+    print("\t\t Inferred Pangenome: \n", inferred.summary())
 
 
 def test_mst_connected():
@@ -165,7 +175,8 @@ def test_mst_connected():
         (9, 11): 2,
     }
     assign = MSTAssignment()
-    pangenome = assign.assign_genomes(sample_matrix)
+    id_pool = GlobalGenomePool(start_id=1)
+    pangenome = assign.assign_genomes(sample_matrix, id_pool)
 
     print("\t For MST connected: ")
 
@@ -173,5 +184,13 @@ def test_mst_connected():
         tree = assign.component_trees[comp]
         tree.print_tree()
 
-    print(pangenome.summary())
+    print("\t\tBase Pangenome: \n",pangenome.summary())
     assert pangenome.check_integrity() is True
+
+
+    refiner = SequentialEdgeRefinement(id_pool)
+
+    inferred = refiner.refine(source=sample_matrix, target=pangenome)
+
+    assert inferred.check_integrity() is True
+    print("\t\t Inferred Pangenome: \n", inferred.summary())
