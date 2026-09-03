@@ -350,9 +350,9 @@ class EulerianTrailAssignment(AssignmentStrategy):
 class MSTAssignment(AssignmentStrategy):
     """Decomposes a given adjacency graph into a path forest by using MST."""
     def __init__(self) -> None:
-        #Useful to look at the different MST trees
+        """Bookeeping the MST trees by component."""
         self.component_trees: dict[int, Tree] = {}
-        
+
     def build_mst(self, adj_list:AdjacencyList,
                     start_node: int | None = None) -> Tree:
         """Computes the MST using Prim's algorithm and a priority queue.
@@ -458,11 +458,12 @@ class MSTAssignment(AssignmentStrategy):
 
         return final_genomes
 
-    def assign_genomes(self, adjacencies: AdjacencyMatrix) -> Pangenome:
+    def assign_genomes(self, adjacencies: AdjacencyMatrix, id_pool:GlobalGenomePool) -> Pangenome:
         """Decomposes an adjacency matrix into a reconstructed Pangenome object.
 
         Args:
             adjacencies: The global weighted adjacency matrix.
+            id_pool: A pool for id genome assignment.
 
         Returns:
             A  Pangenome containing k genomes built by Eulerian Path decomposition.
@@ -470,7 +471,6 @@ class MSTAssignment(AssignmentStrategy):
         adj_list = matrix_to_list(matrix=adjacencies, directed=False)
         explorer = TopologicalExplorer(adj_list, directed=False)
         components = explorer.extract_components()
-        id_pool = GlobalGenomePool(start_id=1)
         all_genomes: list[Genome] = []
         comp_idx = 1
 
