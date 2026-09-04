@@ -14,11 +14,14 @@ from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction import SequentialEdgeInsertion
 from pangesim.reconstruction.assignment import DummyAssignment
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
+from pangesim.reconstruction.assignment import MSTAssignment
 from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.bounds import GreedyPairingISCB
 from pangesim.reconstruction.operators import MergeOperator
 from pangesim.reconstruction.operators import SplitOperator
+from pangesim.reconstruction.refining import SequentialEdgeRefinement
 from pangesim.reconstruction.sorting import WeightSorting
+from pangesim.reconstruction.utils import GlobalGenomePool
 from pangesim.reconstruction.utils import pan_score
 
 
@@ -350,3 +353,40 @@ def evaluate_naive_error_run(num_genes: int, replicate: int) -> Dict[str, Any]:
         "runtime": duration
     }
 
+def evaluate_mst_error_run(num_genes: int, replicate: int) -> Dict[str, Any]:
+    """Main runner to test rsme.
+
+    Args:
+        num_genes: Number of genes per genome.
+        replicate: Current replicate number.
+
+    Returns:
+        A dict with all stats, including runtime and core symmetric difference.
+    """
+    ground_truth = random_simulated_pangenome(num_genes)
+    matrix = ground_truth.compute_weighted_adjacencies()
+    assign = MSTAssignment()
+    id_pool = GlobalGenomePool(start_id=1)
+    t0 = time.perf_counter()
+    base_pangenome = assign.assign_genomes(matrix, id_pool)
+    refiner = SequentialEdgeRefinement(id_pool)
+    inf_pangenome = refiner.refine(source=matrix, target=base_pangenome)
+
+    t1 = time.perf_counter()
+
+    duration = t1 - t0
+
+    gt_core = ground_truth.core
+    inf_core = inf_pangenome.core
+    sd_core = gt_core.symmetric_difference(inf_core)
+    return {
+        "gene size": num_genes,
+        "replicate": replicate,
+        "genomes gt": len(ground_truth),
+        "genomes base": len(base_pangenome),
+        "genomes inf": len(inf_pangenome),
+        "core gt": len(gt_core),
+        "core inf": len(inf_core),
+        "core sd": len(sd_core),
+        "runtime": duration
+    }
