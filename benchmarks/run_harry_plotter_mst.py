@@ -120,21 +120,21 @@ class MSTVisualizer(BaseVisualizer):
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"$k_{true} - k_{inferred}$")
         ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
-        ax.set_ylim(bottom=-1,top=10)
+        #ax.set_ylim(bottom=-1,top=10)
 
         plt.tight_layout()
         plt.savefig(output_path, format="pdf", dpi=400)
         plt.close()
 
 if __name__ == "__main__":
-    print("\tRunning  Harry Plotter Naive version ...")
+    print("\tRunning  Harry Plotter Maximum Spanning Tree version ...")
     results = Path("results/run_20260903")
     df_file = results / "metrics_mst.csv"
     df = pd.read_csv(df_file)
     vis = MSTVisualizer()
-    out_error = results / "MAPE_mst.pdf"
-    out_raw = results / "RAW_diff_mst.pdf"
-    out_runtime = results / "runtime_mst.pdf"
+    out_error = results / "MAPE_mst_v2.pdf"
+    out_raw = results / "RAW_diff_mst_v2.pdf"
+    out_runtime = results / "runtime_mst_v2.pdf"
     vis.plot_genomes_mape(df=df, output_path=out_error)
     vis.plot_phase_runtime(df=df, output_path=out_runtime)
     vis.plot_raw_k_difference(df=df, output_path=out_raw)

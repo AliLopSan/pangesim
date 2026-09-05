@@ -380,7 +380,7 @@ class MSTAssignment(AssignmentStrategy):
             """
             for neighbor, weight in adj_list.get(node, []):
                 if neighbor not in visited:
-                    heapq.heappush(pq, (weight, node, neighbor))
+                    heapq.heappush(pq, (-weight, node, neighbor))
 
         if not adj_list:
             raise ValueError("Cannot build MST from an empty adjacency list.")
