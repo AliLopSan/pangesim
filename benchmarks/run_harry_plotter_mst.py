@@ -30,7 +30,7 @@ class MSTVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#1f77b4",
+            color="#06D6A0",
         )
 
         # ax.set_title(r"\textbf{Scalability Profile: Phases 1--3}")
@@ -73,14 +73,14 @@ class MSTVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2.5,
             errorbar="sd",  # Calculates variance across the 5 replicates
-            color="#FF2052",
+            color="#FFD166",
         )
 
         # 5. Clean LaTeX Typography & Title Context
         #ax.set_title("Sequential Edge Insertion", pad=15)
 
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
-        ax.set_ylabel(r"Mean Absolute Percentage Error (\textit{MAPE \%})")
+        ax.set_ylabel(r"\textit{MAPE (\%)}")
         ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
         ax.set_ylim(bottom=-0.50)
 
@@ -111,7 +111,7 @@ class MSTVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#8DB600",
+            color="#FFC5AA",
         )
 
         # 5. Clean LaTeX Typography & Title Context
@@ -129,7 +129,7 @@ class MSTVisualizer(BaseVisualizer):
 if __name__ == "__main__":
     print("\tRunning  Harry Plotter Maximum Spanning Tree version ...")
     results = Path("results/run_20260903")
-    df_file = results / "metrics_mst.csv"
+    df_file = results / "metrics_mst_maximum_ver.csv"
     df = pd.read_csv(df_file)
     vis = MSTVisualizer()
     out_error = results / "MAPE_mst_v2.pdf"

@@ -30,7 +30,7 @@ class NaiveVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#1f77b4",
+            color="#06D6A0",
         )
 
         # ax.set_title(r"\textbf{Scalability Profile: Phases 1--3}")
@@ -73,14 +73,14 @@ class NaiveVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2.5,
             errorbar="sd",  # Calculates variance across the 5 replicates
-            color="#C0392B",
+            color="#FFD166",
         )
 
         # 5. Clean LaTeX Typography & Title Context
         #ax.set_title("Sequential Edge Insertion", pad=15)
 
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
-        ax.set_ylabel(r"Mean Absolute Percentage Error (\textit{MAPE \%})")
+        ax.set_ylabel(r"\textit{MAPE (\%)}")
         ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
         ax.set_ylim(bottom=-0.50)
 
@@ -111,7 +111,7 @@ class NaiveVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#9966CC",
+            color="#FF7F50",
         )
 
         # 5. Clean LaTeX Typography & Title Context
@@ -120,7 +120,7 @@ class NaiveVisualizer(BaseVisualizer):
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"$k_{true} - k_{inferred}$")
         ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
-        ax.set_ylim(bottom=-1,top=10)
+        ax.set_ylim(bottom=-3,top=6)
 
         plt.tight_layout()
         plt.savefig(output_path, format="pdf", dpi=400)
