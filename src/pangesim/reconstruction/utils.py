@@ -14,10 +14,28 @@ from pangesim.reconstruction.base import AdjacencyList
 from pangesim.reconstruction.base import AdjacencyMatrix
 
 
+class GlobalGenomePool:
+    """Manages globally unique sequential IDs across all graph components."""
+
+    __slots__ = ("_current_id",)
+
+    def __init__(self, start_id: int = 1) -> None:
+        """Initializator for global genome pool."""
+        self._current_id = start_id
+
+    def get_next_id(self) -> int:
+        """Returns the next available unique genome ID in O(1) time."""
+        assigned_id = self._current_id
+        self._current_id += 1
+        return assigned_id
+
+
 class ComponentTopology(NamedTuple):
     """Encapsulates the structural characteristics of a connected component."""
 
     nodes: set[int]
+    sub_adj_list: AdjacencyList
+    sub_adj_matrix: AdjacencyMatrix
     odd_vertices: list[int]
     is_eulerian: bool
 
@@ -69,6 +87,8 @@ class TopologicalExplorer:
                 continue
 
             component_nodes: set[int] = set()
+            sub_adj_list: AdjacencyList = {}
+            sub_adj_matrix: AdjacencyMatrix = {}
             odd_vertices: list[int] = []
             queue: deque[int] = deque([root_node])
             visited.add(root_node)
@@ -77,24 +97,34 @@ class TopologicalExplorer:
                 current = queue.popleft()
                 component_nodes.add(current)
 
-                # Identify imbalances using our pre-calculated lookup map
-                # (Handle missing nodes safely if they have no outward edges in directed mode)
-                balance = self.degrees.get(current, 0)
-                if self.directed:
-                    if balance != 0:
-                        odd_vertices.append(current)
-                else:
-                    if balance % 2 != 0:
-                        odd_vertices.append(current)
+                neighbors = self.adj_list.get(current, [])
+                sub_adj_list[current] = neighbors
 
-                # Traverse neighbors from the (neighbor, weight) tuple layout
-                for neighbor, _ in self.adj_list.get(current, []):
+                if not self.directed and len(neighbors) % 2 != 0:
+                    odd_vertices.append(current)
+
+                for neighbor, weight in neighbors:
+                    if not self.directed:
+                        edge_key = (
+                            (current, neighbor)
+                            if current < neighbor
+                            else (neighbor, current)
+                        )
+                    else:
+                        edge_key = (current, neighbor)
+
+                    if edge_key not in sub_adj_matrix:
+                        sub_adj_matrix[edge_key] = weight
+
                     if neighbor not in visited:
                         visited.add(neighbor)
                         queue.append(neighbor)
+
             components.append(
                 ComponentTopology(
                     nodes=component_nodes,
+                    sub_adj_list=sub_adj_list,
+                    sub_adj_matrix=sub_adj_matrix,
                     odd_vertices=odd_vertices,
                     is_eulerian=len(odd_vertices) == 0,
                 )

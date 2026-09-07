@@ -10,7 +10,7 @@ import seaborn as sns
 
 from pangesim.visualization.performance import BaseVisualizer
 
-class NaiveVisualizer(BaseVisualizer):
+class MSTVisualizer(BaseVisualizer):
     """A class for performance visualizations of Naive algorithm."""
     def plot_phase_runtime(self, df: pd.DataFrame, output_path: str) -> None:
         """Plots the execution runtime across increasing gene sizes with error bands.
@@ -111,7 +111,7 @@ class NaiveVisualizer(BaseVisualizer):
             marker="o",
             linewidth=2,
             errorbar="sd",  # Standard deviation band across the 5 replicates
-            color="#FF7F50",
+            color="#FFC5AA",
         )
 
         # 5. Clean LaTeX Typography & Title Context
@@ -120,21 +120,21 @@ class NaiveVisualizer(BaseVisualizer):
         ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
         ax.set_ylabel(r"$k_{true} - k_{inferred}$")
         ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
-        ax.set_ylim(bottom=-3,top=6)
+        #ax.set_ylim(bottom=-1,top=10)
 
         plt.tight_layout()
         plt.savefig(output_path, format="pdf", dpi=400)
         plt.close()
 
 if __name__ == "__main__":
-    print("\tRunning  Harry Plotter Naive version ...")
-    results = Path("results/run_20260826")
-    df_file = results / "metrics_naive.csv"
+    print("\tRunning  Harry Plotter Maximum Spanning Tree version ...")
+    results = Path("results/run_20260903")
+    df_file = results / "metrics_mst_maximum_ver.csv"
     df = pd.read_csv(df_file)
-    vis = NaiveVisualizer()
-    out_error = results / "MAPE_naive.pdf"
-    out_raw = results / "RAW_diff_naive.pdf"
-    out_runtime = results / "runtime_naive.pdf"
+    vis = MSTVisualizer()
+    out_error = results / "MAPE_mst_v2.pdf"
+    out_raw = results / "RAW_diff_mst_v2.pdf"
+    out_runtime = results / "runtime_mst_v2.pdf"
     vis.plot_genomes_mape(df=df, output_path=out_error)
     vis.plot_phase_runtime(df=df, output_path=out_runtime)
     vis.plot_raw_k_difference(df=df, output_path=out_raw)

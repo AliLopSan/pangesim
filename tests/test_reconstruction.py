@@ -2,8 +2,11 @@
 
 from pangesim.reconstruction import EulerianPathHeuristic
 from pangesim.reconstruction.assignment import EulerianTrailAssignment
+from pangesim.reconstruction.assignment import MSTAssignment
 from pangesim.reconstruction.base import matrix_to_list
 from pangesim.reconstruction.bounds import GreedyPairingISCB
+from pangesim.reconstruction.refining import SequentialEdgeRefinement
+from pangesim.reconstruction.utils import GlobalGenomePool
 from pangesim.reconstruction.utils import TopologicalExplorer
 
 
@@ -125,3 +128,69 @@ def test_roboust_example():
     )
     pangenome = heuristic.reconstruct(sample_matrix)
     assert pangenome.check_integrity() is True
+
+
+
+def test_mst_disconnected():
+    """MST on disconnected graph."""
+    # Graph structure:
+    # Component 1 (Triangle, all even): 1-2, 2-3, 3-1
+    # Component 2 (Line, two odd nodes): 4-5
+    sample_adjacencies = {(1, 2): 1, (2, 3): 1, (3, 1): 1, (4, 5): 1}
+
+    assign = MSTAssignment()
+    id_pool = GlobalGenomePool(start_id=1)
+    pangenome = assign.assign_genomes(sample_adjacencies, id_pool)
+
+    print("\t For MST disconnected: ")
+
+    for comp in assign.component_trees:
+        tree = assign.component_trees[comp]
+        tree.print_tree()
+
+    print("\t\tBase Pangenome: \n",pangenome.summary())
+    assert pangenome.check_integrity() is True
+
+    refiner = SequentialEdgeRefinement(id_pool)
+
+    inferred = refiner.refine(source=sample_adjacencies, target=pangenome)
+
+    assert inferred.check_integrity() is True
+    print("\t\t Inferred Pangenome: \n", inferred.summary())
+
+
+def test_mst_connected():
+    """MST on connected graph."""
+    sample_matrix = {
+        (1, 2): 3,
+        (2, 3): 4,
+        (2, 6): 1,
+        (3, 4): 2,
+        (3, 10): 3,
+        (4, 5): 3,
+        (4, 8): 3,
+        (6, 7): 1,
+        (7, 9): 1,
+        (10, 9): 3,
+        (9, 11): 2,
+    }
+    assign = MSTAssignment()
+    id_pool = GlobalGenomePool(start_id=1)
+    pangenome = assign.assign_genomes(sample_matrix, id_pool)
+
+    print("\t For MST connected: ")
+
+    for comp in assign.component_trees:
+        tree = assign.component_trees[comp]
+        tree.print_tree()
+
+    print("\t\tBase Pangenome: \n",pangenome.summary())
+    assert pangenome.check_integrity() is True
+
+
+    refiner = SequentialEdgeRefinement(id_pool)
+
+    inferred = refiner.refine(source=sample_matrix, target=pangenome)
+
+    assert inferred.check_integrity() is True
+    print("\t\t Inferred Pangenome: \n", inferred.summary())
