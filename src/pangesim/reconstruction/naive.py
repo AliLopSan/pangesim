@@ -72,7 +72,7 @@ class SequentialEdgeInsertion:
         Returns:
             A pangenome that explains matrix.
         """
-        pan = Pangenome(pangenome_id="Naive")
+        pan = Pangenome(pangenome_id="SEQ")
         callbacks = callbacks or []
 
         r = self.build_sorted_residuals(matrix)
