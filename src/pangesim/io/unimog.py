@@ -32,12 +32,98 @@ def export_to_unimog(file_path: Path | str, pan: Pangenome) -> None:
 # UNIMOG output
 #--------------------------------------------------------------
 def parse_dcj_matrix(file_path: Path | str) -> pd.DataFrame:
-     """ Extracts the dcj matrix from UNIMOG's output text."""
+    """Extracts the DCJ distance matrix from UNIMOG output."""
+    path = Path(file_path)
+
+    if not path.is_file():
+        raise ValueError(f"Input file does not exist: {path}")
+
+    matrix_lines = []
+    capture = False
+
+    with open(path, "r") as f:
+        for line in f:
+            stripped = line.strip()
+
+            if "DCJ distance comparisons:" in line:
+                capture = True
+                continue
+
+            if capture:
+                # Stop if we hit a new section header
+                if (
+                    stripped
+                    and not stripped.startswith("|")
+                    and not stripped.startswith("_")
+                    and stripped.endswith(":")
+                ):
+                    break
+
+                if not stripped or stripped.startswith("___"):
+                    continue
+
+                if stripped.startswith("|"):
+                    matrix_lines.append(stripped)
+
+    if not matrix_lines:
+        raise ValueError(
+            f"No matrix data found under 'DCJ distance comparisons:' in {path}"
+        )
+
+    # Convert table blocks into explicit (row_label, col_label, value) tuples
+    records = []
+    current_headers = []
+    all_rows = set()
+    all_cols = set()
+
+    for line in matrix_lines:
+        cells = [c.strip() for c in line.split("|")]
+        if cells and cells[0] == "":
+            cells.pop(0)
+        if cells and cells[-1] == "":
+            cells.pop()
+
+        if not cells:
+            continue
+
+        # Header row check (first cell is empty)
+        if cells[0] == "":
+            current_headers = cells[1:]
+            for col in current_headers:
+                all_cols.add(col)
+        else:
+            row_label = cells[0]
+            all_rows.add(row_label)
+            values = cells[1:]
+
+            # Map values to current chunk headers
+            for col_label, val_str in zip(current_headers, values):
+                val = np.nan if val_str == "-" else float(val_str)
+                records.append(
+                    {"Row": row_label, "Column": col_label, "Value": val}
+                )
+
+    # Build DataFrame safely via pivot
+    records_df = pd.DataFrame(records)
+
+    # De-duplicate entries if UNIMOG repeated any cell coordinates
+    records_df = records_df.drop_duplicates(subset=["Row", "Column"])
+
+    df = records_df.pivot(index="Row", columns="Column", values="Value")
+
+    # Maintain original order of appearance
+    ordered_rows = [r for r in all_rows if r in df.index]
+    ordered_cols = [c for c in all_cols if c in df.columns]
+
+    return df.reindex(index=ordered_rows, columns=ordered_cols)
+
+def parse_dcj_id_matrix(file_path: Path | str) -> pd.DataFrame:
+     """ Extracts the dcj indel matrix from UNIMOG's output text."""
      matrix_lines = []
      capture = False
      with open(file_path, 'r') as f:
           for line in f:
-               if "DCJ distance comparisons:" in line:
+               if "DCJ-indel distance comparisons:" in line:
                     capture = True
                     continue
                if capture:
