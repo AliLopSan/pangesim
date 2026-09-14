@@ -5,6 +5,8 @@ from abc import abstractmethod
 from typing import Any
 from typing import Dict
 
+import pandas as pd
+
 from pangesim import Genome
 from pangesim import Pangenome
 
@@ -47,4 +49,17 @@ class PangenomeMetric(BaseMetric):
     @abstractmethod
     def evaluate(self, ground_truth: Pangenome, inferred: Pangenome) -> Dict[str, float]:
         """Performs comparison strictly between two Pangenomes."""
+        pass
+
+class Metric(ABC):
+    """Blueprint for distribution calculation of individual Pngenomes."""
+
+    @abstractmethod
+    def get_genome_summary(self) -> pd.DataFrame:
+        """Computes the genome summary dataframe."""
+        pass
+
+    @abstractmethod
+    def get_weight_distribution(self) -> pd.DataFrame:
+        """Computes the edge weight distribution."""
         pass
