@@ -1,0 +1,106 @@
+"""Main script for running inference strategies."""
+from pathlib import Path
+
+from tqdm import tqdm
+
+from pangesim.io.unimog import export_to_unimog
+from pangesim.metrics.summary import PangenomeDistribution
+from pangesim.reconstruction import SequentialEdgeInsertion
+from pangesim.reconstruction.assignment import MSTAssignment
+from pangesim.reconstruction.base import AdjacencyMatrix
+from pangesim.reconstruction.refining import SequentialEdgeRefinement
+from pangesim.reconstruction.utils import GlobalGenomePool
+from workflows.scripts.generate_sim import generate_pan
+
+
+def run_seq_inference(m:AdjacencyMatrix):
+    """Sequential edge addition method."""
+    heuristic = SequentialEdgeInsertion()
+    inf_pangenome = heuristic.reconstruct(m)
+    return inf_pangenome
+
+
+def run_mst_inference(m:AdjacencyMatrix):
+    """Maximum Spanning Tree inference."""
+    assign = MSTAssignment()
+    id_pool = GlobalGenomePool(start_id=1)
+    base_pangenome = assign.assign_genomes(m, id_pool)
+    refiner = SequentialEdgeRefinement(id_pool)
+    inf_pangenome = refiner.refine(source=m, target=base_pangenome)
+    return inf_pangenome
+
+def run_inference(results: Path)-> None:
+    """UNIMOG input generation.
+
+    Args:
+        results: The results path for the output.
+    """
+    levels = ["low","medium","high"]
+    gene_sizes = [25, 100, 200, 500, 1000, 1500]
+
+    results.mkdir(parents=True, exist_ok=True)
+
+    with tqdm(total=len(gene_sizes) * len(levels),
+              desc="Total Progress") as pbar:
+        for size in gene_sizes:
+            size_dir = results / str(size)
+            size_dir.mkdir(parents=True, exist_ok=True)
+            for level in levels:
+                level_dir = size_dir / level
+                level_dir.mkdir(parents=True, exist_ok=True)
+                #Ground Truth generation
+                d,r,ground_truth = generate_pan(num_genes=size, evol=level)
+                filename = "ground_truth-d"+str(d) + "_" +"r"+str(r)+".unimog"
+                f = level_dir / filename
+                export_to_unimog(f, ground_truth)
+
+                gt_dist = PangenomeDistribution(pangenome = ground_truth,
+                                                name="simulated")
+                gt_g = gt_dist.get_genome_summary()
+                csv_output_path = level_dir / "simulated_genome.csv"
+                gt_g.to_csv(csv_output_path, index=False)
+                gt_w = gt_dist.get_weight_distribution()
+                csv_output_path = level_dir / "simulated_weights.csv"
+                gt_w.to_csv(csv_output_path, index=False)
+
+                matrix = ground_truth.compute_weighted_adjacencies()
+
+                #MST inference
+                mst = run_mst_inference(matrix)
+                mst.check_integrity()
+                f2 = level_dir / "mst_pangenome.unimog"
+                export_to_unimog(f2, mst)
+
+                mst_dist = PangenomeDistribution(pangenome = mst,
+                                                name="MST")
+                mst_g = mst_dist.get_genome_summary()
+                csv_output_path = level_dir / "mst_genome.csv"
+                mst_g.to_csv(csv_output_path, index=False)
+                mst_w = mst_dist.get_weight_distribution()
+                csv_output_path = level_dir / "mst_weights.csv"
+                mst_w.to_csv(csv_output_path, index=False)
+
+                #Sequential inference
+                seq = run_seq_inference(matrix)
+                seq.check_integrity()
+                f3 = level_dir / "seq_pangenome.unimog"
+                export_to_unimog(f3, seq)
+
+                seq_dist = PangenomeDistribution(pangenome = seq,
+                                                name="SEQ")
+                seq_g = seq_dist.get_genome_summary()
+                csv_output_path = level_dir / "seq_genome.csv"
+                seq_g.to_csv(csv_output_path, index=False)
+                seq_w = seq_dist.get_weight_distribution()
+                csv_output_path = level_dir / "seq_weights.csv"
+                seq_w.to_csv(csv_output_path, index=False)
+
+                pbar.set_postfix({"size": size})
+                pbar.update(1)
+
+
+
+if __name__ == "__main__":
+    out_dir = Path("results/run_20260909/")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    run_inference(out_dir)
