@@ -285,7 +285,6 @@ class Genome:
 
         return adjacency_list
 
-    # Jiazhen's code
     def get_a_path(self, head: DLListNode) -> DLList:
         """Given a head node, reconstruct the path as a list.
 
