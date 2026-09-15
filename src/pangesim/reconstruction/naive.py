@@ -42,7 +42,12 @@ class SequentialEdgeInsertion:
                             if not genome.would_break_path_forest(edge):
                                 slack_list.append(i)
                 else:
-                    slack_list.append(i)
+                    if u in genome.gene_set and genome.degree(u) < 2:
+                        slack_list.append(i)
+                    if v in genome.gene_set and genome.degree(v) < 2:
+                        slack_list.append(i)
+                    if u not in genome.gene_set and v not in genome.gene_set:
+                        slack_list.append(i)
             return slack_list
 
     def new_genome_with_edge(self, pan:Pangenome, edge:Tuple) -> Genome:
@@ -72,7 +77,7 @@ class SequentialEdgeInsertion:
         Returns:
             A pangenome that explains matrix.
         """
-        pan = Pangenome(pangenome_id="Naive")
+        pan = Pangenome(pangenome_id="SEQ")
         callbacks = callbacks or []
 
         r = self.build_sorted_residuals(matrix)

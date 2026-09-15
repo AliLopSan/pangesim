@@ -1,0 +1,37 @@
+import random as rd
+from typing import Tuple
+
+from pangesim import Pangenome
+from pangesim.panevolve import PangenomeSimulator
+
+
+def generate_pan(num_genes: int, evol: str) -> Tuple:
+    """Returns a random simulated pangenome.
+
+    Args:
+    num_genes: Number of desired genes.
+    evol: Complexity of evolutionary events "low", "medium", "high".
+
+    Raises:
+       TypeError: If num_genes is not an integer.
+       ValueError: If num_genes is less than 2 or evol not in options.
+    """
+    num_genomes = rd.randint(2,70)
+    if evol == "low":
+        d = rd.randint(0,1)
+        r = rd.randint(0,1)
+    elif evol == "medium":
+        d = rd.randint(1,5)
+        r  = rd.randint(1,5)
+    elif evol == "high":
+        d = rd.randint(2,10)
+        r  = rd.randint(2,10)
+    else:
+        raise ValueError(
+            f" Accepted values for events are 'low', 'medium', 'high', got {evol}"
+        )
+    sim = PangenomeSimulator(deletion_rate=d, rearrangement_rate=r)
+
+    pangenome = sim.generate_pangenome(k=num_genomes, length=num_genes)
+
+    return d,r,pangenome
