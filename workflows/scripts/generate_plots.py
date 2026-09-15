@@ -418,17 +418,22 @@ def plot_path_length_distribution(
         x=genome_col,
         y=length_col,
         hue=hue_param,
-        palette="viridis" if hue_param else None,
-        color="#5003C0" if not hue_param else None,
+        #palette="viridis" if hue_param else None,
+        color="#AB03A9" if not hue_param else None,
         fliersize=3,
         linewidth=1.2,
         ax=ax,
     )
 
+    n_genomes = df[genome_col].nunique()
+    ax.set_xticks(range(n_genomes))
+    ax.set_xticklabels(range(1, n_genomes + 1))
+
     # Formatting
     ax.set_title(title, pad=15)
-    ax.set_xlabel(r"Genome ID")
+    ax.set_xlabel(r"Genome")
     ax.set_ylabel(r"Path Length")
+    
 
     # Ensure clean integer ticks on y-axis
     ax.yaxis.get_major_locator().set_params(integer=True)
@@ -602,7 +607,14 @@ def plot_pangenome_metrics(results_dir:Path, source_dir:Path, pname:str)->None:
     plt.close()
 
     #Path length
-    fig1, ax2 =  plot_path_counts_per_genome(df=genomes)
+    fig1, ax1 =  plot_path_counts_per_genome(df=genomes)
+    pname = outdir / "number_of_paths_distribution.pdf"
+    plt.savefig(pname, dpi=350)
+    #plt.show()
+    plt.close()
+
+    #Path length
+    fig3, ax3 =  plot_path_length_distribution(df=genomes)
     pname = outdir / "path_length_distribution.pdf"
     plt.savefig(pname, dpi=350)
     #plt.show()
