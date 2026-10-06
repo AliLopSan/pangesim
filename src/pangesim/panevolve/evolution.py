@@ -120,6 +120,283 @@ class SimpleModel(MutationModel):
             if head_b._next is not None:
                 head_b._next._prev = head_b
 
+    def _apply_inversions(self, genome: Genome, num_events: int) -> None:
+        """Invert the segment of the path from node i to the node j (any btw 2 ends).
+
+        The length of the path should >= 2.
+
+        This changes the structural adjacencies without losing or isolating genes.
+        """
+        for _ in range(num_events):
+            candidate_heads = []
+
+            for head in genome.heads:
+                path = genome.get_a_path(head)
+
+                if path._count >= 2:
+                    candidate_heads.append(head)
+
+            if not candidate_heads:
+                break
+
+            random_head = random.choice(candidate_heads)
+            path = genome.get_a_path(random_head)
+
+            ind1 = random.randint(0, path._count - 2)
+            ind2 = random.randint(ind1 + 1, path._count - 1)
+
+            start = path.node_at(ind1)
+            end = path.node_at(ind2)
+
+            before = start._prev
+            after = end._next
+
+            current = start
+
+            while True:
+                old_next = current._next
+
+                current._next, current._prev = current._prev, current._next
+
+                if current is end:
+                    break
+
+                current = old_next
+
+            if before is not None:
+                before._next = end
+                end._prev = before
+            else:  # start is the head, also update heads
+                head_index = genome.heads.index(random_head)
+                genome.heads[head_index] = end
+                end._prev = None
+
+            start._next = after
+
+            if after is not None:
+                after._prev = start
+
+    def _apply_fissions(self, genome: Genome, num_events: int) -> None:
+        """Break the path at a randomly selected node, add them to the genome.
+
+        The length of the path should >= 4, so the paths after fission both have >= 2 nodes.
+
+        This changes the structural adjacencies without losing or isolating genes.
+        """
+        for _ in range(num_events):
+            candidate_heads = []
+
+            for head in genome.heads:
+                path = genome.get_a_path(head)
+
+                if path._count >= 4:
+                    candidate_heads.append(head)
+
+            if not candidate_heads:
+                break
+
+            random_head = random.choice(candidate_heads)
+            path = genome.get_a_path(random_head)
+
+            split_index = random.randint(2, path._count - 2)
+
+            downstream_node = path.node_at(split_index)
+            upstream_node = downstream_node._prev
+            downstream_node._prev = None
+            upstream_node._next = None
+
+            # Get the path of made of the tail portion
+            path_new = genome.get_a_path(downstream_node)
+
+            # Add path_new to the genome (including putting genes in the set)
+            genome.add_path(path_new)
+
+    def _apply_fusions(self, genome: Genome, num_events: int) -> None:
+        """Fuse randomly selected path i and j, i as the head portion.
+
+        Args:
+            genome: The Genome instance to mutate in-place.
+            num_events: The number of edge-breakage events to execute.
+        """
+        for _ in range(num_events):
+            if len(genome.heads) < 2:
+                break
+
+            # Randomly choose two different paths
+            random_head1, random_head2 = random.sample(genome.heads, 2)
+
+            # Get path1: the head portion of the fused path
+            path1 = genome.get_a_path(random_head1)
+
+            # Fusion
+            path1._last._next = random_head2
+            random_head2._prev = path1._last
+
+            # path2 is fused to path1, remove it from heads
+            genome.heads.remove(random_head2)
+
+    def _detach_segment(self, d_start: DLListNode, d_end: DLListNode) -> None:
+        """Detach a contiguous segment from its current path.
+
+        The remaining parts of the path are reconnected after detaching the
+        segment from d_start through d_end.
+
+        Args:
+            d_start (DLListNode): First node of the segment to detach.
+            d_end (DLListNode): Last node of the segment to detach.
+
+        Assumption:
+            d_start and d_end belong to the same path, and d_start occurs
+            before or is equal to d_end.
+        """
+        before = d_start._prev
+        after = d_end._next
+
+        d_start._prev = None
+        d_end._next = None
+
+        if before is not None:
+            before._next = after
+
+        if after is not None:
+            after._prev = before
+
+    def _insert_segment(
+        self, i_start: DLListNode, i_end: DLListNode | None, d_start: DLListNode, d_end: DLListNode
+    ) -> None:
+        """Insert a detached segment into a path.
+
+        The segment from d_start through d_end is inserted between i_start
+        and i_end.
+
+        Args:
+            i_start (DLListNode): Node after which the detached segment is inserted.
+            i_end (DLListNode | None): Node following the inserted segment, or None.
+            d_start (DLListNode): First node of the detached segment.
+            d_end (DLListNode): Last node of the detached segment.
+
+        Assumption:
+            d_start._prev is None.
+            d_end._next is None.
+            i_start and i_end belong to the receiving path.
+        """
+        d_start._prev = i_start
+        d_end._next = i_end
+
+        i_start._next = d_start
+        if i_end is not None:
+            i_end._prev = d_end
+
+    def _apply_translocations(self, genome: Genome, num_events: int) -> None:
+        """Randomly choose two paths and break points, then exchange their tail portions.
+
+        Both reciprocal and non-reciprocal translocation are allowed.
+
+        This changes the structural adjacencies without losing or isolating genes.
+
+        Args:
+            genome: The Genome instance to mutate in-place.
+            num_events: The number of edge-breakage events to execute.
+        """
+        if len(genome.heads) > 1:  # The genome should have at least 2 paths
+            for _ in range(num_events):
+                # Randomly choose two different paths
+                random_head1, random_head2 = random.sample(genome.heads, 2)
+
+                # Get path1 and path2
+                path1 = genome.get_a_path(random_head1)
+                path2 = genome.get_a_path(random_head2)
+
+                # In case we have a path with only one node
+                if path1._count <= 1 or path2._count <= 1:
+                    continue
+
+                # Determine which translocation types are possible
+                # Reciprocal is always possible
+                possible_events = ["reciprocal"]
+
+                if path2._count > 2:  # path2 gives and path1 takes
+                    possible_events.append("path1_takes")
+
+                if path1._count > 2:  # path1 gives and path2 takes
+                    possible_events.append("path2_takes")
+
+                # Randomly choose one valid event
+                event = random.choice(possible_events)
+
+                if event == "reciprocal":
+                    # reciprocal translocation, exchange segments
+                    # Get insertion points and detached segments in path 1 and 2
+                    ind1 = random.randint(1, path1._count - 1)
+                    ind2 = random.randint(1, path2._count - 1)
+
+                    len1 = random.randint(1, path1._count - ind1)
+                    len2 = random.randint(1, path2._count - ind2)
+
+                    d_start1 = path1.node_at(ind1)
+                    d_start2 = path2.node_at(ind2)
+                    i_start1 = d_start1._prev
+                    i_start2 = d_start2._prev
+
+                    d_end1 = path1.node_at(ind1 + len1 - 1)
+                    d_end2 = path2.node_at(ind2 + len2 - 1)
+                    i_end1 = d_end1._next
+                    i_end2 = d_end2._next
+
+                    # Translocation
+                    self._detach_segment(d_start1, d_end1)
+                    self._detach_segment(d_start2, d_end2)
+
+                    self._insert_segment(i_start1, i_end1, d_start2, d_end2)
+                    self._insert_segment(i_start2, i_end2, d_start1, d_end1)
+
+                elif event == "path1_takes":
+                    # Choose insertion point (can be head) in path1
+                    ind1 = random.randint(0, path1._count - 1)
+
+                    i_start1 = path1.node_at(ind1)
+                    i_end1 = i_start1._next
+
+                    # Choose detached segment (after head) from path2
+                    ind2 = random.randint(1, path2._count - 1)
+                    if ind2 == 1:  # Make sure after translocation, it remains at least 2 nodes
+                        len2 = random.randint(1, path2._count - ind2 - 1)
+                    else:
+                        len2 = random.randint(1, path2._count - ind2)
+
+                    d_start2 = path2.node_at(ind2)
+                    d_end2 = path2.node_at(ind2 + len2 - 1)
+
+                    # Detach from path2
+                    self._detach_segment(d_start2, d_end2)
+
+                    # Insert into path1
+                    self._insert_segment(i_start1, i_end1, d_start2, d_end2)
+
+                else:  # path2_takes
+                    # Choose insertion point (can be head) in path2
+                    ind2 = random.randint(0, path2._count - 1)
+
+                    i_start2 = path2.node_at(ind2)
+                    i_end2 = i_start2._next
+
+                    # Choose detached segment (after head) from path1
+                    ind1 = random.randint(1, path1._count - 1)
+
+                    if ind1 == 1:  # Make sure after translocation, it remains at least 2 nodes
+                        len1 = random.randint(1, path1._count - ind1 - 1)
+                    else:
+                        len1 = random.randint(1, path1._count - ind1)
+
+                    d_start1 = path1.node_at(ind1)
+                    d_end1 = path1.node_at(ind1 + len1 - 1)
+
+                    # Detach from path1
+                    self._detach_segment(d_start1, d_end1)
+
+                    # Insert into path2
+                    self._insert_segment(i_start2, i_end2, d_start1, d_end1)
+
 
 class IDPool:
     """Manages unique identifiers across evolutionary lineages."""
@@ -143,12 +420,20 @@ class PangenomeSimulator:
         insertion_rate: float = 0.0,
         deletion_rate: float = 0.0,
         rearrangement_rate: float = 0.0,
+        inversion_rate: float = 0.0,
+        fission_rate: float = 0.0,
+        fusion_rate: float = 0.0,
+        translocation_rate: float = 0.0,
         mutation_model: MutationModel | None = None,
     ) -> None:
         """Initializes the pangenome simulator with the given rates and models."""
         self.insertion_rate = insertion_rate
         self.deletion_rate = deletion_rate
         self.rearrangement_rate = rearrangement_rate
+        self.inversion_rate = inversion_rate
+        self.fission_rate = fission_rate
+        self.fusion_rate = fusion_rate
+        self.translocation_rate = translocation_rate
 
         self.model = mutation_model if mutation_model is not None else SimpleModel()
         self.gene_id_pool = IDPool()
@@ -224,6 +509,10 @@ class PangenomeSimulator:
             num_ins = self._draw_poisson_events(self.insertion_rate, branch_len)
             num_del = self._draw_poisson_events(self.deletion_rate, branch_len)
             num_rea = self._draw_poisson_events(self.rearrangement_rate, branch_len)
+            num_inv = self._draw_poisson_events(self.inversion_rate, branch_len)
+            num_fis = self._draw_poisson_events(self.fission_rate, branch_len)
+            num_fus = self._draw_poisson_events(self.fusion_rate, branch_len)
+            num_trsl = self._draw_poisson_events(self.translocation_rate, branch_len)
 
             # Apply mutations
             if num_ins > 0:
@@ -232,6 +521,14 @@ class PangenomeSimulator:
                 self.model._apply_deletions(child_genome, num_del)
             if num_rea > 0:
                 self.model._apply_rearrangements(child_genome, num_rea)
+            if num_inv > 0:
+                self.model._apply_inversions(child_genome, num_inv)
+            if num_fis > 0:
+                self.model._apply_fissions(child_genome, num_fis)
+            if num_fus > 0:
+                self.model._apply_fusions(child_genome, num_fus)
+            if num_trsl > 0:
+                self.model._apply_translocations(child_genome, num_trsl)
 
             # Cache the child state for downstream branches or final leaf processing
             node_genomes[v] = child_genome
@@ -240,8 +537,4 @@ class PangenomeSimulator:
             if v.is_leaf():
                 leaf_genomes.append(child_genome)
 
-            pan = Pangenome(pangenome_id=f"simulated_k{k}_l{length}", genomes=leaf_genomes)
-            pan.core = pan.compute_core_genes()
-            pan.core_edges = pan.compute_core_edges()
-
-        return pan
+        return Pangenome(pangenome_id=f"simulated_k{k}_l{length}", genomes=leaf_genomes)
