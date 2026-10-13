@@ -236,18 +236,13 @@ class SimpleModel(MutationModel):
             genome.heads.remove(random_head2)
 
     def _detach_segment(self, d_start: DLListNode, d_end: DLListNode) -> None:
-        """Detach a contiguous segment from its current path.
+        """Detach the contiguous segment [d_start, ..., d_end] from its current path.
 
-        The remaining parts of the path are reconnected after detaching the
-        segment from d_start through d_end.
-
-        Args:
-            d_start (DLListNode): First node of the segment to detach.
-            d_end (DLListNode): Last node of the segment to detach.
+        Then reconnect the remaining path.
 
         Assumption:
-            d_start and d_end belong to the same path, and d_start occurs
-            before or is equal to d_end.
+            start and end belong to the same path,
+            and start occurs before or is equal to end.
         """
         before = d_start._prev
         after = d_end._next
@@ -264,21 +259,14 @@ class SimpleModel(MutationModel):
     def _insert_segment(
         self, i_start: DLListNode, i_end: DLListNode | None, d_start: DLListNode, d_end: DLListNode
     ) -> None:
-        """Insert a detached segment into a path.
+        """Insert the detached segment [d_start, ..., d_end].
 
-        The segment from d_start through d_end is inserted between i_start
-        and i_end.
-
-        Args:
-            i_start (DLListNode): Node after which the detached segment is inserted.
-            i_end (DLListNode | None): Node following the inserted segment, or None.
-            d_start (DLListNode): First node of the detached segment.
-            d_end (DLListNode): Last node of the detached segment.
+        Insert it between i_start and i_end.
 
         Assumption:
-            d_start._prev is None.
-            d_end._next is None.
-            i_start and i_end belong to the receiving path.
+            d_start._prev is None
+            d_end._next is None
+            i_start and i_end belongs to the receiving path.
         """
         d_start._prev = i_start
         d_end._next = i_end
@@ -288,114 +276,73 @@ class SimpleModel(MutationModel):
             i_end._prev = d_end
 
     def _apply_translocations(self, genome: Genome, num_events: int) -> None:
-        """Randomly choose two paths and break points, then exchange their tail portions.
+        """Exchange possibly empty segments between two distinct paths.
 
-        Both reciprocal and non-reciprocal translocation are allowed.
-
-        This changes the structural adjacencies without losing or isolating genes.
+        Both segments nonempty gives a reciprocal translocation; exactly one
+        empty segment gives a non-reciprocal translocation. Both paths retain
+        at least two nodes, and no genes are lost or duplicated.
 
         Args:
-            genome: The Genome instance to mutate in-place.
-            num_events: The number of edge-breakage events to execute.
+            genome: The Genome instance to modify in-place.
+            num_events: Number of translocations to attempt.
         """
-        if len(genome.heads) > 1:  # The genome should have at least 2 paths
-            for _ in range(num_events):
-                # Randomly choose two different paths
-                random_head1, random_head2 = random.sample(genome.heads, 2)
+        if len(genome.heads) < 2:
+            return
 
-                # Get path1 and path2
-                path1 = genome.get_a_path(random_head1)
-                path2 = genome.get_a_path(random_head2)
+        for _ in range(num_events):
+            # Randomly get two paths and their lengths
+            head1, head2 = random.sample(genome.heads, 2)
+            path1 = genome.get_a_path(head1)
+            path2 = genome.get_a_path(head2)
+            n1, n2 = path1._count, path2._count
 
-                # In case we have a path with only one node
-                if path1._count <= 1 or path2._count <= 1:
-                    continue
+            if n1 < 2 or n2 < 2:
+                continue
 
-                # Determine which translocation types are possible
-                # Reciprocal is always possible
-                possible_events = ["reciprocal"]
+            # Draw lengths satisfying both final-path size constraints.
+            # l1 = 0 is feasible only if path2 can give up a node.
+            # l1: the segment length from 1 to 2, l2: the segment length from 2 to 1
+            # constraint1: n1 - l1 + l2 >= 2
+            # constraint2: n2 - l2 + l1 >= 2
+            # constraint3: l1 + l2 >= 1
+            l1 = random.randint(0 if n2 >= 3 else 1, n1 - 1)
+            min_l2 = max(0, 2 - n1 + l1)
+            max_l2 = min(n2 - 1, n2 + l1 - 2)
+            if l1 == 0:
+                min_l2 = max(min_l2, 1)  # Do not exchange two empty segments.
+            l2 = random.randint(min_l2, max_l2)
 
-                if path2._count > 2:  # path2 gives and path1 takes
-                    possible_events.append("path1_takes")
+            # ind is the first segment index; for len = 0 it is a gap index.
+            # Restrict to indices >= 1 so registered heads do not change.
+            ind1 = random.randint(1, n1 - l1)
+            ind2 = random.randint(1, n2 - l2)
 
-                if path1._count > 2:  # path1 gives and path2 takes
-                    possible_events.append("path2_takes")
+            # nodes before and after the segments for exchange
+            before1 = path1.node_at(ind1 - 1)
+            after1 = path1.node_at(ind1 + l1) if ind1 + l1 < n1 else None
+            before2 = path2.node_at(ind2 - 1)
+            after2 = path2.node_at(ind2 + l2) if ind2 + l2 < n2 else None
 
-                # Randomly choose one valid event
-                event = random.choice(possible_events)
+            # start and end of the segments to exchange
+            if l1 > 0:
+                start1 = path1.node_at(ind1)
+                end1 = path1.node_at(ind1 + l1 - 1)
+            if l2 > 0:
+                start2 = path2.node_at(ind2)
+                end2 = path2.node_at(ind2 + l2 - 1)
 
-                if event == "reciprocal":
-                    # reciprocal translocation, exchange segments
-                    # Get insertion points and detached segments in path 1 and 2
-                    ind1 = random.randint(1, path1._count - 1)
-                    ind2 = random.randint(1, path2._count - 1)
+            # Detach both nonempty segments before inserting either one.
+            if l1 > 0:
+                self._detach_segment(start1, end1)
+            if l2 > 0:
+                self._detach_segment(start2, end2)
 
-                    len1 = random.randint(1, path1._count - ind1)
-                    len2 = random.randint(1, path2._count - ind2)
-
-                    d_start1 = path1.node_at(ind1)
-                    d_start2 = path2.node_at(ind2)
-                    i_start1 = d_start1._prev
-                    i_start2 = d_start2._prev
-
-                    d_end1 = path1.node_at(ind1 + len1 - 1)
-                    d_end2 = path2.node_at(ind2 + len2 - 1)
-                    i_end1 = d_end1._next
-                    i_end2 = d_end2._next
-
-                    # Translocation
-                    self._detach_segment(d_start1, d_end1)
-                    self._detach_segment(d_start2, d_end2)
-
-                    self._insert_segment(i_start1, i_end1, d_start2, d_end2)
-                    self._insert_segment(i_start2, i_end2, d_start1, d_end1)
-
-                elif event == "path1_takes":
-                    # Choose insertion point (can be head) in path1
-                    ind1 = random.randint(0, path1._count - 1)
-
-                    i_start1 = path1.node_at(ind1)
-                    i_end1 = i_start1._next
-
-                    # Choose detached segment (after head) from path2
-                    ind2 = random.randint(1, path2._count - 1)
-                    if ind2 == 1:  # Make sure after translocation, it remains at least 2 nodes
-                        len2 = random.randint(1, path2._count - ind2 - 1)
-                    else:
-                        len2 = random.randint(1, path2._count - ind2)
-
-                    d_start2 = path2.node_at(ind2)
-                    d_end2 = path2.node_at(ind2 + len2 - 1)
-
-                    # Detach from path2
-                    self._detach_segment(d_start2, d_end2)
-
-                    # Insert into path1
-                    self._insert_segment(i_start1, i_end1, d_start2, d_end2)
-
-                else:  # path2_takes
-                    # Choose insertion point (can be head) in path2
-                    ind2 = random.randint(0, path2._count - 1)
-
-                    i_start2 = path2.node_at(ind2)
-                    i_end2 = i_start2._next
-
-                    # Choose detached segment (after head) from path1
-                    ind1 = random.randint(1, path1._count - 1)
-
-                    if ind1 == 1:  # Make sure after translocation, it remains at least 2 nodes
-                        len1 = random.randint(1, path1._count - ind1 - 1)
-                    else:
-                        len1 = random.randint(1, path1._count - ind1)
-
-                    d_start1 = path1.node_at(ind1)
-                    d_end1 = path1.node_at(ind1 + len1 - 1)
-
-                    # Detach from path1
-                    self._detach_segment(d_start1, d_end1)
-
-                    # Insert into path2
-                    self._insert_segment(i_start2, i_end2, d_start1, d_end1)
+            # The path receiving an empty segment is already reconnected
+            # by _detach_segment; only nonempty incoming segments need insertion.
+            if l2 > 0:
+                self._insert_segment(before1, after1, start2, end2)
+            if l1 > 0:
+                self._insert_segment(before2, after2, start1, end1)
 
 
 class IDPool:
@@ -537,4 +484,8 @@ class PangenomeSimulator:
             if v.is_leaf():
                 leaf_genomes.append(child_genome)
 
-        return Pangenome(pangenome_id=f"simulated_k{k}_l{length}", genomes=leaf_genomes)
+            pan = Pangenome(pangenome_id=f"simulated_k{k}_l{length}", genomes=leaf_genomes)
+            pan.core = pan.compute_core_genes()
+            pan.core_edges = pan.compute_core_edges()
+
+        return pan
