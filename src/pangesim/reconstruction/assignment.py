@@ -15,6 +15,7 @@ from tralda.datastructures.doubly_linked import DLListNode
 
 from pangesim import Genome
 from pangesim import Pangenome
+from pangesim.datastructures.pangenome import unwrap_node_value
 from pangesim.reconstruction import AdjacencyList
 from pangesim.reconstruction import AdjacencyMatrix
 from pangesim.reconstruction import AssignmentStrategy
@@ -422,6 +423,21 @@ class MSTAssignment(AssignmentStrategy):
 
         id_pool: Global Genome Pool for id generation.
         """
+        def path_as_list(path:DLList) -> List[int]:
+            """Transform a Doubly Linked list into a list of integers.
+
+            Args:
+                path: DLList, the list to transform.
+            """
+            new_list : List[int] = []
+            curr = path.first_node()
+            while curr:
+                value = unwrap_node_value(curr)
+                new_list.append(value)
+                curr = curr._next
+
+            return new_list
+
         dll_dict = dict()
 
         for v in mst.postorder():
@@ -451,10 +467,28 @@ class MSTAssignment(AssignmentStrategy):
         final_genomes: list[Genome] = []
 
         for path in dll_dict[mst.root]:
-            genome_id = id_pool.get_next_id()
-            genome = Genome(genome_id=genome_id)
-            genome.add_path(path)
-            final_genomes.append(genome)
+            placed = False
+            dll_as_ints = path_as_list(path)
+            dll_as_set = set(dll_as_ints)
+            for genome in final_genomes:
+                intersection = dll_as_set & genome.gene_set
+                if not intersection:
+                    genome.add_path(path)
+                    placed = True
+                    break
+                if len(intersection) == 1:
+                    element = next(iter(intersection))
+                    if element == dll_as_ints[0] or element == dll_as_ints[-1]:
+                        for u,v in pairwise(dll_as_ints):
+                            genome.add_edge((u,v))
+                        placed = True
+                        break
+
+            if not placed:
+                genome_id = id_pool.get_next_id()
+                genome = Genome(genome_id=genome_id)
+                genome.add_path(path)
+                final_genomes.append(genome)
 
         return final_genomes
 
@@ -468,6 +502,12 @@ class MSTAssignment(AssignmentStrategy):
         Returns:
             A  Pangenome containing k genomes built by Eulerian Path decomposition.
         """
+        def merge_genomes(genome1:Genome, genome2:Genome) -> None:
+            """Merge two genomes into one genome."""
+            for genome_path in genome2.get_path_sequences():
+                for u, v in pairwise(genome_path):
+                    genome1.add_edge((u, v))
+
         adj_list = matrix_to_list(matrix=adjacencies, directed=False)
         explorer = TopologicalExplorer(adj_list, directed=False)
         components = explorer.extract_components()
@@ -484,7 +524,14 @@ class MSTAssignment(AssignmentStrategy):
             all_genomes.extend(comp_genomes)
             self.component_trees[comp_idx] = mst_tree
             comp_idx += 1
-
+            for new_genome in comp_genomes:
+                merged = False
+                for existing_genome in all_genomes:
+                    merge_genomes(existing_genome, new_genome)
+                    merged = True
+                    break
+                if not merged:
+                    all_genomes.append(new_genome)
         return Pangenome(pangenome_id="MST", genomes=all_genomes)
 
 
