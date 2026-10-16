@@ -16,7 +16,7 @@ def generate_pan(num_genes: int, evol: str) -> Tuple:
        TypeError: If num_genes is not an integer.
        ValueError: If num_genes is less than 2 or evol not in options.
     """
-    num_genomes = rd.randint(2,70)
+    num_genomes = rd.randint(10,30)
     if evol == "low":
         d = rd.randint(0,1)
         r = rd.randint(0,1)
