@@ -466,17 +466,18 @@ class MSTAssignment(AssignmentStrategy):
 
         final_genomes: list[Genome] = []
 
-        for path in dll_dict[mst.root]:
+        for p in dll_dict[mst.root]:
             placed = False
-            dll_as_ints = path_as_list(path)
+            dll_as_ints = path_as_list(p)
             dll_as_set = set(dll_as_ints)
             for genome in final_genomes:
                 intersection = dll_as_set & genome.gene_set
                 if not intersection:
-                    genome.add_path(path)
+                    genome.add_path(p)
                     placed = True
                     break
                 if len(intersection) == 1:
+                    final_genomes.append(genome)
                     element = next(iter(intersection))
                     if element == dll_as_ints[0] or element == dll_as_ints[-1]:
                         for u,v in pairwise(dll_as_ints):
@@ -487,7 +488,7 @@ class MSTAssignment(AssignmentStrategy):
             if not placed:
                 genome_id = id_pool.get_next_id()
                 genome = Genome(genome_id=genome_id)
-                genome.add_path(path)
+                genome.add_path(p)
                 final_genomes.append(genome)
 
         return final_genomes
@@ -502,17 +503,12 @@ class MSTAssignment(AssignmentStrategy):
         Returns:
             A  Pangenome containing k genomes built by Eulerian Path decomposition.
         """
-        def merge_genomes(genome1:Genome, genome2:Genome) -> None:
-            """Merge two genomes into one genome."""
-            for genome_path in genome2.get_path_sequences():
-                for u, v in pairwise(genome_path):
-                    genome1.add_edge((u, v))
-
         adj_list = matrix_to_list(matrix=adjacencies, directed=False)
         explorer = TopologicalExplorer(adj_list, directed=False)
         components = explorer.extract_components()
-        all_genomes: list[Genome] = []
-        comp_idx = 1
+        component_genomes_dict: dict[int, list[Genome]] = {}
+        comp_sizes: list[int] = []
+        comp_idx = 0
 
         for component in components:
             mst_tree = self.build_mst(component.sub_adj_list)
@@ -521,17 +517,26 @@ class MSTAssignment(AssignmentStrategy):
                 matrix=component.sub_adj_matrix,
                 id_pool=id_pool,
             )
-            all_genomes.extend(comp_genomes)
             self.component_trees[comp_idx] = mst_tree
+            component_genomes_dict[comp_idx] = comp_genomes
+            comp_sizes.append(len(comp_genomes))
             comp_idx += 1
-            for new_genome in comp_genomes:
-                merged = False
-                for existing_genome in all_genomes:
-                    merge_genomes(existing_genome, new_genome)
-                    merged = True
-                    break
-                if not merged:
-                    all_genomes.append(new_genome)
-        return Pangenome(pangenome_id="MST", genomes=all_genomes)
+
+        # If there is more than one component, merge genomes
+        if len(component_genomes_dict) > 1:
+            max_comp_ix = comp_sizes.index(max(comp_sizes))
+            fixed_genomes = component_genomes_dict[max_comp_ix]
+            for comp in component_genomes_dict:
+                if comp != max_comp_ix:
+                    for i in range(len(component_genomes_dict[comp])):
+                        tar_genome = fixed_genomes[i]
+                        curr_genome = component_genomes_dict[comp][i]
+                        for path in curr_genome.get_path_sequences():
+                            for u,v in pairwise(path):
+                                tar_genome.add_edge((u,v))
+            return Pangenome(pangenome_id="MST", genomes=fixed_genomes)
+        else:
+            return Pangenome(pangenome_id="MST", genomes=component_genomes_dict[0])
+
 
 
