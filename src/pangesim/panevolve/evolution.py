@@ -406,7 +406,6 @@ class PangenomeSimulator:
         Returns:
             A finalized Pangenome collection containing k evolved genomes.
         """
-        # Parameter checkups
         if not isinstance(k, int) or k < 1:
             raise ValueError("Number of genomes k must be an int >=1")
         elif k == 0:
@@ -489,3 +488,132 @@ class PangenomeSimulator:
             pan.core_edges = pan.compute_core_edges()
 
         return pan
+
+class LinearSimulator:
+    """Class for simulating a pangenome using isolated events and no evolutionary tree."""
+
+    def __init__(
+        self,
+        insertion_rate: float = 0.0,
+        deletion_rate: float = 0.0,
+        rearrangement_rate: float = 0.0,
+        inversion_rate: float = 0.0,
+        fission_rate: float = 0.0,
+        fusion_rate: float = 0.0,
+        translocation_rate: float = 0.0,
+        mutation_model: MutationModel | None = None,
+    ) -> None:
+        """Initializes the pangenome simulator with the given rates and models."""
+        self.insertion_rate = insertion_rate
+        self.deletion_rate = deletion_rate
+        self.rearrangement_rate = rearrangement_rate
+        self.inversion_rate = inversion_rate
+        self.fission_rate = fission_rate
+        self.fusion_rate = fusion_rate
+        self.translocation_rate = translocation_rate
+
+        self.model = mutation_model if mutation_model is not None else SimpleModel()
+        self.gene_id_pool = IDPool()
+        self.genome_id_pool = IDPool()
+
+    def _draw_poisson_events(self, rate: float, branch_length: float) -> int:
+        """Draws a random sample of mutation events."""
+        if rate <= 0.0:
+            return 0
+
+        rate_parameter = rate * max(branch_length, 0.001)
+
+        # Returns an exact, C-accelerated Poisson integer immune to underflow/overflow
+        return int(np.random.poisson(lam=rate_parameter))
+
+    def generate_pangenome(
+        self,
+        k: int = 2,
+        length: int = 10,
+        complexity: str = "medium")-> Pangenome:
+        """Tree-less pangenome generation function.
+
+        Generates an ancestral root genome and evolves k-1 descendant genomes
+        from it using Poisson mutation events whose rates are dynamically scaled
+        based on a stochastic frequency tier.
+
+        Args:
+           k: The desired total number of genomes.
+           length: The starting number of genes in the ancestral root genome.
+           complexity: Mutation frequency string ("low", "medium", "high").
+
+        Returns:
+           A finalized Pangenome collection containing k evolved genomes.
+        """
+        if not isinstance(k, int) or k < 1:
+            raise ValueError("Number of genomes k must be an int >=1")
+        if not isinstance(length, int) or length < 1:
+            raise ValueError("Number of genes length must be an int >=1")
+
+        # Map frequency tiers to rate multiplier ranges
+        frequency_ranges = {
+            "low": (0.0, 0.5),
+            "medium": (0.5, 2.0),
+            "high": (3.0, 5.0),
+        }
+        if complexity not in frequency_ranges:
+            raise ValueError("Frequency must be one of 'low', 'medium', or 'high'.")
+
+        min_scale, max_scale = frequency_ranges[complexity]
+
+        # 1. Instantiate the ancestral root genome
+        root_path = DLList()
+        for _ in range(length):
+            root_path.append(DLListNode(value=self.gene_id_pool.get_next_id()))
+
+        root_genome = Genome(genome_id=self.genome_id_pool.get_next_id())
+        root_genome.add_path(root_path)
+
+        genomes: List[Genome] = [root_genome]
+
+        for _ in range(k-1):
+            scale_factor = np.random.uniform(min_scale, max_scale)
+            branch_len = 1.0 * scale_factor
+            child_genome = Genome(genome_id=self.genome_id_pool.get_next_id())
+            for head in root_genome.heads:
+                new_path = DLList()
+                curr = head
+                while curr is not None:
+                    val = unwrap_node_value(curr)
+                    new_path.append(DLListNode(value=val))
+                    curr = curr._next
+                child_genome.add_path(new_path)
+
+            # Draw Poisson mutation events using base rates scaled by the stochastic factor
+            num_ins = self._draw_poisson_events(self.insertion_rate, branch_len)
+            num_del = self._draw_poisson_events(self.deletion_rate, branch_len)
+            num_rea = self._draw_poisson_events(self.rearrangement_rate, branch_len)
+            num_inv = self._draw_poisson_events(self.inversion_rate, branch_len)
+            num_fis = self._draw_poisson_events(self.fission_rate, branch_len)
+            num_fus = self._draw_poisson_events(self.fusion_rate, branch_len)
+            num_trsl = self._draw_poisson_events(self.translocation_rate, branch_len)
+
+            # Apply mutations
+            if num_ins > 0:
+                self.model._apply_insertions(child_genome, num_ins, self.gene_id_pool)
+            if num_del > 0:
+                self.model._apply_deletions(child_genome, num_del)
+            if num_rea > 0:
+                self.model._apply_rearrangements(child_genome, num_rea)
+            if num_inv > 0:
+                self.model._apply_inversions(child_genome, num_inv)
+            if num_fis > 0:
+                self.model._apply_fissions(child_genome, num_fis)
+            if num_fus > 0:
+                self.model._apply_fusions(child_genome, num_fus)
+            if num_trsl > 0:
+                self.model._apply_translocations(child_genome, num_trsl)
+
+            genomes.append(child_genome)
+
+        pan = Pangenome(pangenome_id=f"simulated_k{k}_l{length}_{complexity}", genomes=genomes)
+        pan.core = pan.compute_core_genes()
+        pan.core_edges = pan.compute_core_edges()
+
+        return pan
+
