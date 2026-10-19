@@ -15,6 +15,7 @@ from tralda.datastructures.doubly_linked import DLListNode
 
 from pangesim import Genome
 from pangesim import Pangenome
+from pangesim.datastructures.pangenome import unwrap_node_value
 from pangesim.reconstruction import AdjacencyList
 from pangesim.reconstruction import AdjacencyMatrix
 from pangesim.reconstruction import AssignmentStrategy
@@ -422,6 +423,21 @@ class MSTAssignment(AssignmentStrategy):
 
         id_pool: Global Genome Pool for id generation.
         """
+        def path_as_list(path:DLList) -> List[int]:
+            """Transform a Doubly Linked list into a list of integers.
+
+            Args:
+                path: DLList, the list to transform.
+            """
+            new_list : List[int] = []
+            curr = path.first_node()
+            while curr:
+                value = unwrap_node_value(curr)
+                new_list.append(value)
+                curr = curr._next
+
+            return new_list
+
         dll_dict = dict()
 
         for v in mst.postorder():
@@ -450,11 +466,30 @@ class MSTAssignment(AssignmentStrategy):
 
         final_genomes: list[Genome] = []
 
-        for path in dll_dict[mst.root]:
-            genome_id = id_pool.get_next_id()
-            genome = Genome(genome_id=genome_id)
-            genome.add_path(path)
-            final_genomes.append(genome)
+        for p in dll_dict[mst.root]:
+            placed = False
+            dll_as_ints = path_as_list(p)
+            dll_as_set = set(dll_as_ints)
+            for genome in final_genomes:
+                intersection = dll_as_set & genome.gene_set
+                if not intersection:
+                    genome.add_path(p)
+                    placed = True
+                    break
+                if len(intersection) == 1:
+                    final_genomes.append(genome)
+                    element = next(iter(intersection))
+                    if element == dll_as_ints[0] or element == dll_as_ints[-1]:
+                        for u,v in pairwise(dll_as_ints):
+                            genome.add_edge((u,v))
+                        placed = True
+                        break
+
+            if not placed:
+                genome_id = id_pool.get_next_id()
+                genome = Genome(genome_id=genome_id)
+                genome.add_path(p)
+                final_genomes.append(genome)
 
         return final_genomes
 
@@ -471,8 +506,9 @@ class MSTAssignment(AssignmentStrategy):
         adj_list = matrix_to_list(matrix=adjacencies, directed=False)
         explorer = TopologicalExplorer(adj_list, directed=False)
         components = explorer.extract_components()
-        all_genomes: list[Genome] = []
-        comp_idx = 1
+        component_genomes_dict: dict[int, list[Genome]] = {}
+        comp_sizes: list[int] = []
+        comp_idx = 0
 
         for component in components:
             mst_tree = self.build_mst(component.sub_adj_list)
@@ -481,10 +517,26 @@ class MSTAssignment(AssignmentStrategy):
                 matrix=component.sub_adj_matrix,
                 id_pool=id_pool,
             )
-            all_genomes.extend(comp_genomes)
             self.component_trees[comp_idx] = mst_tree
+            component_genomes_dict[comp_idx] = comp_genomes
+            comp_sizes.append(len(comp_genomes))
             comp_idx += 1
 
-        return Pangenome(pangenome_id="MST", genomes=all_genomes)
+        # If there is more than one component, merge genomes
+        if len(component_genomes_dict) > 1:
+            max_comp_ix = comp_sizes.index(max(comp_sizes))
+            fixed_genomes = component_genomes_dict[max_comp_ix]
+            for comp in component_genomes_dict:
+                if comp != max_comp_ix:
+                    for i in range(len(component_genomes_dict[comp])):
+                        tar_genome = fixed_genomes[i]
+                        curr_genome = component_genomes_dict[comp][i]
+                        for path in curr_genome.get_path_sequences():
+                            for u,v in pairwise(path):
+                                tar_genome.add_edge((u,v))
+            return Pangenome(pangenome_id="MST", genomes=fixed_genomes)
+        else:
+            return Pangenome(pangenome_id="MST", genomes=component_genomes_dict[0])
+
 
 

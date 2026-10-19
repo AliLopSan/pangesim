@@ -159,7 +159,7 @@ class Genome:
         """Inserts a given edge to genome.
 
         Args:
-           edge: Edge to be removed
+           edge: Edge to be added
 
         Returns:
            True if it is possible to add edge, False otherwise.
@@ -177,6 +177,9 @@ class Genome:
             return True
 
         u_n, v_n = self._node_cache[u], self._node_cache[v]
+
+        if self.degree(u_n) == 2 or self.degree(v_n) == 2:
+            return False
 
         # Try Orientation A: u -> v
         if u_n._next is None and v_n._prev is None and not self.would_break_path_forest((u, v)):

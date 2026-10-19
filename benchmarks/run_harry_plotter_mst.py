@@ -128,13 +128,13 @@ class MSTVisualizer(BaseVisualizer):
 
 if __name__ == "__main__":
     print("\tRunning  Harry Plotter Maximum Spanning Tree version ...")
-    results = Path("results/run_20260903")
-    df_file = results / "metrics_mst_maximum_ver.csv"
+    results = Path("results/run_20261015")
+    df_file = results / "metrics_mst.csv"
     df = pd.read_csv(df_file)
     vis = MSTVisualizer()
-    out_error = results / "MAPE_mst_v2.pdf"
-    out_raw = results / "RAW_diff_mst_v2.pdf"
-    out_runtime = results / "runtime_mst_v2.pdf"
+    out_error = results / "MAPE_mst_v3.pdf"
+    out_raw = results / "RAW_diff_mst_v3.pdf"
+    out_runtime = results / "runtime_mst_v3.pdf"
     vis.plot_genomes_mape(df=df, output_path=out_error)
     vis.plot_phase_runtime(df=df, output_path=out_runtime)
     vis.plot_raw_k_difference(df=df, output_path=out_raw)

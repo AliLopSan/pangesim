@@ -630,7 +630,7 @@ def plot_pangenome_metrics(results_dir:Path, source_dir:Path, pname:str)->None:
 
 
 if __name__ == "__main__":
-    results_root = Path("results/run_20260909/")
+    results_root = Path("results/run_20261015/")
     results_root.mkdir(parents=True, exist_ok=True)
 
     levels = ["low", "medium", "high"]
@@ -658,8 +658,8 @@ if __name__ == "__main__":
                 )
 
             # Plot dcj distances
-            dcj_csv = level_dir / "dcj_matrix.pkl"
-            plot_all_dcjs(plots_dir, dcj_csv)
+            #dcj_csv = level_dir / "dcj_matrix.pkl"
+            #plot_all_dcjs(plots_dir, dcj_csv)
 
-            dcj_id_csv = level_dir / "dcj_id_matrix.pkl"
-            plot_all_dcjs_id(plots_dir, dcj_id_csv)
+            #dcj_id_csv = level_dir / "dcj_id_matrix.pkl"
+            #plot_all_dcjs_id(plots_dir, dcj_id_csv)
