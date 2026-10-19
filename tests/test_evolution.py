@@ -2,8 +2,10 @@
 
 import random as rd
 
+import numpy as np
 from tralda.datastructures.doubly_linked import DLList
 
+from pangesim.panevolve import LinearSimulator
 from pangesim.panevolve import PangenomeSimulator
 
 
@@ -166,3 +168,66 @@ def test_mutations():
 
     # Check integrity of the pangenome
     assert pangenome.check_integrity() is True
+
+
+def test_linear_simulator():
+    """Checks integrity of the resulting genomes."""
+    rates = (0.0,10.0)
+
+    genomes = rd.randint(2, 15)
+    genes = rd.randint(2, 200)
+
+    r1 = np.random.uniform(rates[0], rates[1])
+    r2 = np.random.uniform(rates[0], rates[1])
+    r3 = np.random.uniform(rates[0], rates[1])
+    r4 = np.random.uniform(rates[0], rates[1])
+    r5 = np.random.uniform(rates[0], rates[1])
+    r6 = np.random.uniform(rates[0], rates[1])
+    r7 = np.random.uniform(rates[0], rates[1])
+
+    #Tests for the different complexity levels
+    sim1 = LinearSimulator(insertion_rate=r1,
+        deletion_rate=r2,
+        rearrangement_rate=r3,
+        inversion_rate=r4,
+        fission_rate=r5,
+        fusion_rate=r6,
+        translocation_rate=r7)
+    pan1 = sim1.generate_pangenome(k=genomes,
+        length=genes, complexity="low")
+
+    print("\t Simulated pangenome: \n", pan1.summary())
+
+    assert pan1.check_integrity() is True
+
+    #Tests for the different complexity levels
+    sim2 = LinearSimulator(insertion_rate=r1,
+                          deletion_rate=r2,
+                          rearrangement_rate=r3,
+                          inversion_rate=r4,
+                          fission_rate=r5,
+                          fusion_rate=r6,
+                          translocation_rate=r7)
+    pan2 = sim2.generate_pangenome(k=genomes,
+                                       length=genes)
+
+    print("\t Simulated pangenome: \n", pan2.summary())
+
+    assert pan2.check_integrity() is True
+
+    # Tests for the different complexity levels
+    sim3 = LinearSimulator(
+        insertion_rate=r1,
+        deletion_rate=r2,
+        rearrangement_rate=r3,
+        inversion_rate=r4,
+        fission_rate=r5,
+        fusion_rate=r6,
+        translocation_rate=r7,
+    )
+    pan3 = sim3.generate_pangenome(k=genomes, length=genes, complexity="high")
+
+    print("\t Simulated pangenome: \n", pan3.summary())
+
+    assert pan3.check_integrity() is True
+
