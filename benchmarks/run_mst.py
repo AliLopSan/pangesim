@@ -25,7 +25,7 @@ def main() -> None:
                 pbar.update(1)
 
     df = pd.DataFrame(benchmark_data)
-    output_dir = Path("results/run_20260903")
+    output_dir = Path("results/run_20261015")
     output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / "metrics_mst.csv"
     df.to_csv(file_path, index=False)
