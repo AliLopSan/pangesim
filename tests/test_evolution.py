@@ -172,10 +172,12 @@ def test_mutations():
 
 def test_linear_simulator():
     """Checks integrity of the resulting genomes."""
-    rates = (0.0,10.0)
+    rates = (0.0, 10.0)
 
     genomes = rd.randint(2, 15)
     genes = rd.randint(2, 200)
+
+    print("\t Test for ",genomes, " genomes with ", genes, " genes.")
 
     r1 = np.random.uniform(rates[0], rates[1])
     r2 = np.random.uniform(rates[0], rates[1])
@@ -184,36 +186,45 @@ def test_linear_simulator():
     r5 = np.random.uniform(rates[0], rates[1])
     r6 = np.random.uniform(rates[0], rates[1])
     r7 = np.random.uniform(rates[0], rates[1])
+    r8 = np.random.uniform(rates[0], rates[1])
 
-    #Tests for the different complexity levels
-    sim1 = LinearSimulator(insertion_rate=r1,
+    # Tests for the different complexity levels
+    sim1 = LinearSimulator(
+        insertion_rate=r1,
         deletion_rate=r2,
         rearrangement_rate=r3,
         inversion_rate=r4,
         fission_rate=r5,
         fusion_rate=r6,
-        translocation_rate=r7)
-    pan1 = sim1.generate_pangenome(k=genomes,
-        length=genes, complexity="low")
+        translocation_rate=r7,
+        gene_deletion_rate=r8,
+    )
+    pan1 = sim1.generate_pangenome(k=genomes, length=genes, complexity="low")
 
-    print("\t Simulated pangenome: \n", pan1.summary())
+    print("\t Simulated pangenome has  ",pan1.total_gene_count, " total genes \n", pan1.summary())
 
     assert pan1.check_integrity() is True
 
-    #Tests for the different complexity levels
-    sim2 = LinearSimulator(insertion_rate=r1,
-                          deletion_rate=r2,
-                          rearrangement_rate=r3,
-                          inversion_rate=r4,
-                          fission_rate=r5,
-                          fusion_rate=r6,
-                          translocation_rate=r7)
-    pan2 = sim2.generate_pangenome(k=genomes,
-                                       length=genes)
+    #sim1.print_simulation_summary()
 
-    print("\t Simulated pangenome: \n", pan2.summary())
+    # Tests for the different complexity levels
+    sim2 = LinearSimulator(
+        insertion_rate=r1,
+        deletion_rate=r2,
+        rearrangement_rate=r3,
+        inversion_rate=r4,
+        fission_rate=r5,
+        fusion_rate=r6,
+        translocation_rate=r7,
+        gene_deletion_rate=r8,
+    )
+    pan2 = sim2.generate_pangenome(k=genomes, length=genes)
+
+    print("\t Simulated pangenome has  ", pan2.total_gene_count, " total genes \n", pan2.summary())
 
     assert pan2.check_integrity() is True
+
+    #sim2.print_simulation_summary()
 
     # Tests for the different complexity levels
     sim3 = LinearSimulator(
@@ -224,10 +235,12 @@ def test_linear_simulator():
         fission_rate=r5,
         fusion_rate=r6,
         translocation_rate=r7,
+        gene_deletion_rate=r8,
     )
     pan3 = sim3.generate_pangenome(k=genomes, length=genes, complexity="high")
 
-    print("\t Simulated pangenome: \n", pan3.summary())
+    print("\t Simulated pangenome has  ", pan3.total_gene_count, " total genes \n", pan3.summary())
 
     assert pan3.check_integrity() is True
 
+    #sim3.print_simulation_summary()

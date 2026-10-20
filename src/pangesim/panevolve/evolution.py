@@ -63,6 +63,86 @@ class SimpleModel(MutationModel):
 
             genome.gene_set.add(new_gene_id)
 
+    def _apply_gene_deletions(self, genome: Genome, num_events:int) -> None:
+        """Simulates gene deletion events.
+
+        Args:
+            genome: The Genome instance to mutate in-place.
+            num_events: The number of gene deletion events to execute.
+        """
+        def _remove_head(genome: Genome, head: DLListNode) -> None:
+            """Removes gene from the head of the genome."""
+            val = unwrap_node_value(head)
+            next_node = head._next
+
+            if next_node is not None:
+                # Unlink new head and update heads list
+                next_node._prev = None
+                idx = genome.heads.index(head)
+                genome.heads[idx] = next_node
+            else:
+                # Path becomes empty, remove head entirely
+                genome.heads.remove(head)
+
+            # Clean up gene tracking attributes
+            genome.gene_set.discard(val)
+            genome._node_cache.pop(val, None)
+
+        def _remove_tail(genome:Genome, tail: DLListNode) -> None:
+            """Removes gene from the tail of the genome."""
+            val = unwrap_node_value(tail)
+            prev_node = tail._prev
+
+            if prev_node is not None:
+                # Unlink tail
+                prev_node._next = None
+            else:
+                # Path had only 1 node, remove head entirely
+                genome.heads.remove(head_node)
+
+            # Clean up gene tracking attributes
+            genome.gene_set.discard(val)
+            genome._node_cache.pop(val, None)
+
+        for _ in range(num_events):
+            # Safety constraint 1: Never leave a genome with fewer than 2 genes
+            if len(genome) <= 2:
+                break
+
+            if not genome.heads:
+                break
+
+            # Safety constraint 2: Choose paths with more than 2 genes
+            valid_heads = []
+            path_lengths = {}
+
+            for head in genome.heads:
+                length = 0
+                curr = head
+                while curr is not None:
+                    length += 1
+                    curr = curr._next
+                path_lengths[head] = length
+                if length > 2:
+                     valid_heads.append(head)
+
+            # If no path has enough genes to safely delete from, stop
+            if not valid_heads:
+                break
+
+            head_node = random.choice(valid_heads)
+            tail_node = head_node
+            while tail_node._next is not None:
+                tail_node = tail_node._next
+
+            # Safety constrain 3: delete the head or the tail of the path
+            target_choice = random.choice(["head", "tail"])
+            if target_choice == "head":
+                _remove_head(genome, head_node)
+            else:
+                _remove_tail(genome,tail_node)
+
+
     def _apply_deletions(self, genome: Genome, num_events: int) -> None:
         """Simulates chromosome breakage by deleting adjacency edges.
 
@@ -494,6 +574,7 @@ class LinearSimulator:
 
     def __init__(
         self,
+        gene_deletion_rate: float = 0.0,
         insertion_rate: float = 0.0,
         deletion_rate: float = 0.0,
         rearrangement_rate: float = 0.0,
@@ -511,10 +592,12 @@ class LinearSimulator:
         self.fission_rate = fission_rate
         self.fusion_rate = fusion_rate
         self.translocation_rate = translocation_rate
+        self.gene_deletion_rate = gene_deletion_rate
 
         self.model = mutation_model if mutation_model is not None else SimpleModel()
         self.gene_id_pool = IDPool()
         self.genome_id_pool = IDPool()
+        self.simulation_history: List[Dict[str, Any]] = []
 
     def _draw_poisson_events(self, rate: float, branch_length: float) -> int:
         """Draws a random sample of mutation events."""
@@ -569,6 +652,17 @@ class LinearSimulator:
         root_genome = Genome(genome_id=self.genome_id_pool.get_next_id())
         root_genome.add_path(root_path)
 
+        self.simulation_history.append(
+            {
+                "genome_id": root_genome._genome_id,
+                "is_ancestor": True,
+                "scale_factor": 0.0,
+                "branch_length": 0.0,
+                "effective_rates": {},
+                "event_counts": {},
+            }
+        )
+
         genomes: List[Genome] = [root_genome]
 
         for _ in range(k-1):
@@ -584,6 +678,17 @@ class LinearSimulator:
                     curr = curr._next
                 child_genome.add_path(new_path)
 
+            effective_rates = {
+                "insertion": self.insertion_rate * branch_len,
+                "deletion": self.deletion_rate * branch_len,
+                "rearrangement": self.rearrangement_rate * branch_len,
+                "inversion": self.inversion_rate * branch_len,
+                "fission": self.fission_rate * branch_len,
+                "fusion": self.fusion_rate * branch_len,
+                "translocation": self.translocation_rate * branch_len,
+                "gene_deletion": self.gene_deletion_rate * branch_len,
+            }
+
             # Draw Poisson mutation events using base rates scaled by the stochastic factor
             num_ins = self._draw_poisson_events(self.insertion_rate, branch_len)
             num_del = self._draw_poisson_events(self.deletion_rate, branch_len)
@@ -592,6 +697,18 @@ class LinearSimulator:
             num_fis = self._draw_poisson_events(self.fission_rate, branch_len)
             num_fus = self._draw_poisson_events(self.fusion_rate, branch_len)
             num_trsl = self._draw_poisson_events(self.translocation_rate, branch_len)
+            num_gdel = self._draw_poisson_events(self.gene_deletion_rate, branch_len)
+
+            event_counts = {
+                "insertion": num_ins,
+                "deletion": num_del,
+                "rearrangement": num_rea,
+                "inversion": num_inv,
+                "fission": num_fis,
+                "fusion": num_fus,
+                "translocation": num_trsl,
+                "gene_deletion": num_gdel,
+            }
 
             # Apply mutations
             if num_ins > 0:
@@ -608,7 +725,19 @@ class LinearSimulator:
                 self.model._apply_fusions(child_genome, num_fus)
             if num_trsl > 0:
                 self.model._apply_translocations(child_genome, num_trsl)
+            if num_gdel > 0:
+                self.model._apply_gene_deletions(child_genome, num_gdel)
 
+            self.simulation_history.append(
+                {
+                    "genome_id": child_genome._genome_id,
+                    "is_ancestor": False,
+                    "scale_factor": scale_factor,
+                    "branch_length": branch_len,
+                    "effective_rates": effective_rates,
+                    "event_counts": event_counts,
+                }
+            )
             genomes.append(child_genome)
 
         pan = Pangenome(pangenome_id=f"simulated_k{k}_l{length}_{complexity}", genomes=genomes)
@@ -617,3 +746,40 @@ class LinearSimulator:
 
         return pan
 
+    def print_simulation_summary(self) -> None:
+        """Prints a clean, human-readable summary of the simulation history.
+
+        Outputs the scale factors, effective rates, and realized event counts
+        for each genome generated during the simulation run.
+        """
+        if not self.simulation_history:
+            print("No simulation history available. Run generate_pangenome() first.")
+            return
+
+        summary = [
+            "========================================",
+            "      LINEAR SIMULATOR RUN SUMMARY      ",
+            "========================================",
+        ]
+
+        for record in self.simulation_history:
+            g_id = record["genome_id"]
+            if record["is_ancestor"]:
+                summary.append(f"Genome {g_id} [Ancestral Root]:")
+                summary.append("└── Initial state (0 mutation events)")
+            else:
+                scale = record["scale_factor"]
+                summary.append(f"Genome {g_id} [Descendant]:")
+                summary.append(f"├── Scale Factor: {scale:.3f}")
+                summary.append("├── Effective Rates (rate × branch_length):")
+                for rate_name, rate_val in record["effective_rates"].items():
+                    summary.append(f"│   ├── {rate_name}: {rate_val:.3f}")
+                summary.append("└── Realized Event Counts:")
+                counts = record["event_counts"]
+                count_items = list(counts.items())
+                for i, (evt_name, count) in enumerate(count_items):
+                    prefix = "    └──" if i == len(count_items) - 1 else "    ├──"
+                    summary.append(f"{prefix} {evt_name}: {count}")
+            summary.append("-" * 40)
+
+        print("\n".join(summary))
