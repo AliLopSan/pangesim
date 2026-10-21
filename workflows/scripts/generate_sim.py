@@ -1,7 +1,6 @@
 import random as rd
 from typing import Tuple
 
-from pangesim import Pangenome
 from pangesim.panevolve import PangenomeSimulator
 
 

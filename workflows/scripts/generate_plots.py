@@ -6,8 +6,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from pangesim.io.unimog import parse_dcj_matrix
-
 
 def plot_dcj_distance_distribution(
     df_matrix: pd.DataFrame,
@@ -316,7 +314,7 @@ def plot_genome_sizes(
     ax.set_xticks(range(n_genomes))
     ax.set_xticklabels(range(1, n_genomes + 1), rotation=0)
 
-    
+
     plt.tick_params(axis="x", direction='out', rotation=45)
 
     ax.set_title(r"Genome Size per Genome", pad=15)
@@ -354,7 +352,7 @@ def plot_path_counts_per_genome(
         .nunique()
         .reset_index(name="path_count")
     )
-    
+
 
     fig, ax = plt.subplots(figsize=figsize)
 
@@ -381,7 +379,7 @@ def plot_path_counts_per_genome(
     ax.set_xlabel(r"Genome")
     ax.set_ylabel(r"Number of paths")
 
-    
+
     plt.tick_params(axis="x", direction='out', rotation=45)
 
     # Ensure integer ticks on y-axis for counts
@@ -433,7 +431,7 @@ def plot_path_length_distribution(
     ax.set_title(title, pad=15)
     ax.set_xlabel(r"Genome")
     ax.set_ylabel(r"Path Length")
-    
+
 
     # Ensure clean integer ticks on y-axis
     ax.yaxis.get_major_locator().set_params(integer=True)

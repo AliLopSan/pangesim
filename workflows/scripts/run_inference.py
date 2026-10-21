@@ -101,6 +101,6 @@ def run_inference(results: Path)-> None:
 
 
 if __name__ == "__main__":
-    out_dir = Path("results/run_20261015/")
+    out_dir = Path("results/run_20261020/")
     out_dir.mkdir(parents=True, exist_ok=True)
     run_inference(out_dir)
