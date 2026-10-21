@@ -3,8 +3,8 @@ from typing import Callable
 from typing import List
 from typing import Tuple
 
-from pangesim import Pangenome
 from pangesim import Genome
+from pangesim import Pangenome
 from pangesim.reconstruction import AdjacencyMatrix
 
 
@@ -21,7 +21,7 @@ class SequentialEdgeInsertion:
         return residuals
 
     def find_slack(self, pan:Pangenome, edge:Tuple[int,int])->List:
-        """ Finds a slack genome.
+        """Finds a slack genome.
 
         Args:
             pan: the current pangenome.
@@ -97,7 +97,7 @@ class SequentialEdgeInsertion:
                 else:
                     new_genome = self.new_genome_with_edge(pan,edge)
                     pan.add_genome(new_genome)
-    
+
                 target-= 1
-        
+
         return pan
