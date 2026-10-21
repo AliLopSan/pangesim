@@ -155,8 +155,46 @@ class Genome:
                 break
         return flag
 
+    def _reverse_path(self, node: DLListNode) -> DLListNode:
+        """Reverses the entire path containing the given node and updates heads.
+
+        Args:
+            node: Any node belonging to the target path.
+
+        Returns:
+            The new head of the reversed path.
+        """
+        # 1. Find the current head of this path
+        curr = node
+        while curr._prev is not None:
+            curr = curr._prev
+        old_head = curr
+
+        # 2. Traverse and reverse _next and _prev pointers
+        prev_node = None
+        curr = old_head
+        new_head = None
+        while curr is not None:
+            next_node = curr._next
+            curr._next = prev_node
+            curr._prev = next_node
+            prev_node = curr
+            new_head = curr
+            curr = next_node
+
+        # 3. Update self.heads reference
+        if old_head in self.heads:
+            idx = self.heads.index(old_head)
+            self.heads[idx] = new_head
+        else:
+            self.heads.append(new_head)
+
+        return new_head
+
     def add_edge(self, edge: Tuple[int, int]) -> bool:
         """Inserts a given edge to genome.
+
+        Now handles path extension, creation and joining paths.
 
         Args:
            edge: Edge to be added
@@ -166,33 +204,114 @@ class Genome:
         """
         u, v = edge[0], edge[1]
 
-        # Dynamically instantiate and cache missing genes
-        for val in (u, v):
-            if val not in self.gene_set:
-                self.gene_set.add(val)
-                self._node_cache[val] = DLListNode(value=val)
-                self.heads.append(self._node_cache[val])
-
         if self.has_edge((u, v)):
             return True
 
-        u_n, v_n = self._node_cache[u], self._node_cache[v]
-
-        if self.degree(u_n) == 2 or self.degree(v_n) == 2:
+        # Check path forest constraints before addition
+        if self.would_break_path_forest((u, v)):
             return False
 
-        # Try Orientation A: u -> v
-        if u_n._next is None and v_n._prev is None and not self.would_break_path_forest((u, v)):
-            u_n._next, v_n._prev = v_n, u_n
+        u_is_new = u not in self.gene_set
+        v_is_new = v not in self.gene_set
+
+        # Dynamically instantiate missing genes
+        if u_is_new:
+            self.gene_set.add(u)
+            self._node_cache[u] = DLListNode(value=u)
+        if v_is_new:
+            self.gene_set.add(v)
+            self._node_cache[v] = DLListNode(value=v)
+
+        #Updating node cache
+        u_n = self._node_cache[u]
+        v_n = self._node_cache[v]
+
+        # Verify degree conditions
+        if self.degree(u_n) >= 2 or self.degree(v_n) >= 2:
+            return False
+
+        # Case 1: Both nodes are new -> Create a new 2-node path
+        if u_is_new and v_is_new:
+            u_n._next = v_n
+            v_n._prev = u_n
+            self.heads.append(u_n)  # u becomes the head of this new path
+            return True
+
+        # Case 2: Exactly one node is new -> Extend an existing path
+        if u_is_new or v_is_new:
+            if u_is_new and not v_is_new:
+                # Attach u to v
+                if v_n._next is None:  # v is tail, attach u after (v -> u)
+                    v_n._next = u_n
+                    u_n._prev = v_n
+                    return True
+                elif v_n._prev is None:  # v is head, attach u before (u -> v)
+                    u_n._next = v_n
+                    v_n._prev = u_n
+                    # u is now the new head of this path
+                    if v_n in self.heads:
+                        idx = self.heads.index(v_n)
+                        self.heads[idx] = u_n
+                    else:
+                        self.heads.append(u_n)
+                    return True
+            else:  # v is new and u exists
+                if u_n._next is None:  # u is tail, attach v after (u -> v)
+                    u_n._next = v_n
+                    v_n._prev = u_n
+                    return True
+                elif u_n._prev is None:  # u is head, attach v before (v -> u)
+                    v_n._next = u_n
+                    u_n._prev = v_n
+                    if u_n in self.heads:
+                        idx = self.heads.index(u_n)
+                        self.heads[idx] = v_n
+                    else:
+                        self.heads.append(v_n)
+                    return True
+            return False
+        # Case 3: Both nodes exist -> Merging two distinct paths
+        u_is_tail = u_n._next is None
+        u_is_head = u_n._prev is None
+        v_is_tail = v_n._next is None
+        v_is_head = v_n._prev is None
+
+        # Subcase A: u is tail, v is head (u -> v) -> Direct merge
+        if u_is_tail and v_is_head:
+            u_n._next = v_n
+            v_n._prev = u_n
             if v_n in self.heads:
                 self.heads.remove(v_n)
             return True
 
-        # Try Orientation B: v -> u
-        if v_n._next is None and u_n._prev is None and not self.would_break_path_forest((v, u)):
-            v_n._next, u_n._prev = u_n, v_n
+        # Subcase B: v is tail, u is head (v -> u) -> Direct merge
+        if v_is_tail and u_is_head:
+            v_n._next = u_n
+            u_n._prev = v_n
             if u_n in self.heads:
                 self.heads.remove(u_n)
+            return True
+
+        # Subcase C: u is tail, v is tail -> Reverse path v so v becomes head, then merge
+        if u_is_tail and v_is_tail:
+            new_v_head = self._reverse_path(v_n)
+            u_n._next = new_v_head
+            new_v_head._prev = u_n
+            if new_v_head in self.heads:
+                self.heads.remove(new_v_head)
+            return True
+
+        # Subcase D: u is head, v is head -> Reverse path u so u becomes tail, then merge
+        if u_is_head and v_is_head:
+            new_u_head = self._reverse_path(u_n)
+            # Find tail of reversed u path
+            curr = new_u_head
+            while curr._next is not None:
+                 curr = curr._next
+            curr._next = v_n
+            v_n._prev = curr
+            if v_n in self.heads:
+                self.heads.remove(v_n)
             return True
 
         return False
@@ -571,3 +690,25 @@ class Pangenome:
         if len(core_genes) > 0:
             summary_info.append(f"> {core_genes[:5]}")
         return "\n".join(summary_info)
+
+    def print_full_paths(self) -> None:
+        """Prints all paths of each genome in the pangenome fully without truncation.
+
+        Useful for visual comparison of small-scale example runs in the terminal.
+        """
+        lines = [
+            "========================================",
+            f" {self._pangenome_id} full paths",
+            "========================================",
+        ]
+        for genome in self._genomes:
+            lines.append(
+                f"Genome {genome._genome_id}  of {len(self)} genomes"
+                f"\n(Total Genes: {len(genome)}, Paths: {genome.path_count})"
+            )
+            paths = genome.get_path_sequences()
+            for i, path in enumerate(paths):
+                prefix = "└──" if i == len(paths) - 1 else "├──"
+                lines.append(f"    {prefix} Path {i + 1}: {path}")
+            lines.append("-" * 40)
+        print("\n".join(lines))
