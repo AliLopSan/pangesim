@@ -6,6 +6,7 @@ from pangesim.reconstruction.assignment import MSTAssignment
 from pangesim.reconstruction.refining import SequentialEdgeRefinement
 from pangesim.reconstruction.utils import GlobalGenomePool
 
+
 def test_mst_connected():
     """Test for MST and MSTAssignment."""
     print("\t Test Matrix")

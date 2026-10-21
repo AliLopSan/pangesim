@@ -1,14 +1,13 @@
 """Plotter script for individual results visualization."""
 
 from pathlib import Path
-from typing import Dict
 
-import pandas as pd
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
 from pangesim.visualization.performance import BaseVisualizer
+
 
 class MSTVisualizer(BaseVisualizer):
     """A class for performance visualizations of Naive algorithm."""
@@ -41,7 +40,7 @@ class MSTVisualizer(BaseVisualizer):
         plt.tight_layout()
         plt.savefig(output_path, format="pdf", dpi=300)
         plt.close()
-        
+
     def plot_genomes_mape(
         self, df: pd.DataFrame, output_path: Path
     ) -> None:

@@ -43,6 +43,6 @@ def test_reconstruction():
     algorithm = SequentialEdgeInsertion()
 
     pangenome = algorithm.reconstruct(sample_matrix)
-    
+
     assert pangenome.check_integrity() is True
-    
+
