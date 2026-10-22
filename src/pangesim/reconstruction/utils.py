@@ -223,6 +223,8 @@ def build_residuals(target: Pangenome, source: AdjacencyMatrix) -> AdjacencyMatr
     endogenous_weights = target.compute_weighted_adjacencies()
 
     for (u, v), m_uv in source.items():
+        if u == v:
+            continue
         # Note that all tuples in pangenome are sorted
         key = (u, v) if u <= v else (v, u)
 

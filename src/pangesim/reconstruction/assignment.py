@@ -3,10 +3,10 @@ import heapq
 from copy import copy
 from itertools import pairwise
 from typing import Any
+from typing import Generator
 from typing import List
 from typing import Set
 from typing import Tuple
-from typing import Generator
 
 import networkx as nx
 from tralda.datastructures import Tree
@@ -468,7 +468,8 @@ class MSTAssignment(AssignmentStrategy):
 
         for v in postorder_nodes:
             if v.is_leaf():
-                lst = DLList([v.label])
+                lst = DLList()
+                lst.append(DLListNode(value=v.label))
                 dll_dict[v] = [lst]
             else:
                 v_label = v.label
@@ -479,9 +480,10 @@ class MSTAssignment(AssignmentStrategy):
                     for path in dll_dict[child]:
                         key = (v_label, c_label) if v_label < c_label else (c_label, v_label)
                         if residuals[key] > 0:
-                            if path._last._value in key:
-                                path.append(v.label)
-                                residuals[key] -=1
+                            last_node = path._last
+                            if last_node and unwrap_node_value(last_node) in key:
+                                path.append(DLListNode(value=v.label))
+                                residuals[key] -= 1
                         paths.append(path)
                 dll_dict[v] = paths
 

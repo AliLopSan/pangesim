@@ -28,6 +28,8 @@ def matrix_to_list(matrix: AdjacencyMatrix, directed: bool = False) -> Adjacency
     """
     adj_list: AdjacencyList = {}
     for source, target in matrix:
+        if source == target:
+            continue
         if source not in adj_list:
             adj_list[source] = []
         adj_list[source].append((target, matrix[(source, target)]))

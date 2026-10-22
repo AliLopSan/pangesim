@@ -16,7 +16,11 @@ class SequentialEdgeInsertion:
         Args:
             matrix: Input adjacency matrix in the form ((node,node),weight)
         """
-        residuals = [ (element, matrix[element]) for element in matrix]
+        residuals = [
+            (element, matrix[element])
+            for element in matrix
+            if element[0] != element[1]
+        ]
         residuals = sorted(residuals, key=lambda x:x[1], reverse=True)
         return residuals
 
@@ -59,8 +63,9 @@ class SequentialEdgeInsertion:
         """
         i = len(pan)
         new_genome = Genome(genome_id=i)
-        new_genome.add_edge(edge)
-        return new_genome
+        if new_genome.add_edge(edge):
+            return new_genome
+        return None
 
     def reconstruct(
             self,
@@ -88,16 +93,24 @@ class SequentialEdgeInsertion:
             slack_list = self.find_slack(pan, edge)
 
             while target > 0:
+                success = False
                 if slack_list:
                     index = slack_list.pop()
                     candidate_genome = pan.genomes[index].copy()
-                    candidate_genome.add_edge(edge)
-                    pan.replace_genome(candidate_genome._genome_id,candidate_genome)
 
+                    if candidate_genome.add_edge(edge):
+                        pan.replace_genome(candidate_genome._genome_id, candidate_genome)
+                        success = True
+
+                if not success:
+                    new_genome = self.new_genome_with_edge(pan, edge)
+                    if new_genome is not None:
+                        pan.add_genome(new_genome)
+                        success = True
+
+                if success:
+                    target -= 1
                 else:
-                    new_genome = self.new_genome_with_edge(pan,edge)
-                    pan.add_genome(new_genome)
-
-                target-= 1
+                    break
 
         return pan

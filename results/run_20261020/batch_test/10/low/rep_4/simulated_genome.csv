@@ -1,0 +1,27 @@
+pan,genome id,genome size,path_id,length
+simulated,0,10,0,10
+simulated,1,10,0,10
+simulated,2,8,0,8
+simulated,3,7,0,2
+simulated,3,7,1,5
+simulated,4,10,0,4
+simulated,4,10,1,6
+simulated,5,10,0,10
+simulated,6,12,0,12
+simulated,7,10,0,3
+simulated,7,10,1,2
+simulated,7,10,2,3
+simulated,7,10,3,2
+simulated,8,10,0,4
+simulated,8,10,1,2
+simulated,8,10,2,4
+simulated,9,8,0,8
+simulated,10,11,0,11
+simulated,11,8,0,8
+simulated,12,11,0,3
+simulated,12,11,1,8
+simulated,13,9,0,9
+simulated,14,11,0,11
+simulated,15,10,0,10
+simulated,16,11,0,11
+simulated,17,7,0,7

@@ -60,35 +60,35 @@ def run_inferences(results: Path):
     #GT generation
     print("Running MST inference...")
     print("\t Generating ground truth...")
-    ground_truth = sim.generate_pangenome(k=20, length=1000, complexity="medium")
+    ground_truth = sim.generate_pangenome(k=5, length=10, complexity="medium")
     matrix = ground_truth.compute_weighted_adjacencies()
     filename = "ground_truth.unimog"
     f = results / filename
     export_to_unimog(f, ground_truth)
 
-    #ground_truth.print_full_paths()
+    ground_truth.print_full_paths()
 
-    # MST inference
+    #MST inference
     print("\t Generating MST Pangenome...")
     mst = run_mst_inference(matrix)
     mst.check_integrity()
     f2 = results / "mst_pangenome.unimog"
     export_to_unimog(f2, mst)
 
-    #mst.print_full_paths()
+    mst.print_full_paths()
 
     # Sequential inference
-    print("\t Generating SEQ Pangenome...")
+    print("Generating SEQ pangenome...")
     seq = run_seq_inference(matrix)
     seq.check_integrity()
     f3 = results / "seq_pangenome.unimog"
     export_to_unimog(f3, seq)
 
-    #seq.print_full_paths()
+    seq.print_full_paths()
 
 
 
 if __name__ == "__main__":
-    out_dir = Path("results/run_20261020/unit_test/")
+    out_dir = Path("results/run_20261022/unit_test/")
     out_dir.mkdir(parents=True, exist_ok=True)
     run_inferences(out_dir)
