@@ -6,6 +6,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from scipy.optimize import linear_sum_assignment
+
+from pangesim.io.unimog import parse_dcj_id_matrix
+from pangesim.visualization.distances import MWMComparisonVisualizer
+
 
 def plot_dcj_distance_distribution(
     df_matrix: pd.DataFrame,
@@ -628,11 +633,11 @@ def plot_pangenome_metrics(results_dir:Path, source_dir:Path, pname:str)->None:
 
 
 if __name__ == "__main__":
-    results_root = Path("results/run_20261015/")
+    results_root = Path("results/run_20261020/")
     results_root.mkdir(parents=True, exist_ok=True)
 
     levels = ["low", "medium", "high"]
-    gene_sizes = [25, 100, 200, 500, 1000, 1500]
+    gene_sizes = [25, 100, 200, 500, 800, 1000]
 
     for size in gene_sizes:
         size_dir = results_root / str(size)

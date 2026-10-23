@@ -73,22 +73,21 @@ def run_inference(results: Path)-> None:
                     matrix = ground_truth.compute_weighted_adjacencies()
                     gt_core = ground_truth.core
 
-                    # MST inference
-                    #mst = run_mst_inference(matrix)
-                    #mst.check_integrity()
-                    #export_to_unimog(rep_dir / "mst_pangenome.unimog", mst)
+                    #MST inference
+                    mst = run_mst_inference(matrix)
+                    mst.check_integrity()
+                    export_to_unimog(rep_dir / "mst_pangenome.unimog", mst)
 
-                    #mst_dist = PangenomeDistribution(pangenome=mst, name="MST")
-                    #mst_g = mst_dist.get_genome_summary()
-                    #mst_g.to_csv(rep_dir / "mst_genome.csv", index=False)
-                    #mst_w = mst_dist.get_weight_distribution()
-                    #mst_w.to_csv(rep_dir / "mst_weights.csv", index=False)
+                    mst_dist = PangenomeDistribution(pangenome=mst, name="MST")
+                    mst_g = mst_dist.get_genome_summary()
+                    mst_g.to_csv(rep_dir / "mst_genome.csv", index=False)
+                    mst_w = mst_dist.get_weight_distribution()
+                    mst_w.to_csv(rep_dir / "mst_weights.csv", index=False)
 
                     # MST Core metrics
-                    #mst_core = mst.core
-                    #mst_sd = gt_core.symmetric_difference(mst_core)
+                    mst_core = mst.core
+                    mst_sd = gt_core.symmetric_difference(mst_core)
 
-                    """
                     summary_records.append(
                         {
                             "gene_size": size,
@@ -102,7 +101,6 @@ def run_inference(results: Path)-> None:
                             "core_sd": len(mst_sd)
                         }
                     )
-                    """
 
                     # Sequential inference
                     seq = run_seq_inference(matrix)
