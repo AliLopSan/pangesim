@@ -11,6 +11,8 @@ from pangesim.io.unimog import parse_dcj_id_matrix
 from pangesim.visualization.distances import MWMComparisonVisualizer
 from workflows.scripts.unit_mwm_comparison import compute_mwm_evaluation
 
+from typing import Dict, Any
+
 
 def enrich_summary_with_mwm(results_root: Path) -> pd.DataFrame:
     """Adds mwm results to master dataframe, computes mwm dumbell plots."""
@@ -248,18 +250,17 @@ def plot_summary_mwm(
     mst_color: str = "#5003C0",
     seq_color: str = "#FF467A",
     title: str = r"Average MWM Distance Across Gene Sizes and Complexity",
-    figsize: tuple[int, int] = (14, 7),
+    figsize: tuple[int, int] = (12, 8),
 ) -> tuple[plt.Figure, plt.Axes]:
     """Plots average MWM evaluation distance from the experiment summary DataFrame."""
     custom_rc = {
         "text.usetex": True,
         "font.family": "serif",
         "text.latex.preamble": r"\usepackage{amsmath}",
-        "axes.titlesize": 18,
-        "axes.labelsize": 16,
-        "xtick.labelsize": 14,
-        "ytick.labelsize": 14,
-        "legend.fontsize": 14,
+        "axes.titlesize": 18,"axes.labelsize": 35,
+        "xtick.labelsize": 30,
+        "ytick.labelsize": 30,
+        "legend.fontsize": 25,
     }
     sns.set_theme(style="whitegrid", rc=custom_rc)
     fig, ax = plt.subplots(figsize=figsize)
@@ -276,14 +277,15 @@ def plot_summary_mwm(
         dashes=False,
         palette=palette,
         linewidth=2,
+        markersize=20,
         ax=ax,
     )
 
-    ax.set_title(title, pad=20)
-    ax.set_xlabel(r"Gene Size")
+    #ax.set_title(title, pad=20)
+    ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
     ax.set_ylabel(r"Average MWM Distance")
-    ax.legend(loc="upper left", title=r"\textbf{Method / Complexity}")
-
+    #ax.legend(loc="upper left", title=r"\textbf{Method / Complexity}")
+    ax.legend(loc="upper left")
     plt.tight_layout()
     return fig, ax
 
@@ -300,11 +302,10 @@ def plot_genome_sizes(
         "text.usetex": True,
         "font.family": "serif",
         "text.latex.preamble": r"\usepackage{amsmath}",
-        "axes.titlesize": 18,
-        "axes.labelsize": 18,
-        "xtick.labelsize": 14,
-        "ytick.labelsize": 14,
-        "legend.fontsize": 14,
+        "axes.titlesize": 18,"axes.labelsize": 25,
+        "xtick.labelsize": 20,
+        "ytick.labelsize": 20,
+        "legend.fontsize": 18,
     }
     sns.set_theme(style="whitegrid", rc=custom_rc)
     sizes_per_genome = df.groupby(genome_col)[size_col].first()
@@ -339,6 +340,223 @@ def plot_pangenome_metrics(results_dir: Path, source_dir: Path, pname: str) -> N
         plt.savefig(outdir / "genome_size_distribution.pdf", dpi=350)
         plt.close()
 
+def plot_genomes_mape_comparison(
+    df: pd.DataFrame,
+    complexity: str,
+    output_path: Path,
+    mst_color: str = "#5003C0",
+    seq_color: str = "#FF467A"
+) -> None:
+    """Plots and compares the MAPE of MST and SEQ methods for a given complexity level.
+
+    Args:
+        df: Master summary DataFrame containing columns ["gene_size", "complexity", "method", "genomes_gt", "genomes_inf"].
+        complexity: The complexity level to filter by (e.g., "low", "medium", "high").
+        output_path: System path where the resulting PDF file will be saved.
+        mst_color: Hex color string for MST method.
+        seq_color: Hex color string for SEQ method.
+    """
+    df = df.copy()
+
+    # Filter data down to the target complexity level
+    filtered_df = df[df["complexity"] == complexity]
+
+    if filtered_df.empty:
+        print(f"[Warning] No data found for complexity level: '{complexity}'. Skipping plot.")
+        return
+
+    # Calculate row-level MAPE (%)
+    filtered_df["MAPE"] = (
+        (filtered_df["genomes_gt"] - filtered_df["genomes_inf"]).abs()
+        / filtered_df["genomes_gt"]
+    ) * 100.0
+
+    # Custom LaTeX-friendly theme settings
+    custom_rc = {
+        "text.usetex": True,
+        "font.family": "serif",
+        "text.latex.preamble": r"\usepackage{amsmath}",
+        "axes.titlesize": 16,"axes.labelsize": 45,
+        "xtick.labelsize": 35,
+        "ytick.labelsize": 35,
+        "legend.fontsize": 25,
+    }
+    sns.set_theme(style="whitegrid", rc=custom_rc)
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    palette = {"MST": mst_color, "SEQ": seq_color}
+
+    # Lineplot with MST and SEQ compared side-by-side
+    sns.lineplot(
+        data=filtered_df,
+        x="gene_size",
+        y="MAPE",
+        hue="method",
+        style="method",
+        palette=palette,
+        marker="o",
+        linewidth=2.5,
+        markersize=20,
+        errorbar="sd",  # Aggregates variance across the 5 replicates
+        ax=ax,
+    )
+
+    # Title & Axis Labels
+    #title_str = rf" \textbf{{Pangenome size MAPE Comparison}} ($\text{{Complexity}} = \text{{{complexity.capitalize()}}}$)"
+    #ax.set_title(title_str, pad=15)
+    ax.set_xlabel(r"Number of Genes")
+    ax.set_ylabel(r"MAPE (\%)")
+    ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
+    ax.set_ylim(bottom=0)
+
+    # Legend formatting
+    ax.legend(loc="upper right", title=r"\textbf{Method}")
+
+    plt.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, format="pdf", dpi=300)
+    plt.close()
+
+
+def plot_genomes_comparison(
+    df: pd.DataFrame,
+    complexity: str,
+    output_path: Path,
+    mst_color: str = "#5003C0",
+    seq_color: str = "#FF467A"
+) -> None:
+    """Plots and compares the MAPE of MST and SEQ methods for a given complexity level.
+
+    Args:
+        df: Master summary DataFrame containing columns ["gene_size", "complexity", "method", "genomes_gt", "genomes_inf"].
+        complexity: The complexity level to filter by (e.g., "low", "medium", "high").
+        output_path: System path where the resulting PDF file will be saved.
+        mst_color: Hex color string for MST method.
+        seq_color: Hex color string for SEQ method.
+    """
+    df = df.copy()
+
+    # Filter data down to the target complexity level
+    filtered_df = df[df["complexity"] == complexity]
+
+    if filtered_df.empty:
+        print(f"[Warning] No data found for complexity level: '{complexity}'. Skipping plot.")
+        return
+
+    # Calculate row-level MAPE (%)
+    filtered_df["k_diff"] = filtered_df["genomes_gt"] - filtered_df["genomes_inf"]
+
+    # Custom LaTeX-friendly theme settings
+    custom_rc = {
+        "text.usetex": True,
+        "font.family": "serif",
+        "text.latex.preamble": r"\usepackage{amsmath}",
+        "axes.titlesize": 16,"axes.labelsize": 45,
+        "xtick.labelsize": 35,
+        "ytick.labelsize": 35,
+        "legend.fontsize": 25,
+    }
+    sns.set_theme(style="whitegrid", rc=custom_rc)
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    palette = {"MST": mst_color, "SEQ": seq_color}
+
+    # Lineplot with MST and SEQ compared side-by-side
+    sns.lineplot(
+        data=filtered_df,
+        x="gene_size",
+        y="k_diff",
+        hue="method",
+        style="method",
+        palette=palette,
+        marker="o",
+        markersize=20,
+        linewidth=2.5,
+        errorbar="sd",  # Aggregates variance across the 5 replicates
+        ax=ax,
+    )
+
+    # Title & Axis Labels
+    #title_str = rf" \textbf{{Pangenome Size Comparison}} ($\text{{Complexity}} = \text{{{complexity.capitalize()}}}$)"
+    #ax.set_title(title_str, pad=15)
+    ax.set_xlabel(r"Number of Genes")
+    ax.set_ylabel(r"$k_{true} - k_{inferred}$")
+    ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
+    #ax.set_ylim(bottom=0)
+
+    # Legend formatting
+    ax.legend(loc="upper right", title=r"\textbf{Method}")
+
+    plt.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, format="pdf", dpi=300)
+    plt.close()
+
+
+def plot_core_sd_boxplot(
+    df_summary: pd.DataFrame,
+    complexity: str,
+    output_path: Path,
+    mst_color: str = "#5003C0",
+    seq_color: str = "#FF467A",
+) -> None:
+    """Plots a grouped box plot comparing the Core Symmetric Difference (core_sd) distribution across replicates."""
+    df_summary = df_summary.copy()
+
+    # Filter by complexity level
+    filtered_df = df_summary[df_summary["complexity"] == complexity]
+
+    if filtered_df.empty:
+        print(
+            f"[Warning] No summary data found for complexity level: '{complexity}'. Skipping core boxplot."
+        )
+        return
+
+    custom_rc = {
+        "text.usetex": True,
+        "font.family": "serif",
+        "text.latex.preamble": r"\usepackage{amsmath}",
+        "axes.titlesize": 16, "axes.labelsize": 45,
+        "xtick.labelsize": 35,
+        "ytick.labelsize": 35,
+        "legend.fontsize": 25,
+    }
+    sns.set_theme(style="whitegrid", rc=custom_rc)
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    palette = {"MST": mst_color, "SEQ": seq_color}
+
+    # Grouped boxplot showing core_sd distribution across replicates
+    sns.boxplot(
+        data=filtered_df,
+        x="gene_size",
+        y="core_sd",
+        hue="method",
+        palette=palette,
+        width=0.6,
+        fliersize=3,
+        linewidth=1.2,
+        ax=ax,
+    )
+
+    #title_str = rf" \textbf{{Core Symmetric Difference Distribution}} ($\text{{Complexity}} = \text{{{complexity.capitalize()}}}$)"
+    #ax.set_title(title_str, pad=15)
+    ax.set_xlabel(r"Number of Genes")
+    ax.set_ylabel(r"$|C_{true} \triangle C_{inferred}|$")
+    ax.set_ylim(bottom=0)
+
+    # Ensure integer-friendly ticks on y-axis
+    ax.yaxis.get_major_locator().set_params(integer=True)
+
+    ax.legend(loc="upper left", title=r"\textbf{Method}")
+
+    plt.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, format="pdf", dpi=300)
+    plt.close()
+
 
 if __name__ == "__main__":
     results_root = Path("results/run_20261022/")
@@ -371,6 +589,12 @@ if __name__ == "__main__":
 
             plots_dir = level_dir / "plots"
             plots_dir.mkdir(parents=True, exist_ok=True)
+            out_pdf = summary_plots_dir / f"mape_comparison_{level}.pdf"
+            out_pdf2 = summary_plots_dir / f"k_comparison_{level}.pdf"
+            out_pdf3 = summary_plots_dir / f"core_sd_boxplot_{level}.pdf"
+            plot_genomes_mape_comparison(df=df_summary, complexity=level, output_path=out_pdf)
+            plot_genomes_comparison(df=df_summary, complexity=level, output_path=out_pdf2)
+            plot_core_sd_boxplot(df_summary=df_summary, complexity=level, output_path=out_pdf3)
 
             for p in ["simulated", "mst", "seq"]:
                 plot_pangenome_metrics(

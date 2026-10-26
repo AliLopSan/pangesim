@@ -21,11 +21,11 @@ class MWMComparisonVisualizer():
             "text.usetex": True,
             "font.family": "serif",
             "text.latex.preamble": r"\usepackage{amsmath}",
-            "axes.titlesize": 18,  # Controls ax.set_title size
-            "axes.labelsize": 16,  # Controls x/ylabel size
-            "xtick.labelsize": 14,  # Controls x-axis tick scale
-            "ytick.labelsize": 14,  # Controls y-axis tick scale
-            "legend.fontsize": 14,  # Controls internal legend text
+            "axes.titlesize": 30,  # Controls ax.set_title size
+            "axes.labelsize": 35,  # Controls x/ylabel size
+            "xtick.labelsize": 30,  # Controls x-axis tick scale
+            "ytick.labelsize": 30,  # Controls y-axis tick scale
+            "legend.fontsize": 25,  # Controls internal legend text
         }
         sns.set_theme(style="whitegrid", rc=custom_rc)
 
@@ -57,7 +57,7 @@ class MWMComparisonVisualizer():
             sim_labels: List of simulated ground-truth genome labels.
             save_path: Optional file path to export the resulting publication-ready figure.
         """
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(10, 8))
 
         x_indices = np.arange(len(sim_labels))
         mst_distances = []
@@ -107,8 +107,8 @@ class MWMComparisonVisualizer():
             )
 
         plt.xticks(x_indices, [str(i) for i in x_indices])
-        plt.xlabel(r"Simulated Genome Index $(G_i)$", fontsize=14)
-        plt.ylabel(r"Minimum Weight Matching Distance ($d_{\text{MWM}}$)", fontsize=14)
+        plt.xlabel(r"Simulated Genome Index $(G_i)$")
+        plt.ylabel(r"MWM DCJ-id Distance ")
         #plt.title(r"\textbf{Comparative Reconstruction Performance: MST vs SEQ}", fontsize=16)
 
         plt.legend(
