@@ -282,7 +282,7 @@ def plot_summary_mwm(
     )
 
     #ax.set_title(title, pad=20)
-    ax.set_xlabel(r"Input Scale (\textit{Number of Genes})")
+    ax.set_xlabel(r"Ancestral Genome Size")
     ax.set_ylabel(r"Average MWM Distance")
     #ax.legend(loc="upper left", title=r"\textbf{Method / Complexity}")
     ax.legend(loc="upper left")
@@ -405,7 +405,7 @@ def plot_genomes_mape_comparison(
     # Title & Axis Labels
     #title_str = rf" \textbf{{Pangenome size MAPE Comparison}} ($\text{{Complexity}} = \text{{{complexity.capitalize()}}}$)"
     #ax.set_title(title_str, pad=15)
-    ax.set_xlabel(r"Number of Genes")
+    ax.set_xlabel(r"Ancestral Genome Size")
     ax.set_ylabel(r"MAPE (\%)")
     ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
     ax.set_ylim(bottom=0)
@@ -481,7 +481,7 @@ def plot_genomes_comparison(
     # Title & Axis Labels
     #title_str = rf" \textbf{{Pangenome Size Comparison}} ($\text{{Complexity}} = \text{{{complexity.capitalize()}}}$)"
     #ax.set_title(title_str, pad=15)
-    ax.set_xlabel(r"Number of Genes")
+    ax.set_xlabel(r"Ancestral Genome Size")
     ax.set_ylabel(r"$k_{true} - k_{inferred}$")
     ax.axhline(0, color="gray", linestyle="--", alpha=0.5)
     #ax.set_ylim(bottom=0)
@@ -543,7 +543,7 @@ def plot_core_sd_boxplot(
 
     #title_str = rf" \textbf{{Core Symmetric Difference Distribution}} ($\text{{Complexity}} = \text{{{complexity.capitalize()}}}$)"
     #ax.set_title(title_str, pad=15)
-    ax.set_xlabel(r"Number of Genes")
+    ax.set_xlabel(r"Ancestral Genome Size")
     ax.set_ylabel(r"$|C_{true} \triangle C_{inferred}|$")
     ax.set_ylim(bottom=0)
 
