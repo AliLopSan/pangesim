@@ -13,11 +13,18 @@ from tralda.datastructures.doubly_linked import DLListNode
 
 
 def unwrap_node_value(node: DLListNode) -> Any:
-    """Safely extracts the raw primitive value from a tralda node structure."""
-    if hasattr(node, "_value") and hasattr(node._value, "_value"):
-        return node._value._value
-    if isinstance(node.get(), int):
-        return node.get()
+    """Safely extracts the raw primitive value from a tralda node structure or raw int."""
+    if isinstance(node, int):
+        return node
+    if hasattr(node, "get") and callable(node.get):
+        try:
+            val = node.get()
+            if isinstance(val, int):
+                return val
+        except Exception:
+            pass
+    if hasattr(node, "_value"):
+        return unwrap_node_value(node._value)
     if hasattr(node, "item"):
         return node.item
     return node
@@ -26,7 +33,7 @@ def unwrap_node_value(node: DLListNode) -> Any:
 class Genome:
     """A genome modeled as a path forest."""
 
-    __slots__ = ("_genome_id", "heads", "gene_set", "_node_cache")
+    __slots__ = ("_genome_id", "heads", "gene_set", "_node_cache","head_set","tail_set")
 
     def __init__(
         self,
@@ -34,11 +41,33 @@ class Genome:
         heads: List[DLListNode] | None = None,
         gene_set: Set | None = None,
     ) -> None:
-        """Initializes an empty Genome container."""
         self._genome_id = genome_id
         self.heads = heads if heads is not None else []
         self.gene_set = gene_set if gene_set is not None else set()
         self._node_cache: Dict[Any, DLListNode] = {}
+
+        self.head_set: Set[int] = set()
+        self.tail_set: Set[int] = set()
+
+        # Auto-sync cache, gene set, and head/tail integer sets from heads
+        for head in self.heads:
+            head_val = unwrap_node_value(head)
+            if head_val is not None:
+                self.head_set.add(head_val)
+
+            curr = head
+            prev_val = None
+            while curr is not None:
+                val = unwrap_node_value(curr)
+                if val is not None:
+                    self.gene_set.add(val)
+                    node_obj = curr if isinstance(curr, DLListNode) else DLListNode(value=val)
+                    self._node_cache[val] = node_obj
+                prev_val = val
+                curr = curr._next if hasattr(curr, "_next") else None
+
+            if prev_val is not None:
+                self.tail_set.add(prev_val)
 
     def __len__(self) -> int:
         """Returns the total number of nodes across all paths in the genome."""
@@ -68,21 +97,33 @@ class Genome:
         return len(self.heads)
 
     def add_path(self, path: DLList) -> None:
-        """Adds an individual path segment by archiving its head node pointer.
-
-        Updates gene set.
-        """
+        """Adds an individual path segment, updating gene set, cache, and head/tail sets."""
         start_node = path.first_node()
-
         if start_node is not None:
-            self.heads.append(start_node)
+            node_to_add = (
+                start_node if isinstance(start_node, DLListNode) else DLListNode(value=start_node)
+            )
+            self.heads.append(node_to_add)
+
+            head_val = unwrap_node_value(start_node)
+            if head_val is not None:
+                self.head_set.add(head_val)
+
             current = start_node
+            prev_val = None
             while current is not None:
                 value = unwrap_node_value(current)
                 if value is not None:
                     self.gene_set.add(value)
-                    self._node_cache[value] = current
-                current = current._next
+                    node_obj = (
+                        current if isinstance(current, DLListNode) else DLListNode(value=value)
+                    )
+                    self._node_cache[value] = node_obj
+                prev_val = value
+                current = current._next if hasattr(current, "_next") else None
+
+            if prev_val is not None:
+                self.tail_set.add(prev_val)
 
     def degree(self, node_identifier: Any) -> int:
         """Computes the degree of a node.
@@ -155,57 +196,232 @@ class Genome:
                 break
         return flag
 
+    def _reverse_path(self, node: DLListNode) -> DLListNode:
+        """Reverses a path and updates head_set and tail_set accordingly."""
+        curr = node
+        while curr._prev is not None:
+            curr = curr._prev
+        old_head = curr
+        old_head_val = unwrap_node_value(old_head)
+
+        # Find old tail before reversing
+        old_tail = old_head
+        while old_tail._next is not None:
+            old_tail = old_tail._next
+        old_tail_val = unwrap_node_value(old_tail)
+
+        # Reverse pointers
+        prev_node = None
+        curr = old_head
+        new_head = None
+        while curr is not None:
+            next_node = curr._next
+            curr._next = prev_node
+            curr._prev = next_node
+            prev_node = curr
+            new_head = curr
+            curr = next_node
+
+        # Update heads list reference
+        if old_head in self.heads:
+            idx = self.heads.index(old_head)
+            self.heads[idx] = new_head
+        else:
+            self.heads.append(new_head)
+
+        # Swap head/tail integer roles in the sets
+        if old_head_val in self.head_set:
+            self.head_set.remove(old_head_val)
+        self.tail_set.add(old_head_val)
+
+        if old_tail_val in self.tail_set:
+            self.tail_set.remove(old_tail_val)
+        self.head_set.add(old_tail_val)
+
+        return new_head
+
     def add_edge(self, edge: Tuple[int, int]) -> bool:
-        """Inserts a given edge to genome.
-
-        Args:
-           edge: Edge to be added
-
-        Returns:
-           True if it is possible to add edge, False otherwise.
-        """
-        u, v = edge[0], edge[1]
-
-        # Dynamically instantiate and cache missing genes
-        for val in (u, v):
-            if val not in self.gene_set:
-                self.gene_set.add(val)
-                self._node_cache[val] = DLListNode(value=val)
-                self.heads.append(self._node_cache[val])
-
-        if self.has_edge((u, v)):
-            return True
-
-        u_n, v_n = self._node_cache[u], self._node_cache[v]
-
-        if self.degree(u_n) == 2 or self.degree(v_n) == 2:
+        """Inserts a given edge to genome by coordinating path creation, extension, or merging."""
+        if not edge or edge[0] is None or edge[1] is None:
             return False
 
-        # Try Orientation A: u -> v
-        if u_n._next is None and v_n._prev is None and not self.would_break_path_forest((u, v)):
-            u_n._next, v_n._prev = v_n, u_n
-            if v_n in self.heads:
-                self.heads.remove(v_n)
+        u, v = edge[0], edge[1]
+        key = (u, v) if u <= v else (v, u)
+
+        if self.has_edge(key):
             return True
 
-        # Try Orientation B: v -> u
-        if v_n._next is None and u_n._prev is None and not self.would_break_path_forest((v, u)):
-            v_n._next, u_n._prev = u_n, v_n
+        if self.would_break_path_forest(key):
+            return False
+
+        u_is_new = u not in self._node_cache
+        v_is_new = v not in self._node_cache
+
+        # Dynamically instantiate missing nodes
+        if u_is_new:
+            self.gene_set.add(u)
+            self._node_cache[u] = DLListNode(value=u)
+        if v_is_new:
+            self.gene_set.add(v)
+            self._node_cache[v] = DLListNode(value=v)
+
+        u_n = self._node_cache[u]
+        v_n = self._node_cache[v]
+
+        if self.degree(u_n) >= 2 or self.degree(v_n) >= 2:
+            return False
+
+        # Dispatch to clean modular helper methods based on node states
+        if u_is_new and v_is_new:
+            #print("\t\t Handling both new case ", edge)
+            return self._handle_both_new(u_n, v_n)
+        elif u_is_new or v_is_new:
+            #print("\t\t Handling one is new case ", edge)
+            return self._handle_single_new(u_n, v_n, u_is_new)
+        else:
+            #print("\t\t Handling path merge case ", edge)
+            return self._handle_path_merge(u_n, v_n)
+
+    def _handle_both_new(self, u_n: DLListNode, v_n: DLListNode) -> bool:
+        """Case 1: Both nodes are new -> Create a new 2-node path."""
+        u_val = unwrap_node_value(u_n)
+        v_val = unwrap_node_value(v_n)
+
+        u_n._next = v_n
+        v_n._prev = u_n
+        self.heads.append(u_n)
+
+        self.head_set.add(u_val)
+        self.tail_set.add(v_val)
+        return True
+
+    def _handle_single_new(self, u_n: DLListNode, v_n: DLListNode, u_is_new: bool) -> bool:
+        """Case 2: Exactly one node is new -> Extend an existing path."""
+        new_node, existing_node = (u_n, v_n) if u_is_new else (v_n, u_n)
+        new_val = unwrap_node_value(new_node)
+        existing_val = unwrap_node_value(existing_node)
+
+        # Attach after tail
+        if existing_node._next is None:
+            existing_node._next = new_node
+            new_node._prev = existing_node
+
+            # existing_node is no longer a tail; new_node is the new tail
+            if existing_val in self.tail_set:
+                self.tail_set.remove(existing_val)
+            self.tail_set.add(new_val)
+            return True
+
+        # Attach before head
+        elif existing_node._prev is None:
+            new_node._next = existing_node
+            existing_node._prev = new_node
+
+            # Find and update heads list reference
+            if existing_node in self.heads:
+                idx = self.heads.index(existing_node)
+                self.heads[idx] = new_node
+            else:
+                self.heads.append(new_node)
+
+            # existing_node is no longer a head; new_node is the new head
+            if existing_val in self.head_set:
+                self.head_set.remove(existing_val)
+            self.head_set.add(new_val)
+            return True
+
+        return False
+
+    def _handle_path_merge(self, u_n: DLListNode, v_n: DLListNode) -> bool:
+        """Case 3: Both nodes exist -> Merging two distinct paths using integer sets."""
+        u_val = unwrap_node_value(u_n)
+        v_val = unwrap_node_value(v_n)
+
+        #Find the head of u path
+        u_head = u_n
+        while u_head._prev is not None:
+            u_head = u_head._prev
+        u_head_val = unwrap_node_value(u_head)
+
+        #Find the tail of u path
+        u_tail = u_n
+        while u_tail._next is not None:
+            u_tail = u_tail._next
+        u_tail_val = unwrap_node_value(u_tail)
+
+        #Find the head of v path
+        v_head = v_n
+        while v_head._prev is not None:
+            v_head = v_head._prev
+        v_head_val = unwrap_node_value(v_head)
+
+        #Find the tail of the v path
+        v_tail = v_n
+        while v_tail._next is not None:
+            v_tail = v_tail._next
+        v_tail_val = unwrap_node_value(v_tail)
+
+        if u_head_val == v_head_val:
+            return False  # Same path, cycle check
+
+        u_is_tail = u_val in self.tail_set
+        u_is_head = u_val in self.head_set
+        v_is_tail = v_val in self.tail_set
+        v_is_head = v_val in self.head_set
+
+        # Subcase A: u is tail, v is head (u -> v)
+        if u_is_tail and v_is_head:
+            self.head_set.remove(u_head_val)
+            if u_head in self.heads:
+                self.heads.remove(u_head)
+            self.tail_set.remove(v_tail_val)
+
+            v_tail._next = u_head
+            u_head._prev = v_tail
+            return True
+
+        # Subcase B: v is tail, u is head (v -> u)
+        if v_is_tail and u_is_head:
+            self.head_set.remove(v_head_val)
+            if v_head in self.heads:
+                self.heads.remove(v_head)
+            self.tail_set.remove(u_tail_val)
+
+            u_tail._next = v_head
+            v_head._prev = u_tail
+            return True
+
+        # Subcase C: u is tail, v is tail -> Reverse v's path so v becomes head, then join u to v
+        if u_is_tail and v_is_tail:
+            new_v_head = self._reverse_path(v_n)
+            u_n._next = new_v_head
+            new_v_head._prev = u_n
+            self.tail_set.discard(u_val)
+            self.head_set.discard(v_head_val)
+            if v_n in self.heads:
+                self.heads.remove(v_n)
+            self.head_set.add(v_val)
+            return True
+
+        # Subcase D: u is head, v is head -> remove u from heads, join with v's tail
+        if u_is_head and v_is_head:
+            # Connect v's tail to u
+            v_tail._next = u_n
+            u_n._prev = v_tail
+
+            # u was a head, but now it has a predecessor (v_tail). Remove u as a head!
+            self.head_set.discard(u_val)
             if u_n in self.heads:
                 self.heads.remove(u_n)
+
+            # Update tail set: v_tail is no longer a tail, u_tail is still the tail
+            self.tail_set.discard(v_tail_val)
             return True
 
         return False
 
     def remove_edge(self, edge: Tuple[int, int]) -> bool:
-        """Removes a given edge from the genome.
-
-        Args:
-           edge: Edge to be removed
-
-        Returns:
-           True if the edge existed.
-        """
+        """Removes a given edge from the genome and updates integer head/tail sets."""
         if self.has_edge(edge):
             u, v = edge[0], edge[1]
             u_node = self._node_cache.get(u)
@@ -215,38 +431,47 @@ class Genome:
             if self.degree(u_node) <= 1 or self.degree(v_node) <= 1:
                 return False
 
-            # Check Direction A: u -> v
+            # Check Direction A: u -> v was the edge (splitting path into u (new tail) and v (new head))
             if u_node._next == v_node:
                 u_node._next = None
                 v_node._prev = None
+
+                # v_node becomes a new path head
                 self.heads.append(v_node)
+                self.head_set.add(v)
+                # u_node becomes a new path tail
+                self.tail_set.add(u)
                 return True
 
-            # Check Direction B: v -> u
+            # Check Direction B: v -> u was the edge (splitting path into v (new tail) and u (new head))
             if v_node._next == u_node:
                 v_node._next = None
                 u_node._prev = None
-                self.heads.append(u_node)
-                return True
-        else:
-            return False
 
-    def get_path_sequences(self) -> List[List[Any]]:
+                # u_node becomes a new path head
+                self.heads.append(u_node)
+                self.head_set.add(u)
+                # v_node becomes a new path tail
+                self.tail_set.add(v)
+                return True
+
+        return False
+
+    def get_path_sequences(self) -> List[List[int]]:
         """Traverse every individual path sequentially from its head pointer.
 
         Returns:
            A list of paths, where each path is a list of node values.
         """
-        all_paths: List[List[Any]] = []
-        current_path_nodes: List[Any] = []
+        all_paths: List[List[int]] = []
 
-        for node in self.iter_nodes():
-            value = unwrap_node_value(node)
-            current_path_nodes.append(value)
-            if node._next is None:
-                all_paths.append(current_path_nodes)
-                current_path_nodes = []
-
+        for head in self.heads:
+            path = self.get_a_path(head)
+            current_path_nodes: List[DLListNode] = []
+            for node in path:
+                value = unwrap_node_value(node)
+                current_path_nodes.append(value)
+            all_paths.append(current_path_nodes)
         return all_paths
 
     def get_adjacency_tuples(self) -> Set[Tuple[Any, Any]]:
@@ -312,56 +537,83 @@ class Genome:
         return new_dllist
 
     def would_break_path_forest(self, edge: Tuple[int, int]) -> bool:
-        """Checks whether inserting (u,v) would break the path forest condition.
-
-        Args:
-            edge: the edge to test.
-
-        Returns:
-            True if there exists a possible violation created by the edge.
-        """
+        """Checks whether inserting (u,v) would break the path forest condition."""
         u = edge[0]
         v = edge[1]
-        # If they do not exist, we are safe
         if u not in self.gene_set and v not in self.gene_set:
             return False
 
-        # Case 1: They already exist there
         if self.has_edge(edge):
             return True
 
-        # If they exist, we will find them
         u_node = self._node_cache.get(u)
         v_node = self._node_cache.get(v)
 
-        # Case 2: Possible branching
-        # If either of them is an internal node, then it's not possible
+        # Branching check (degree cannot exceed 2)
         if u_node and u_node._prev is not None and u_node._next is not None:
             return True
-
         if v_node and v_node._prev is not None and v_node._next is not None:
             return True
 
-        # Case 3: Cycle detection
-        # If both nodes exist in the forest, make sure v is not upstream of u
         if u_node and v_node:
-            curr = v_node
-            while curr is not None:
-                if unwrap_node_value(curr) == u:
-                    return True  # Connecting u -> v closes a cycle!
-                curr = curr._next
+            u_head = u_node
+            while u_head._prev is not None:
+                u_head = u_head._prev
+
+            v_head = v_node
+            while v_head._prev is not None:
+                v_head = v_head._prev
+
+            if u_head == v_head:
+                curr = u_node
+                while curr is not None:
+                    if curr == v_node:
+                        return True
+                    curr = curr._next
+                curr = v_node
+                while curr is not None:
+                    if curr == u_node:
+                        return True
+                    curr = curr._next
+                return True
 
         return False
 
     def copy(self) -> "Genome":
-        """Returns a deep copy of the genome structure."""
+        """Returns a robust deep copy of the genome, preserving exact node chains and integer sets."""
         new_genome = Genome(genome_id=self._genome_id)
-        # Re-build independent path copies using your get_path_sequences structure
-        for path_seq in self.get_path_sequences():
-            new_list = DLList()
-            for val in path_seq:
-                new_list.append(DLListNode(value=val))
-            new_genome.add_path(new_list)
+        new_genome.gene_set = self.gene_set.copy()
+        new_genome.head_set = self.head_set.copy()
+        new_genome.tail_set = self.tail_set.copy()
+
+        new_heads: List[DLListNode] = []
+        new_node_cache: Dict[Any, DLListNode] = {}
+
+        for head in self.heads:
+            curr = head
+            new_head = None
+            prev_new_node = None
+
+            while curr is not None:
+                val = unwrap_node_value(curr)
+                new_node = DLListNode(value=val)
+
+                if new_head is None:
+                    new_head = new_node
+
+                if prev_new_node is not None:
+                    prev_new_node._next = new_node
+                    new_node._prev = prev_new_node
+
+                new_node_cache[val] = new_node
+                prev_new_node = new_node
+                curr = curr._next
+
+            if new_head is not None:
+                new_heads.append(new_head)
+
+        new_genome.heads = new_heads
+        new_genome._node_cache = new_node_cache
         return new_genome
 
     def check_integrity(self) -> bool:
@@ -370,20 +622,32 @@ class Genome:
         Returns:
            True if this is a valid path forest.
         """
+        if len(self.gene_set) < 2:
+            print("\t\t Gene set: :", self.gene_set)
+            return False
+
         seen_nodes: Set[Any] = set()
         for node in self.iter_nodes():
             value = unwrap_node_value(node)
 
             # Cycle condition check
             if value in seen_nodes:
+                print(f"\t\t Cycle condition failed with node {value}")
                 return False
             seen_nodes.add(value)
 
             # Isolated node check
             if node._prev is None and node._next is None:
+                print(f"\t\t Isolated node found {node.value}")
                 return False
 
         ad = self.as_adjacency_list()
+
+        if len(ad) == 0:
+            print("\t\t Gene set: :", self.gene_set)
+            print("\t\t Heads: :", self.heads_set)
+            print("\t\t But no adjacency list :( ")
+            return False
 
         for node in ad:
             neighbors = ad[node]
@@ -548,6 +812,9 @@ class Pangenome:
         for genome in self._genomes:
             if hasattr(genome, "check_integrity") and not genome.check_integrity():
                 raise ValueError(f"Genome '{genome._genome_id}' failed internal validation.")
+            for path in genome.get_path_sequences():
+                if len(path) < 2:
+                    raise ValueError(f"Genome '{genome._genome_id}' failed path validation.")
 
         return True
 
@@ -571,3 +838,25 @@ class Pangenome:
         if len(core_genes) > 0:
             summary_info.append(f"> {core_genes[:5]}")
         return "\n".join(summary_info)
+
+    def print_full_paths(self) -> None:
+        """Prints all paths of each genome in the pangenome fully without truncation.
+
+        Useful for visual comparison of small-scale example runs in the terminal.
+        """
+        lines = [
+            "========================================",
+            f" {self._pangenome_id} full paths",
+            "========================================",
+        ]
+        for genome in self._genomes:
+            lines.append(
+                f"Genome {genome._genome_id}  of {len(self)} genomes"
+                f"\n(Total Genes: {len(genome)}, Paths: {genome.path_count})"
+            )
+            paths = genome.get_path_sequences()
+            for i, path in enumerate(paths):
+                prefix = "└──" if i == len(paths) - 1 else "├──"
+                lines.append(f"    {prefix} Path {i + 1}: {path}")
+            lines.append("-" * 40)
+        print("\n".join(lines))

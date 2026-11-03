@@ -6,7 +6,10 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from pangesim.io.unimog import parse_dcj_matrix
+from scipy.optimize import linear_sum_assignment
+
+from pangesim.io.unimog import parse_dcj_id_matrix
+from pangesim.visualization.distances import MWMComparisonVisualizer
 
 
 def plot_dcj_distance_distribution(
@@ -316,7 +319,7 @@ def plot_genome_sizes(
     ax.set_xticks(range(n_genomes))
     ax.set_xticklabels(range(1, n_genomes + 1), rotation=0)
 
-    
+
     plt.tick_params(axis="x", direction='out', rotation=45)
 
     ax.set_title(r"Genome Size per Genome", pad=15)
@@ -354,7 +357,7 @@ def plot_path_counts_per_genome(
         .nunique()
         .reset_index(name="path_count")
     )
-    
+
 
     fig, ax = plt.subplots(figsize=figsize)
 
@@ -381,7 +384,7 @@ def plot_path_counts_per_genome(
     ax.set_xlabel(r"Genome")
     ax.set_ylabel(r"Number of paths")
 
-    
+
     plt.tick_params(axis="x", direction='out', rotation=45)
 
     # Ensure integer ticks on y-axis for counts
@@ -433,7 +436,7 @@ def plot_path_length_distribution(
     ax.set_title(title, pad=15)
     ax.set_xlabel(r"Genome")
     ax.set_ylabel(r"Path Length")
-    
+
 
     # Ensure clean integer ticks on y-axis
     ax.yaxis.get_major_locator().set_params(integer=True)
@@ -630,11 +633,11 @@ def plot_pangenome_metrics(results_dir:Path, source_dir:Path, pname:str)->None:
 
 
 if __name__ == "__main__":
-    results_root = Path("results/run_20261015/")
+    results_root = Path("results/run_20261020/")
     results_root.mkdir(parents=True, exist_ok=True)
 
     levels = ["low", "medium", "high"]
-    gene_sizes = [25, 100, 200, 500, 1000, 1500]
+    gene_sizes = [25, 100, 200, 500, 800, 1000]
 
     for size in gene_sizes:
         size_dir = results_root / str(size)

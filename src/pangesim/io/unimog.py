@@ -1,8 +1,8 @@
 """Exporters for dcj tools (UniMoG)."""
-import pandas as pd
-import numpy as np
-
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 from pangesim import Pangenome
 
@@ -118,7 +118,7 @@ def parse_dcj_matrix(file_path: Path | str) -> pd.DataFrame:
     return df.reindex(index=ordered_rows, columns=ordered_cols)
 
 def parse_dcj_id_matrix(file_path: Path | str) -> pd.DataFrame:
-     """ Extracts the dcj indel matrix from UNIMOG's output text."""
+     """Extracts the dcj indel matrix from UNIMOG's output text."""
      matrix_lines = []
      capture = False
      with open(file_path, 'r') as f:
@@ -145,7 +145,7 @@ def parse_dcj_id_matrix(file_path: Path | str) -> pd.DataFrame:
           if cells and cells[-1] == '':
                cells.pop()
           cleaned_data.append(cells)
-          
+
      if not cleaned_data:
           raise ValueError("No matrix data found under 'DCJ distance comparisons:'")
      headers = cleaned_data[0][1:]

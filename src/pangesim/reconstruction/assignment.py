@@ -3,6 +3,7 @@ import heapq
 from copy import copy
 from itertools import pairwise
 from typing import Any
+from typing import Generator
 from typing import List
 from typing import Set
 from typing import Tuple
@@ -423,6 +424,23 @@ class MSTAssignment(AssignmentStrategy):
 
         id_pool: Global Genome Pool for id generation.
         """
+        def iterative_postorder(root: TreeNode) -> Generator[TreeNode, None, None]:
+            """Performs an iterative postorder traversal using explicit stacks."""
+            if not root:
+                return
+
+            stack1 = [root]
+            stack2 = []
+
+            while stack1:
+                node = stack1.pop()
+                stack2.append(node)
+                for child in node.children:
+                    stack1.append(child)
+
+            while stack2:
+                yield stack2.pop()
+
         def path_as_list(path:DLList) -> List[int]:
             """Transform a Doubly Linked list into a list of integers.
 
@@ -440,14 +458,18 @@ class MSTAssignment(AssignmentStrategy):
 
         dll_dict = dict()
 
-        for v in mst.postorder():
+        # Use iterative postorder instead of mst.postorder()
+        postorder_nodes = list(iterative_postorder(mst.root))
+
+        for v in postorder_nodes:
             dll_dict[v] = []
 
         residuals = copy(matrix)
 
-        for v in mst.postorder():
+        for v in postorder_nodes:
             if v.is_leaf():
-                lst = DLList([v.label])
+                lst = DLList()
+                lst.append(DLListNode(value=v.label))
                 dll_dict[v] = [lst]
             else:
                 v_label = v.label
@@ -458,14 +480,14 @@ class MSTAssignment(AssignmentStrategy):
                     for path in dll_dict[child]:
                         key = (v_label, c_label) if v_label < c_label else (c_label, v_label)
                         if residuals[key] > 0:
-                            if path._last._value in key:
-                                path.append(v.label)
-                                residuals[key] -=1
+                            last_node = path._last
+                            if last_node and unwrap_node_value(last_node) in key:
+                                path.append(DLListNode(value=v.label))
+                                residuals[key] -= 1
                         paths.append(path)
                 dll_dict[v] = paths
 
         final_genomes: list[Genome] = []
-
         for p in dll_dict[mst.root]:
             placed = False
             dll_as_ints = path_as_list(p)
@@ -477,9 +499,8 @@ class MSTAssignment(AssignmentStrategy):
                     placed = True
                     break
                 if len(intersection) == 1:
-                    final_genomes.append(genome)
                     element = next(iter(intersection))
-                    if element == dll_as_ints[0] or element == dll_as_ints[-1]:
+                    if genome.degree(element) < 2:
                         for u,v in pairwise(dll_as_ints):
                             genome.add_edge((u,v))
                         placed = True
@@ -490,7 +511,6 @@ class MSTAssignment(AssignmentStrategy):
                 genome = Genome(genome_id=genome_id)
                 genome.add_path(p)
                 final_genomes.append(genome)
-
         return final_genomes
 
     def assign_genomes(self, adjacencies: AdjacencyMatrix, id_pool:GlobalGenomePool) -> Pangenome:
@@ -501,7 +521,7 @@ class MSTAssignment(AssignmentStrategy):
             id_pool: A pool for id genome assignment.
 
         Returns:
-            A  Pangenome containing k genomes built by Eulerian Path decomposition.
+            A  Pangenome containing k genomes built by Maximum Spanning Tree peeling.
         """
         adj_list = matrix_to_list(matrix=adjacencies, directed=False)
         explorer = TopologicalExplorer(adj_list, directed=False)

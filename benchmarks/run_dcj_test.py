@@ -1,12 +1,11 @@
 """DCJ test with UNIMOG."""
 
-from pangesim.visualization.performance import BaseVisualizer
+from pathlib import Path
+
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
-import numpy as np
-
-from pathlib import Path
 
 from benchmarks.fixtures import random_simulated_pangenome
 from pangesim.io.unimog import export_to_unimog
@@ -16,7 +15,6 @@ from pangesim.reconstruction.assignment import MSTAssignment
 from pangesim.reconstruction.base import AdjacencyMatrix
 from pangesim.reconstruction.refining import SequentialEdgeRefinement
 from pangesim.reconstruction.utils import GlobalGenomePool
-
 
 
 def run_seq_inference(m:AdjacencyMatrix):
@@ -193,7 +191,7 @@ def plot_dcj_distance_distribution(
     # Explicitly force integer tick labels on the x-axis
     min_val = int(np.floor(valid_distances.min()))
     max_val = int(np.ceil(valid_distances.max()))
-    
+
     # Generate integer ticks
     """
     x_ticks = np.arange(min_val, max_val + 1, tick_step)
@@ -428,7 +426,7 @@ def plot_paired_dcj_boxplots(
     return fig, ax
 
 def get_matrix():
-    
+
     results = Path("results/run_20260908")
     f = results / "dcj_results.txt"
     df = parse_dcj_matrix(f)
@@ -464,7 +462,7 @@ def get_matrix():
     plt.savefig(pname, dpi=350)
     plt.show()
     plt.close()
-    
+
 
 
 if __name__ == "__main__":
