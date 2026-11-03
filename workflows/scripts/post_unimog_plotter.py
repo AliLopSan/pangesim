@@ -267,12 +267,15 @@ def plot_summary_mwm(
 
     palette = {"MST": mst_color, "SEQ": seq_color}
 
+    # Create a copy and rename 'complexity' to 'level' for the plot
+    df_plot = df_summary.copy().rename(columns={"complexity": "level"})
+
     sns.lineplot(
-        data=df_summary,
+        data=df_plot,
         x="gene_size",
         y="mwm_average",
         hue="method",
-        style="complexity",
+        style="level",  # Updated to use the new column name
         markers=True,
         dashes=False,
         palette=palette,
