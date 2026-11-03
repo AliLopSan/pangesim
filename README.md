@@ -22,11 +22,10 @@ This project investigates the reconstruction of pangenomes and its constituent g
 
 The repository contains:
 
-- A simulator of pangenome evolution
 - Synthetic benchmark generation
-- Reconstruction heuristics
+- Reconstruction Algorithms
 - Evaluation metrics
-- Experimental notebooks
+
 
 ---
 
@@ -46,28 +45,25 @@ Our input (on the left) is a graph that represents the known adjacencies between
 
 ## Core Components 
 
-### 1. 🧬 Pangenome Evolution Simulator 
+## Core Components
 
-(`panevolve`) Generates synthetic benchmark datasets starting from ancestral genomes along simulated species trees via: 
+### 1. 🧬 Pangenome Evolution Simulator (`panevolve`)
+Generates synthetic benchmark datasets across controlled evolutionary levels (low, medium, and high) starting from an ancestral linear genome of $n$ unique markers.
+- **Evolutionary Modeling:** Simulates $k-1$ descendant genomes via independent event rates sampled from Poisson distributions ($\mathrm{Poisson}(r_e \cdot b)$).
+- **Structural & Content Modifications:** Supports gene insertions, deletions, adjacency modifications, inversions, fissions, fusions, and translocations while preserving linear genome architectures.
+- **Ground-Truth Tracking:** Maintains explicit lineage histories, core genome sets, and pathway matrices for rigorous benchmarking.
 
-- Gene loss & insertion events
+### 2. 🧩 Reconstruction & Refinement Pipeline (`reconstruction`)
+Recovers individual genome pathways from aggregated adjacency frequencies using advanced decomposition strategies:
+- **Sequential Edge Addition (SEQ):** Builds and expands genome paths incrementally based on adjacency weights.
+- **Maximum Spanning Tree (MST) Path Decompositions:** Leverages tree-based decompositions for robust structural recovery, demonstrating superior performance on benchmark evaluations.
+- **Iterative Refinement:** Optimizes edge residuals and path connectivity using a greedy routines (`SequentialEdgeRefinement`).
 
-- Structural genome rearrangements 
-
-- Ground-truth tracking for core genomes, pathway matrices, and evolutionary histories 
-
-### 2. 🧩 Reconstruction & Refinement Pipeline 
-
-(`reconstruction`) A three-phase heuristic pipeline designed to recover individual genome pathways: 
-
-- **Phase 1 (Eulerian trials):** Finds Eulerian trails by transforming the input adjacencies into an eulerian graph. 
-
-- **Phase 2 (Assignment):** Transforms the trails into a set of genomes. 
-
-- **Phase 3 (Refinement):** Iterative greedy hill-climbing optimization using `fix_under_edge` and `fix_over_edge` routines to minimize edge residuals. 
-
-### 3. 📊 Visual Tracking Engine 
-
+### 3. 📊 Visual Tracking & Evaluation Engine (`visualization`)
+Provides comprehensive comparative analytics and visualization tooling:
+- **UniMoG input generation**: Using `export_to_unimog` users can compare the DCJ-indel distance using the [UniMoG](https://wwww.cebitec.uni-bielefeld.de/bibiserv.cebitec.uni-bielefeld.de/dcj@id=dcj_manual.html) package.
+- **`SmartRefinementVisualizer`:** A delta-aware dashboard comparing **Ground Truth (`#007FFF`)** against **Inferred Pangenomes (`#BD33A4`)** across stacked subgrids with explicit numeric edge weights and action logs.
+- **Comparative Metrics:** Evaluates inferred collections against pangenome size, core set recovery, and structural similarity measured via the DCJ-indel distance (including specialized MwmComparisonVisualizer pipelines).
 (`visualization`) Features `SmartRefinementVisualizer`, a delta-aware dashboard comparing **Ground Truth (`#007FFF`)** against **Inferred Pangenomes (`#BD33A4`)** across stacked genome subgrids, complete with explicit numeric edge weights and action logs. 
 
 ![Pangesim Refinement Tracking](docs/images/refinement_stepwise.gif)
@@ -78,24 +74,26 @@ Our input (on the left) is a graph that represents the known adjacencies between
 .
 ├── src/pangesim/
 │   ├── datastructures/#Pangenome models
-│   ├── metrics/ #Scoring functions
+│   ├── io/#UniMoG compatibility imports/exports
+│   ├── metrics/ #Evaluation functions
 │   ├── panevolve/ #main simulator
-│   ├── reconstruction/ #algorithms and heuristics
-│   └── visualization/ #SmartRefinementVisualizer & plot rederings
-│
+│   ├── reconstruction/ #algorithms and refinement methods
+│   ├── reconstruction/ #algorithms and refinement methods
+│   ├── reconstruction/ #algorithms and refinement methods
+│   └── visualization/ #Plot rederings
 |
 ├── benchmarks/ # Pangenome Reconstruction Experiments
-│   ├── config.py # Heuristic and simulation parameters
-│   ├── fixtures.py # Mock pangenome generator
-│   ├── run_single_scenario.py
-│   ├── runners.py
-│   └── tracking.py
 |
-├── scripts/ # Pangenome generation Experiments
-│   ├── run_example.py
-│   ├── run_peeling.py
-│   └── run_strategy_comparison.py
+├── scripts/ # Pangenome generation Unitary Experiments
 │
+├── workflows/
+│   ├── scripts/ #Main RECOMB paper data pipeline
+│       ├── generate_sim.py #Simulation parameter runner
+│       ├── run_inference.py #Main inference pipeline
+│       ├── post_unimog_plotter.py # MWM plots
+│       └── generate_plots.py # Constituent genomes and core comparisons
+|
+├── results/ # wrokflow data and plots, sorted by date
 ├── docs/
 │   ├── images/ #Dashboards and architecture diagrams
 │   ├── CHANGELOG.md
@@ -157,16 +155,12 @@ This repository explores questions such as:
 
 ------
 
-## Status
+## Project Status
 
-Current stage:
-
--  Pangenome simulator (In progress)
--  Ground-truth generation (In progress)
--  Reconstruction heuristic benchmarking (In progress)
--  Comparative baselines (Future work)
--  Large-scale experiments (Future work)
-
+- **RECOMB 2027 Submission & Manuscript:** Formal description and benchmarking results submitted to RECOMB; preprint preparation in progress for arXiv.
+- **Pangenome Simulation (`panevolve`):** Fully implemented with comprehensive evolutionary event modeling across configurable divergence tiers.
+- **Reconstruction Pipelines (`reconstruction`):** Active implementations of Sequential Edge Addition (SEQ) and Maximum Spanning Tree (MST) path decomposition strategies.
+- **Evaluation & Visualization:** Fully functional benchmarking suite utilizing DCJ-indel distances, core set recovery, and MWM-based comparative visualizers.
 
 
 ## Contributing
